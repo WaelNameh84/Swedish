@@ -29,12 +29,42 @@ export const LessonDifficulty = {
   advanced: 'advanced',
 } as const;
 
+export type LessonLevel = typeof LessonLevel[keyof typeof LessonLevel];
+
+
+export const LessonLevel = {
+  A1: 'A1',
+  A2: 'A2',
+  B1: 'B1',
+  B2: 'B2',
+  C1: 'C1',
+  C2: 'C2',
+} as const;
+
+export type LessonSkill = typeof LessonSkill[keyof typeof LessonSkill];
+
+
+export const LessonSkill = {
+  reading: 'reading',
+  writing: 'writing',
+  listening: 'listening',
+  speaking: 'speaking',
+  grammar: 'grammar',
+  tests: 'tests',
+} as const;
+
 export interface Lesson {
   id: number;
   title: string;
   titleSv: string;
+  /** @nullable */
+  description?: string | null;
   category: string;
   difficulty: LessonDifficulty;
+  level: LessonLevel;
+  skill: LessonSkill;
+  durationMinutes: number;
+  isLocked: boolean;
   completionPercentage: number;
   /** @nullable */
   lastAccessedAt?: string | null;
@@ -140,4 +170,33 @@ export interface ChatMessage {
 export interface ChatMessageInput {
   content: string;
 }
+
+export type GetLessonsParams = {
+level?: GetLessonsLevel;
+skill?: GetLessonsSkill;
+};
+
+export type GetLessonsLevel = typeof GetLessonsLevel[keyof typeof GetLessonsLevel];
+
+
+export const GetLessonsLevel = {
+  A1: 'A1',
+  A2: 'A2',
+  B1: 'B1',
+  B2: 'B2',
+  C1: 'C1',
+  C2: 'C2',
+} as const;
+
+export type GetLessonsSkill = typeof GetLessonsSkill[keyof typeof GetLessonsSkill];
+
+
+export const GetLessonsSkill = {
+  reading: 'reading',
+  writing: 'writing',
+  listening: 'listening',
+  speaking: 'speaking',
+  grammar: 'grammar',
+  tests: 'tests',
+} as const;
 

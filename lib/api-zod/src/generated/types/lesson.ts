@@ -6,13 +6,21 @@
  * OpenAPI spec version: 0.1.0
  */
 import type { LessonDifficulty } from './lessonDifficulty';
+import type { LessonLevel } from './lessonLevel';
+import type { LessonSkill } from './lessonSkill';
 
 export interface Lesson {
   id: number;
   title: string;
   titleSv: string;
+  /** @nullable */
+  description?: string | null;
   category: string;
   difficulty: LessonDifficulty;
+  level: LessonLevel;
+  skill: LessonSkill;
+  durationMinutes: number;
+  isLocked: boolean;
   completionPercentage: number;
   /** @nullable */
   lastAccessedAt?: Date | null;

@@ -51,6 +51,34 @@ paths:
               schema:
                 $ref: "#/components/schemas/UserProgress"
 
+  /lessons:
+    get:
+      operationId: getLessons
+      tags: [lessons]
+      summary: Get lessons filtered by level and/or skill
+      parameters:
+        - name: level
+          in: query
+          required: false
+          schema:
+            type: string
+            enum: [A1, A2, B1, B2, C1, C2]
+        - name: skill
+          in: query
+          required: false
+          schema:
+            type: string
+            enum: [reading, writing, listening, speaking, grammar, tests]
+      responses:
+        "200":
+          description: List of lessons
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Lesson"
+
   /lessons/recent:
     get:
       operationId: getRecentLesson
@@ -251,7 +279,7 @@ components:
 
     Lesson:
       type: object
-      required: [id, title, titleSv, category, difficulty, completionPercentage]
+      required: [id, title, titleSv, category, difficulty, level, skill, durationMinutes, isLocked, completionPercentage]
       properties:
         id:
           type: integer
@@ -259,11 +287,23 @@ components:
           type: string
         titleSv:
           type: string
+        description:
+          type: ["string", "null"]
         category:
           type: string
         difficulty:
           type: string
           enum: [beginner, intermediate, advanced]
+        level:
+          type: string
+          enum: [A1, A2, B1, B2, C1, C2]
+        skill:
+          type: string
+          enum: [reading, writing, listening, speaking, grammar, tests]
+        durationMinutes:
+          type: integer
+        isLocked:
+          type: boolean
         completionPercentage:
           type: integer
         lastAccessedAt:

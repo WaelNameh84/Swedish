@@ -1,5 +1,5 @@
 import { Link, useLocation } from "wouter";
-import { Home, MessageSquare, Bot, BarChart3 } from "lucide-react";
+import { Home, MessageSquare, Bot, BookOpen } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 export default function BottomNav() {
@@ -7,9 +7,9 @@ export default function BottomNav() {
 
   const tabs = [
     { href: "/", label: "الرئيسية", icon: Home },
+    { href: "/lessons", label: "الدروس", icon: BookOpen },
     { href: "/conversations", label: "المحادثات", icon: MessageSquare },
     { href: "/chat", label: "تدرب", icon: Bot },
-    { href: "/stats", label: "إحصائياتي", icon: BarChart3 },
   ];
 
   return (

@@ -25,6 +25,7 @@ import type {
   Conversation,
   ConversationDetail,
   DailyChallenge,
+  GetLessonsParams,
   HealthStatus,
   LearningStats,
   Lesson,
@@ -201,6 +202,90 @@ export function useGetUserProgress<TData = Awaited<ReturnType<typeof getUserProg
  ):  UseQueryResult<TData, TError> & { queryKey: QueryKey } {
 
   const queryOptions = getGetUserProgressQueryOptions(options)
+
+  const query = useQuery(queryOptions) as  UseQueryResult<TData, TError> & { queryKey: QueryKey };
+
+  return withQueryKey(query, queryOptions.queryKey);
+}
+
+
+
+
+
+
+
+export const getGetLessonsUrl = (params?: GetLessonsParams,) => {
+  const normalizedParams = new URLSearchParams();
+
+  Object.entries(params || {}).forEach(([key, value]) => {
+
+    if (value !== undefined) {
+      normalizedParams.append(key, value === null ? 'null' : String(value))
+    }
+  });
+
+  const stringifiedParams = normalizedParams.toString();
+
+  return stringifiedParams.length > 0 ? `/api/lessons?${stringifiedParams}` : `/api/lessons`
+}
+
+/**
+ * @summary Get lessons filtered by level and/or skill
+ */
+export const getLessons = async (params?: GetLessonsParams, options?: RequestInit): Promise<Lesson[]> => {
+
+  return customFetch<Lesson[]>(getGetLessonsUrl(params),
+  {
+    ...options,
+    method: 'GET'
+
+
+  }
+);}
+
+
+
+
+
+export const getGetLessonsQueryKey = (params?: GetLessonsParams,) => {
+    return [
+    `/api/lessons`, ...(params ? [params] : [])
+    ] as const;
+    }
+
+
+export const getGetLessonsQueryOptions = <TData = Awaited<ReturnType<typeof getLessons>>, TError = ErrorType<unknown>>(params?: GetLessonsParams, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof getLessons>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
+) => {
+
+const {query: queryOptions, request: requestOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getGetLessonsQueryKey(params);
+
+
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof getLessons>>> = ({ signal }) => getLessons(params, { signal, ...requestOptions });
+
+
+
+
+
+   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof getLessons>>, TError, TData> & { queryKey: QueryKey }
+}
+
+export type GetLessonsQueryResult = NonNullable<Awaited<ReturnType<typeof getLessons>>>
+export type GetLessonsQueryError = ErrorType<unknown>
+
+
+/**
+ * @summary Get lessons filtered by level and/or skill
+ */
+
+export function useGetLessons<TData = Awaited<ReturnType<typeof getLessons>>, TError = ErrorType<unknown>>(
+ params?: GetLessonsParams, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof getLessons>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
+
+ ):  UseQueryResult<TData, TError> & { queryKey: QueryKey } {
+
+  const queryOptions = getGetLessonsQueryOptions(params,options)
 
   const query = useQuery(queryOptions) as  UseQueryResult<TData, TError> & { queryKey: QueryKey };
 

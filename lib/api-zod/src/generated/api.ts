@@ -32,14 +32,44 @@ export const GetUserProgressResponse = zod.object({
 
 
 /**
+ * @summary Get lessons filtered by level and/or skill
+ */
+export const GetLessonsQueryParams = zod.object({
+  "level": zod.enum(['A1', 'A2', 'B1', 'B2', 'C1', 'C2']).optional(),
+  "skill": zod.enum(['reading', 'writing', 'listening', 'speaking', 'grammar', 'tests']).optional()
+})
+
+export const GetLessonsResponseItem = zod.object({
+  "id": zod.number(),
+  "title": zod.string(),
+  "titleSv": zod.string(),
+  "description": zod.string().nullish(),
+  "category": zod.string(),
+  "difficulty": zod.enum(['beginner', 'intermediate', 'advanced']),
+  "level": zod.enum(['A1', 'A2', 'B1', 'B2', 'C1', 'C2']),
+  "skill": zod.enum(['reading', 'writing', 'listening', 'speaking', 'grammar', 'tests']),
+  "durationMinutes": zod.number(),
+  "isLocked": zod.boolean(),
+  "completionPercentage": zod.number(),
+  "lastAccessedAt": zod.coerce.date().nullish()
+})
+export const GetLessonsResponse = zod.array(GetLessonsResponseItem)
+
+
+/**
  * @summary Get most recently accessed lesson
  */
 export const GetRecentLessonResponse = zod.object({
   "id": zod.number(),
   "title": zod.string(),
   "titleSv": zod.string(),
+  "description": zod.string().nullish(),
   "category": zod.string(),
   "difficulty": zod.enum(['beginner', 'intermediate', 'advanced']),
+  "level": zod.enum(['A1', 'A2', 'B1', 'B2', 'C1', 'C2']),
+  "skill": zod.enum(['reading', 'writing', 'listening', 'speaking', 'grammar', 'tests']),
+  "durationMinutes": zod.number(),
+  "isLocked": zod.boolean(),
   "completionPercentage": zod.number(),
   "lastAccessedAt": zod.coerce.date().nullish()
 })
