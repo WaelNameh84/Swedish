@@ -9,7 +9,7 @@ const router = Router();
 const TUTOR_SYSTEM_PROMPT = `أنت "المعلم الذكي"، مساعد ودود لتعليم اللغة السويدية للناطقين بالعربية داخل تطبيق تعلم لغة. تحدّث بالعربية مع إبراز الكلمات والجمل السويدية بوضوح. إذا كتب المستخدم بالسويدية، صحّح أخطاءه بلطف وردّ عليه محادثةً، وإذا سأل بالعربية عن قاعدة أو كلمة اشرحها ببساطة مع أمثلة. اجعل ردودك قصيرة ومشجعة (3-5 أسطر) واستخدم رموزاً تعبيرية بشكل معتدل.`;
 
 async function generateAITutorResponse(userMessage: string, history: { role: string; content: string }[]): Promise<string | null> {
-  const openai = getOpenAI();
+  const openai = await getOpenAI();
   if (!openai) return null;
 
   const completion = await openai.chat.completions.create({

@@ -1,10 +1,10 @@
 ---
-name: Svenska AI feature gating
-description: Why AI-dependent features in the Svenska app wait on a user-supplied OpenAI key instead of the Replit AI Integrations proxy.
+name: Svenska AI key gating
+description: How getOpenAI() resolves the API key for gated AI features (chat, corrections, pronunciation AI, AI voice).
 ---
 
-The user explicitly declined enabling the Replit AI Integrations OpenAI proxy for this project. AI-only features (smart error correction, AI pronunciation evaluation, grammar explanations, AI chat/homework generation) must stay gated behind a **user-supplied OpenAI API key**, to be entered later via the app's Settings page — do not re-propose the Replit AI Integrations proxy for this project unless the user brings it up again.
+`getOpenAI()` in `artifacts/api-server/src/lib/openai.ts` is async. It checks `OPENAI_API_KEY` env var first, then falls back to the user's own key stored on `user_settings.openai_api_key` (set via the app's Settings page). All three call sites (`chat.ts`, `aiTeacher.ts`, `pronunciation.ts`) must `await` it.
 
-**Why:** explicit user decision to self-manage the key rather than use Replit's managed proxy.
+**Why:** the user declined the Replit AI Integrations proxy and no env key is set in this project, so without the DB fallback every AI-gated feature (including the new AI voice) would be permanently unavailable — the Settings UI implies "add your key here to unlock AI features" but nothing previously read that stored key.
 
-**How to apply:** when adding new AI-powered features to this app, route them through the same "bring your own key via Settings" pattern (check for the key, prompt the user to add it there) rather than wiring up the AI Integrations proxy. Non-AI approaches should be preferred wherever they can meet the need — see the audio-tts memory for one example (browser `speechSynthesis`). For translation/voice/OCR specifically: the free public Google Translate endpoint (proxied server-side to dodge CORS/key issues), the browser Web Speech API (`speechSynthesis` + `SpeechRecognition`), and client-side `tesseract.js` OCR together cover translation, voice, and image-text needs with no AI key at all.
+**How to apply:** any new AI-gated route must `await getOpenAI()` (or `await isAIAvailable()`), not call it synchronously. If a future feature needs the key elsewhere (e.g. a script), reuse `getOpenAI()` rather than reading `user_settings` directly.

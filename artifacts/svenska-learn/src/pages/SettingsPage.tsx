@@ -13,14 +13,20 @@ import {
   Gauge,
   Lock,
   Globe,
-  CloudCog
+  CloudCog,
+  Sparkles,
 } from "lucide-react";
 import { Switch } from "@/components/ui/switch";
+import { useAudioSettings } from "@/lib/audioSettings";
+import { listVoicesForLang, speak } from "@/lib/speech";
 
 const BASE = import.meta.env.BASE_URL.replace(/\/$/, "");
 
 export default function SettingsPage() {
   const [settings, setSettings] = useState<any>(null);
+  const [aiAvailable, setAiAvailable] = useState(false);
+  const [svVoices, setSvVoices] = useState<SpeechSynthesisVoice[]>([]);
+  const audio = useAudioSettings();
 
   const fetchSettings = () => {
     fetch(BASE + "/api/settings/user")
@@ -31,6 +37,22 @@ export default function SettingsPage() {
 
   useEffect(() => {
     fetchSettings();
+    fetch(BASE + "/api/ai-teacher/status")
+      .then((r) => r.json())
+      .then((d) => setAiAvailable(!!d.available))
+      .catch(() => {});
+    const loadVoices = () => setSvVoices(listVoicesForLang("sv"));
+    loadVoices();
+    if (typeof window !== "undefined" && window.speechSynthesis) {
+      // Use addEventListener (not the onvoiceschanged property) so we don't
+      // clobber the listener lib/speech.ts already registered on load.
+      window.speechSynthesis.addEventListener("voiceschanged", loadVoices);
+    }
+    return () => {
+      if (typeof window !== "undefined" && window.speechSynthesis) {
+        window.speechSynthesis.removeEventListener("voiceschanged", loadVoices);
+      }
+    };
   }, []);
 
   const updateSetting = async (key: string, value: any) => {
@@ -285,6 +307,50 @@ export default function SettingsPage() {
                 <option value="medium">متوسط</option>
                 <option value="fast">سريع</option>
               </select>
+            </div>
+
+            <div className="pt-3 border-t border-border flex flex-col gap-3">
+              <div className="flex items-center justify-between">
+                <div className="flex flex-col">
+                  <span className="text-sm font-semibold flex items-center gap-1.5">
+                    <Sparkles className="w-3.5 h-3.5 text-amber-500" /> صوت بشري بالذكاء الاصطناعي
+                  </span>
+                  <span className="text-[10px] text-muted-foreground">
+                    {aiAvailable ? "نطق طبيعي وواضح بدل الصوت الآلي" : "يحتاج مفتاح OpenAI (أضفه أعلاه في مفاتيح الذكاء الاصطناعي)"}
+                  </span>
+                </div>
+                <Switch
+                  checked={audio.useAiVoice}
+                  disabled={!aiAvailable}
+                  onCheckedChange={audio.setUseAiVoice}
+                />
+              </div>
+
+              {!audio.useAiVoice && svVoices.length > 0 && (
+                <div className="flex items-center justify-between">
+                  <span className="text-sm font-semibold">صوت النطق السويدي</span>
+                  <select
+                    className="bg-muted text-sm rounded-lg px-3 py-1.5 border-none outline-none max-w-[55%]"
+                    value={audio.voiceURI ?? "auto"}
+                    onChange={(e) => audio.setVoiceURI(e.target.value === "auto" ? null : e.target.value)}
+                    dir="ltr"
+                  >
+                    <option value="auto">تلقائي (أفضل صوت متاح)</option>
+                    {svVoices.map((v) => (
+                      <option key={v.voiceURI} value={v.voiceURI}>
+                        {v.name}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+              )}
+
+              <button
+                onClick={() => speak("Hej, jag lär mig svenska!", { lang: "sv-SE" })}
+                className="w-full flex items-center justify-center gap-2 py-2.5 rounded-xl bg-primary/10 text-primary font-semibold text-sm hover:bg-primary/20 transition-colors"
+              >
+                <Volume2 className="w-4 h-4" /> تجربة الصوت
+              </button>
             </div>
           </div>
         </section>

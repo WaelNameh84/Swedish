@@ -38,7 +38,7 @@ router.post("/ai-teacher/generate", async (req, res) => {
       return res.status(400).json({ error: "الرجاء إدخال طلبك" });
     }
 
-    const openai = getOpenAI();
+    const openai = await getOpenAI();
     if (!openai) {
       return res.status(503).json({ error: AI_NOT_CONFIGURED_MESSAGE, aiDisabled: true });
     }
@@ -67,7 +67,7 @@ router.post("/ai-teacher/translate", async (req, res) => {
       return res.status(400).json({ error: "الرجاء إدخال نص" });
     }
 
-    const openai = getOpenAI();
+    const openai = await getOpenAI();
     if (!openai) {
       return res.status(503).json({ error: AI_NOT_CONFIGURED_MESSAGE, aiDisabled: true });
     }
@@ -101,7 +101,7 @@ router.post("/ai-teacher/speak", async (req, res) => {
       return res.status(400).json({ error: "الرجاء إدخال نص" });
     }
 
-    const openai = getOpenAI();
+    const openai = await getOpenAI();
     if (!openai) {
       return res.status(503).json({ error: AI_NOT_CONFIGURED_MESSAGE, aiDisabled: true });
     }
@@ -134,7 +134,7 @@ router.post("/ai-teacher/pronunciation", upload.single("audio"), async (req, res
       return res.status(400).json({ error: "الرجاء تحديد الجملة المطلوب نطقها" });
     }
 
-    const openai = getOpenAI();
+    const openai = await getOpenAI();
     if (!openai) {
       return res.status(503).json({ error: AI_NOT_CONFIGURED_MESSAGE, aiDisabled: true });
     }
@@ -180,7 +180,7 @@ router.post("/ai-teacher/transcribe", upload.single("audio"), async (req, res) =
       return res.status(400).json({ error: "لم يتم إرسال أي تسجيل صوتي" });
     }
 
-    const openai = getOpenAI();
+    const openai = await getOpenAI();
     if (!openai) {
       return res.status(503).json({ error: AI_NOT_CONFIGURED_MESSAGE, aiDisabled: true });
     }
@@ -198,8 +198,8 @@ router.post("/ai-teacher/transcribe", upload.single("audio"), async (req, res) =
   }
 });
 
-router.get("/ai-teacher/status", (_req, res) => {
-  res.json({ available: isAIAvailable() });
+router.get("/ai-teacher/status", async (_req, res) => {
+  res.json({ available: await isAIAvailable() });
 });
 
 export default router;

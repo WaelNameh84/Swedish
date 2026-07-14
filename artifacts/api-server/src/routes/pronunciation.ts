@@ -27,7 +27,7 @@ router.post("/pronunciation/evaluate", upload.single("audio"), async (req, res) 
       return res.status(400).json({ error: "الرجاء تحديد الكلمة أو الجملة المطلوب نطقها" });
     }
 
-    const openai = getOpenAI();
+    const openai = await getOpenAI();
     if (!openai) {
       return res.status(503).json({ error: AI_NOT_CONFIGURED_MESSAGE, aiDisabled: true });
     }
@@ -82,7 +82,7 @@ router.post("/pronunciation/errors", upload.single("audio"), async (req, res) =>
       return res.status(400).json({ error: "الرجاء تحديد الكلمة أو الجملة المطلوب نطقها" });
     }
 
-    const openai = getOpenAI();
+    const openai = await getOpenAI();
     if (!openai) {
       return res.status(503).json({ error: AI_NOT_CONFIGURED_MESSAGE, aiDisabled: true });
     }
