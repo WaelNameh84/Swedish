@@ -1,6 +1,7 @@
-import { useMemo, useState } from "react";
+import { useMemo, useState, useEffect } from "react";
 import { AnimatePresence, motion } from "framer-motion";
-import { Image as ImageIcon } from "lucide-react";
+import { Image as ImageIcon, Volume2 } from "lucide-react";
+import { speak } from "@/lib/speech";
 import { cn } from "@/lib/utils";
 import { useWordPool, shuffle, type PoolWord } from "@/lib/useWordPool";
 import GameHeader from "@/components/GameHeader";
@@ -28,6 +29,11 @@ export default function PictureGame() {
   const [done, setDone] = useState(false);
 
   const q = questions[current];
+
+  // Auto-play the Swedish word whenever the question changes
+  useEffect(() => {
+    if (q?.word?.word) speak(q.word.word, { lang: "sv-SE" });
+  }, [current, q]);
 
   const choose = (idx: number) => {
     if (selected !== null) return;
@@ -59,7 +65,16 @@ export default function PictureGame() {
             <motion.div key={current} initial={{ opacity: 0, x: 12 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -12 }}>
               <div className="bg-card border border-card-border rounded-2xl p-6 mb-4 text-center">
                 <p className="text-xs text-muted-foreground mb-1">أي صورة تمثّل الكلمة؟</p>
-                <span className="text-2xl font-black text-foreground" dir="ltr">{q.word.word}</span>
+                <div className="flex items-center justify-center gap-3 mt-1">
+                  <span className="text-2xl font-black text-foreground" dir="ltr">{q.word.word}</span>
+                  <button
+                    onClick={() => speak(q.word.word, { lang: "sv-SE" })}
+                    className="w-9 h-9 rounded-full bg-primary/10 flex items-center justify-center text-primary hover:bg-primary/20 transition-colors"
+                    aria-label="استمع للنطق"
+                  >
+                    <Volume2 className="w-4 h-4" />
+                  </button>
+                </div>
                 <p className="text-sm text-muted-foreground mt-1">{q.word.translation}</p>
               </div>
               <div className="grid grid-cols-2 gap-3">

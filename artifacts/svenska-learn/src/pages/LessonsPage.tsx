@@ -11,6 +11,7 @@ import {
   Lock, 
   Star,
   ChevronRight,
+  Volume2,
   type LucideIcon
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
@@ -18,6 +19,7 @@ import {
   useGetLessons, 
   getGetLessonsQueryKey 
 } from "@workspace/api-client-react";
+import { speak } from "@/lib/speech";
 import { Skeleton } from "@/components/ui/skeleton";
 import { cn } from "@/lib/utils";
 
@@ -237,7 +239,18 @@ export default function LessonsPage() {
                           </div>
                           
                           <h3 className="text-lg font-bold text-foreground mb-1 line-clamp-1">{lesson.title}</h3>
-                          <p className="text-xs text-muted-foreground mb-3 font-medium line-clamp-1" dir="ltr">{lesson.titleSv}</p>
+                          <div className="flex items-center gap-1.5 mb-3">
+                            <p className="text-xs text-muted-foreground font-medium line-clamp-1 flex-1" dir="ltr">{lesson.titleSv}</p>
+                            {!isLocked && lesson.titleSv && (
+                              <button
+                                onClick={(e) => { e.preventDefault(); e.stopPropagation(); speak(lesson.titleSv, { lang: "sv-SE" }); }}
+                                className="w-6 h-6 rounded-full bg-primary/10 flex items-center justify-center text-primary hover:bg-primary/20 transition-colors shrink-0"
+                                aria-label="استمع للنطق"
+                              >
+                                <Volume2 className="w-3 h-3" />
+                              </button>
+                            )}
+                          </div>
                           
                           {lesson.description && (
                             <p className="text-sm text-foreground/80 line-clamp-2 leading-relaxed mb-4">

@@ -26,6 +26,7 @@ import {
 } from "@workspace/api-client-react";
 import { Skeleton } from "@/components/ui/skeleton";
 import { cn } from "@/lib/utils";
+import { speak } from "@/lib/speech";
 
 // ── Types ──────────────────────────────────────────────────────────────────
 
@@ -145,6 +146,13 @@ function VocabularySection({ content }: { content: Record<string, unknown> }) {
                 </div>
               </div>
               <div className="flex items-center gap-2">
+                <button
+                  onClick={(e) => { e.stopPropagation(); speak(word.sv, { lang: "sv-SE" }); }}
+                  className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center text-primary hover:bg-primary/20 transition-colors shrink-0"
+                  aria-label="استمع"
+                >
+                  <Volume2 className="w-4 h-4" />
+                </button>
                 <span className="text-xs font-medium text-accent bg-accent/10 px-2 py-1 rounded-lg" dir="ltr">
                   [{word.phonetic}]
                 </span>
@@ -212,7 +220,14 @@ function GrammarSection({ content }: { content: Record<string, unknown> }) {
       <div className="space-y-2">
         <p className="text-xs font-bold text-muted-foreground uppercase tracking-wider" dir="rtl">أمثلة:</p>
         {examples.map((ex, i) => (
-          <div key={i} className="bg-card border border-card-border rounded-xl p-3 flex justify-between items-start gap-3">
+          <div key={i} className="bg-card border border-card-border rounded-xl p-3 flex items-start gap-3">
+            <button
+              onClick={() => speak(ex.sv, { lang: "sv-SE" })}
+              className="w-7 h-7 rounded-full bg-primary/10 flex items-center justify-center text-primary hover:bg-primary/20 transition-colors shrink-0 mt-0.5"
+              aria-label="استمع"
+            >
+              <Volume2 className="w-3.5 h-3.5" />
+            </button>
             <p className="text-sm font-medium text-foreground flex-1" dir="ltr">{ex.sv}</p>
             <p className="text-sm text-muted-foreground text-right" dir="rtl">{ex.ar}</p>
           </div>
@@ -246,9 +261,18 @@ function ReadingSection({ content }: { content: Record<string, unknown> }) {
         </div>
       )}
       <div className="bg-card border border-card-border rounded-2xl p-4">
-        <p className="text-xs font-bold text-muted-foreground uppercase tracking-wider mb-3" dir="rtl">
-          النص بالسويدية
-        </p>
+        <div className="flex items-center justify-between mb-3">
+          <p className="text-xs font-bold text-muted-foreground uppercase tracking-wider" dir="rtl">
+            النص بالسويدية
+          </p>
+          <button
+            onClick={() => speak(passage, { lang: "sv-SE", rate: 0.85 })}
+            className="flex items-center gap-1.5 bg-primary/10 text-primary text-xs font-semibold px-3 py-1.5 rounded-full hover:bg-primary/20 transition-colors"
+          >
+            <Volume2 className="w-3.5 h-3.5" />
+            استمع
+          </button>
+        </div>
         <p className="text-sm leading-relaxed text-foreground whitespace-pre-line" dir="ltr">{passage}</p>
       </div>
       <button
@@ -345,9 +369,16 @@ function ListeningSection({ content }: { content: Record<string, unknown> }) {
           <Volume2 className="w-4 h-4 text-primary" />
           <p className="text-xs font-bold text-primary uppercase tracking-wider">تدريب الاستماع</p>
         </div>
-        <p className="text-sm text-foreground/80 leading-relaxed" dir="rtl">
-          اقرأ النص أدناه بصوت عالٍ وتدرب على النطق الصحيح
+        <p className="text-sm text-foreground/80 leading-relaxed mb-4" dir="rtl">
+          اضغط على الزر للاستماع للنص كاملاً بنطق سويدي صحيح
         </p>
+        <button
+          onClick={() => speak(transcript, { lang: "sv-SE", rate: 0.85 })}
+          className="w-full flex items-center justify-center gap-2 py-3 rounded-xl bg-primary text-primary-foreground font-bold text-sm hover:bg-primary/90 active:scale-[0.98] transition-all"
+        >
+          <Volume2 className="w-4 h-4" />
+          اضغط للاستماع
+        </button>
       </div>
       <button
         onClick={() => setShowTranscript(!showTranscript)}

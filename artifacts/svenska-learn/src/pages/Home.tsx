@@ -18,7 +18,8 @@ import {
   Languages,
   AudioLines,
   Users2,
-  UserCircle2
+  UserCircle2,
+  Volume2
 } from "lucide-react";
 import { motion } from "framer-motion";
 import { 
@@ -32,6 +33,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Progress } from "@/components/ui/progress";
+import { speak } from "@/lib/speech";
 
 const containerVariants = {
   hidden: { opacity: 0 },
@@ -221,7 +223,16 @@ export default function Home() {
                     <span className="text-[10px] font-medium text-primary bg-primary/10 px-2 py-0.5 rounded w-max mb-2">
                       {word.category}
                     </span>
-                    <span className="text-xl font-bold text-foreground mb-1 block" dir="ltr">{word.word}</span>
+                    <div className="flex items-center gap-2 mb-1">
+                      <span className="text-xl font-bold text-foreground block" dir="ltr">{word.word}</span>
+                      <button
+                        onClick={() => speak(word.word, { lang: "sv-SE" })}
+                        className="w-7 h-7 rounded-full bg-primary/10 flex items-center justify-center text-primary hover:bg-primary/20 transition-colors shrink-0"
+                        aria-label="استمع"
+                      >
+                        <Volume2 className="w-3.5 h-3.5" />
+                      </button>
+                    </div>
                     <span className="text-xs text-muted-foreground mb-3 font-mono" dir="ltr">/{word.phonetic}/</span>
                     <span className="text-sm font-medium text-foreground/80">{word.translation}</span>
                   </div>
