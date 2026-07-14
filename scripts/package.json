@@ -8,6 +8,7 @@
     "seed": "tsx ./src/seedLessons.ts",
     "seed:dictionary": "tsx ./src/seedDictionary.ts",
     "seed:verbs": "tsx ./src/seedVerbs.ts",
+    "seed:conversations": "tsx ./src/seedConversations.ts",
     "typecheck": "tsc -p tsconfig.json --noEmit"
   },
   "dependencies": {
