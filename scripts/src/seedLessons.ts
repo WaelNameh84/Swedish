@@ -1567,9 +1567,9 @@ const allLessons: LessonData[] = [
 async function seed() {
   console.log("🌱 Seeding lessons database...");
 
-  const [{ count }] = await db.execute(sql`SELECT count(*) as count FROM lessons`);
-  if (Number(count) > 0) {
-    console.log(`⏭️  Lessons already seeded (${count} rows), skipping.`);
+  const existing = await db.select().from(lessonsTable).limit(1);
+  if (existing.length > 0) {
+    console.log("⏭️  Lessons already seeded, skipping.");
     process.exit(0);
   }
 
