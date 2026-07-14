@@ -1,0 +1,51 @@
+2026-07-14T19:43:10.786724444Z dist/public/assets/index-BCN4B5Gl.js      15.89 kB │ gzip:   6.87 kB
+2026-07-14T19:43:10.786733845Z dist/public/assets/index-BSjNL8C9.js   1,241.53 kB │ gzip: 340.50 kB
+2026-07-14T19:43:10.786777025Z 
+2026-07-14T19:43:10.786793035Z (!) Some chunks are larger than 500 kB after minification. Consider:
+2026-07-14T19:43:10.786800485Z - Using dynamic import() to code-split the application
+2026-07-14T19:43:10.786807455Z - Use build.rollupOptions.output.manualChunks to improve chunking: https://rollupjs.org/configuration-options/#output-manualchunks
+2026-07-14T19:43:10.786813975Z - Adjust chunk size limit for this warning via build.chunkSizeWarningLimit.
+2026-07-14T19:43:10.787015578Z ✓ built in 6.24s
+2026-07-14T19:43:12.522300942Z 
+2026-07-14T19:43:12.522333533Z PWA v1.3.0
+2026-07-14T19:43:12.522341313Z mode      generateSW
+2026-07-14T19:43:12.522347453Z precache  9 entries (2240.99 KiB)
+2026-07-14T19:43:12.522351823Z files generated
+2026-07-14T19:43:12.522384683Z   dist/public/sw.js
+2026-07-14T19:43:12.522391913Z   dist/public/workbox-9c191d2f.js
+2026-07-14T19:43:13.089876077Z 
+2026-07-14T19:43:13.089905747Z > @workspace/api-server@0.0.0 build /opt/render/project/src/artifacts/api-server
+2026-07-14T19:43:13.089913628Z > node ./build.mjs
+2026-07-14T19:43:13.089919488Z 
+2026-07-14T19:43:13.741930351Z 
+2026-07-14T19:43:13.741958402Z   dist/index.mjs                       3.5mb ⚠️
+2026-07-14T19:43:13.741964072Z   dist/pino-worker.mjs               153.4kb
+2026-07-14T19:43:13.741968272Z   dist/pino-file.mjs                 142.1kb
+2026-07-14T19:43:13.741972582Z   dist/pino-pretty.mjs               114.4kb
+2026-07-14T19:43:13.741976512Z   dist/thread-stream-worker.mjs        7.3kb
+2026-07-14T19:43:13.741980592Z   dist/index.mjs.map                   6.9mb
+2026-07-14T19:43:13.741984462Z   dist/pino-worker.mjs.map           256.9kb
+2026-07-14T19:43:13.741988252Z   dist/pino-file.mjs.map             229.0kb
+2026-07-14T19:43:13.741992172Z   dist/pino-pretty.mjs.map           203.6kb
+2026-07-14T19:43:13.741995982Z   dist/thread-stream-worker.mjs.map   12.0kb
+2026-07-14T19:43:13.742010582Z 
+2026-07-14T19:43:13.742013952Z ⚡ Done in 585ms
+2026-07-14T19:43:15.184337244Z ==> Uploading build...
+2026-07-14T19:43:24.334714353Z ==> Uploaded in 4.0s. Compression took 5.2s
+2026-07-14T19:43:24.373106711Z ==> Build successful 🎉
+2026-07-14T19:43:36.352186968Z ==> Deploying...
+2026-07-14T19:43:36.46916353Z ==> Setting WEB_CONCURRENCY=1 by default, based on available CPUs in the instance
+2026-07-14T19:43:57.788556925Z ==> Running 'node --enable-source-maps artifacts/api-server/dist/index.mjs'
+2026-07-14T19:44:00.08181399Z {"level":30,"time":1784058239994,"pid":69,"hostname":"srv-d9b7aqdaeets73ag6ld0-hibernate-7777bf879d-fmqkv","staticDir":"artifacts/svenska-learn/dist/public","msg":"Serving static frontend"}
+2026-07-14T19:44:00.084180279Z (node:69) [DEP0040] DeprecationWarning: The `punycode` module is deprecated. Please use a userland alternative instead.
+2026-07-14T19:44:00.08419395Z (Use `node --trace-deprecation ...` to show where the warning was created)
+2026-07-14T19:44:00.085230762Z {"level":30,"time":1784058240084,"pid":69,"hostname":"srv-d9b7aqdaeets73ag6ld0-hibernate-7777bf879d-fmqkv","port":10000,"msg":"Server listening"}
+2026-07-14T19:44:00.705507994Z {"level":30,"time":1784058240705,"pid":69,"hostname":"srv-d9b7aqdaeets73ag6ld0-hibernate-7777bf879d-fmqkv","req":{"id":1,"method":"HEAD","url":"/"},"res":{"statusCode":200},"responseTime":4,"msg":"request completed"}
+2026-07-14T19:44:07.599836688Z ==> Your service is live 🎉
+2026-07-14T19:44:07.790137294Z ==> 
+2026-07-14T19:44:07.792322641Z ==> ///////////////////////////////////////////////////////////
+2026-07-14T19:44:07.794340697Z ==> 
+2026-07-14T19:44:07.795946715Z ==> Available at your primary URL https://swedish-caah.onrender.com
+2026-07-14T19:44:07.7979528Z ==> 
+2026-07-14T19:44:07.799627433Z ==> ///////////////////////////////////////////////////////////
+2026-07-14T19:44:07.557735437Z {"level":30,"time":1784058247557,"pid":69,"hostname":"srv-d9b7aqdaeets73ag6ld0-hibernate-7777bf879d-fmqkv","req":{"id":2,"method":"GET","url":"/"},"res":{"statusCode":200},"responseTime":3,"msg":"request completed"}
