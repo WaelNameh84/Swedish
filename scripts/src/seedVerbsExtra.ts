@@ -1664,6 +1664,27 @@ const extraVerbs = [
   },
 ];
 
+// drizzle-orm wraps the underlying pg error as `.cause` (its own top-level
+// `.message` is a generic "Failed query: ..." string), so checking
+// `e.message.includes("unique")` on the outer error never matches — walk the
+// cause chain and check the Postgres error code (23505 = unique_violation)
+// instead of relying on message text.
+function isUniqueViolation(e: unknown): boolean {
+  let current: unknown = e;
+  for (let i = 0; i < 5 && current; i++) {
+    if (typeof current === "object" && current !== null) {
+      const code = (current as { code?: unknown }).code;
+      if (code === "23505") return true;
+      const message = (current as { message?: unknown }).message;
+      if (typeof message === "string" && message.toLowerCase().includes("unique")) return true;
+      current = (current as { cause?: unknown }).cause;
+    } else {
+      break;
+    }
+  }
+  return false;
+}
+
 async function seed() {
   console.log("🌱 Adding extra verbs...");
   let added = 0;
@@ -1695,7 +1716,7 @@ async function seed() {
       console.log(`✅ ${v.infinitiv} — ${v.translation}`);
       added++;
     } catch (e: unknown) {
-      if (e instanceof Error && e.message.includes("unique")) {
+      if (isUniqueViolation(e)) {
         console.log(`⏭️  ${v.infinitiv} — already exists, skipped`);
         skipped++;
       } else {

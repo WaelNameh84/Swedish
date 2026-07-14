@@ -1020,11 +1020,15 @@ async function seed() {
 
   for (let i = 0; i < extraScenarios.length; i++) {
     const s = extraScenarios[i];
-    // Skip if this scenario already exists
+    // Skip if this scenario was already inserted by a previous run (redeploys
+    // re-run this script against the same DB, so it must be idempotent).
     const existing = await db.query.conversationsTable.findFirst({
-      where: (t, { eq }) => eq(t.scenario, s.scenario + "_extra_" + i),
+      where: (t, { eq }) => eq(t.scenario, s.scenario),
     });
-    // Insert regardless — we use a unique variant so they won't conflict
+    if (existing) {
+      console.log(`⏭️  [${i + 1}/${extraScenarios.length}] ${s.emoji} ${s.titleAr} — already exists, skipped`);
+      continue;
+    }
     const [conv] = await db.insert(conversationsTable).values({
       title: s.title,
       titleAr: s.titleAr,

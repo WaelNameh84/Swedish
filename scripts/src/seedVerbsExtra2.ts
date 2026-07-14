@@ -1549,6 +1549,26 @@ const extraVerbs2 = [
   },
 ];
 
+// drizzle-orm wraps the underlying pg error as `.cause`, so checking
+// `err.code`/`err.message` on the outer error alone can miss real unique
+// violations — walk the cause chain (see seedVerbsExtra.ts for the incident
+// this was copied from).
+function isUniqueViolation(e: unknown): boolean {
+  let current: unknown = e;
+  for (let i = 0; i < 5 && current; i++) {
+    if (typeof current === "object" && current !== null) {
+      const code = (current as { code?: unknown }).code;
+      if (code === "23505") return true;
+      const message = (current as { message?: unknown }).message;
+      if (typeof message === "string" && message.toLowerCase().includes("unique")) return true;
+      current = (current as { cause?: unknown }).cause;
+    } else {
+      break;
+    }
+  }
+  return false;
+}
+
 async function seedVerbsExtra2() {
   console.log("🌱 Adding extra verbs (batch 2)...\n");
   let added = 0;
@@ -1560,7 +1580,7 @@ async function seedVerbsExtra2() {
       console.log(`✅ ${verb.infinitiv} — ${verb.translation}`);
       added++;
     } catch (err: any) {
-      if (err?.code === "23505" || err?.message?.includes("unique")) {
+      if (isUniqueViolation(err)) {
         console.log(`⏭️  ${verb.infinitiv} — already exists, skipped`);
         skipped++;
       } else {
