@@ -1,0 +1,71 @@
+2026-07-14T19:22:20.636015539Z ==> Downloading cache...
+2026-07-14T19:22:20.671802635Z ==> Cloning from https://github.com/WaelNameh84/Swedish
+2026-07-14T19:22:21.101618166Z ==> Checking out commit 7b4fa0c524b26c1a05641f83f1ad6518a25cdcf2 in branch main
+2026-07-14T19:22:27.492574418Z ==> Downloaded 128MB in 2s. Extraction took 5s.
+2026-07-14T19:22:31.877654014Z ==> Requesting Node.js version 22
+2026-07-14T19:22:32.000001999Z ==> Using Node.js version 22.23.1 via /opt/render/project/src/.node-version
+2026-07-14T19:22:32.000020479Z ==> Docs on specifying a Node.js version: https://render.com/docs/node-version
+2026-07-14T19:22:32.000117732Z ==> Installing Node.js version 22.23.1...
+2026-07-14T19:22:33.148371495Z ==> Running build command 'npm install -g pnpm@10 && pnpm install --ignore-scripts && pnpm rebuild esbuild tesseract.js && BASE_PATH=/ pnpm --filter @workspace/svenska-learn run build && pnpm --filter @workspace/api-server run build'...
+2026-07-14T19:22:34.315548775Z 
+2026-07-14T19:22:34.315571656Z added 1 package in 1s
+2026-07-14T19:22:34.31569552Z 
+2026-07-14T19:22:34.31570499Z 1 package is looking for funding
+2026-07-14T19:22:34.3157143Z   run `npm fund` for details
+2026-07-14T19:22:36.114340949Z 
+2026-07-14T19:22:36.11437067Z > @workspace/svenska-learn@0.0.0 build /opt/render/project/src/artifacts/svenska-learn
+2026-07-14T19:22:36.11437505Z > vite build --config vite.config.ts
+2026-07-14T19:22:36.11437776Z 
+2026-07-14T19:22:36.40833659Z vite v7.3.6 building client environment for production...
+2026-07-14T19:22:36.475717675Z transforming...
+2026-07-14T19:22:37.324999126Z src/components/ui/tooltip.tsx (2:0): Error when using sourcemap for reporting an error: Can't resolve original location of error.
+2026-07-14T19:22:38.540871689Z src/components/ui/sheet.tsx (2:0): Error when using sourcemap for reporting an error: Can't resolve original location of error.
+2026-07-14T19:22:41.668335903Z ✓ 2943 modules transformed.
+2026-07-14T19:22:41.990178121Z rendering chunks...
+2026-07-14T19:22:42.32140184Z computing gzip size...
+2026-07-14T19:22:42.351885156Z dist/public/index.html                     1.53 kB │ gzip:   0.59 kB
+2026-07-14T19:22:42.35202837Z dist/public/assets/index-DQtPcOE1.css    159.19 kB │ gzip:  23.91 kB
+2026-07-14T19:22:42.352183655Z dist/public/assets/index-BCN4B5Gl.js      15.89 kB │ gzip:   6.87 kB
+2026-07-14T19:22:42.352189065Z dist/public/assets/index-BSjNL8C9.js   1,241.53 kB │ gzip: 340.50 kB
+2026-07-14T19:22:42.352255717Z 
+2026-07-14T19:22:42.352260987Z (!) Some chunks are larger than 500 kB after minification. Consider:
+2026-07-14T19:22:42.352264507Z - Using dynamic import() to code-split the application
+2026-07-14T19:22:42.352269417Z - Use build.rollupOptions.output.manualChunks to improve chunking: https://rollupjs.org/configuration-options/#output-manualchunks
+2026-07-14T19:22:42.352271987Z - Adjust chunk size limit for this warning via build.chunkSizeWarningLimit.
+2026-07-14T19:22:42.352470473Z ✓ built in 5.92s
+2026-07-14T19:22:42.792509411Z 
+2026-07-14T19:22:42.792534922Z > @workspace/api-server@0.0.0 build /opt/render/project/src/artifacts/api-server
+2026-07-14T19:22:42.792539123Z > node ./build.mjs
+2026-07-14T19:22:42.792541563Z 
+2026-07-14T19:22:43.486723315Z 
+2026-07-14T19:22:43.486752795Z   dist/index.mjs                       3.5mb ⚠️
+2026-07-14T19:22:43.486771036Z   dist/pino-worker.mjs               153.4kb
+2026-07-14T19:22:43.486774996Z   dist/pino-file.mjs                 142.1kb
+2026-07-14T19:22:43.486778736Z   dist/pino-pretty.mjs               114.4kb
+2026-07-14T19:22:43.486786426Z   dist/thread-stream-worker.mjs        7.3kb
+2026-07-14T19:22:43.486790026Z   dist/index.mjs.map                   6.9mb
+2026-07-14T19:22:43.486793637Z   dist/pino-worker.mjs.map           256.9kb
+2026-07-14T19:22:43.486797297Z   dist/pino-file.mjs.map             229.0kb
+2026-07-14T19:22:43.486800667Z   dist/pino-pretty.mjs.map           203.6kb
+2026-07-14T19:22:43.486804367Z   dist/thread-stream-worker.mjs.map   12.0kb
+2026-07-14T19:22:43.486807767Z 
+2026-07-14T19:22:43.486812087Z ⚡ Done in 625ms
+2026-07-14T19:22:44.753026302Z ==> Uploading build...
+2026-07-14T19:22:53.105172003Z ==> Uploaded in 3.9s. Compression took 4.5s
+2026-07-14T19:22:53.361476032Z ==> Build successful 🎉
+2026-07-14T19:23:03.104504884Z ==> Deploying...
+2026-07-14T19:23:03.236916853Z ==> Setting WEB_CONCURRENCY=1 by default, based on available CPUs in the instance
+2026-07-14T19:23:22.54688147Z ==> Running 'node --enable-source-maps artifacts/api-server/dist/index.mjs'
+2026-07-14T19:23:24.73858563Z {"level":30,"time":1784057004737,"pid":70,"hostname":"srv-d9b7aqdaeets73ag6ld0-hibernate-6f7b9bdf48-kk5pn","staticDir":"artifacts/svenska-learn/dist/public","msg":"Serving static frontend"}
+2026-07-14T19:23:24.741113032Z (node:70) [DEP0040] DeprecationWarning: The `punycode` module is deprecated. Please use a userland alternative instead.
+2026-07-14T19:23:24.741124942Z (Use `node --trace-deprecation ...` to show where the warning was created)
+2026-07-14T19:23:24.741964696Z {"level":30,"time":1784057004741,"pid":70,"hostname":"srv-d9b7aqdaeets73ag6ld0-hibernate-6f7b9bdf48-kk5pn","port":10000,"msg":"Server listening"}
+2026-07-14T19:23:24.837599227Z {"level":30,"time":1784057004837,"pid":70,"hostname":"srv-d9b7aqdaeets73ag6ld0-hibernate-6f7b9bdf48-kk5pn","req":{"id":1,"method":"HEAD","url":"/"},"res":{"statusCode":200},"responseTime":68,"msg":"request completed"}
+2026-07-14T19:23:34.080965585Z ==> Your service is live 🎉
+2026-07-14T19:23:34.209799172Z ==> 
+2026-07-14T19:23:34.212184862Z ==> ///////////////////////////////////////////////////////////
+2026-07-14T19:23:34.213684943Z ==> 
+2026-07-14T19:23:34.218391549Z ==> Available at your primary URL https://swedish-caah.onrender.com
+2026-07-14T19:23:34.219878219Z ==> 
+2026-07-14T19:23:34.222028934Z ==> ///////////////////////////////////////////////////////////
+2026-07-14T19:23:34.178094683Z {"level":30,"time":1784057014177,"pid":70,"hostname":"srv-d9b7aqdaeets73ag6ld0-hibernate-6f7b9bdf48-kk5pn","req":{"id":2,"method":"GET","url":"/"},"res":{"statusCode":200},"responseTime":3,"msg":"request completed"}
