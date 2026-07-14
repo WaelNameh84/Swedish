@@ -1,0 +1,53 @@
+2026-07-14T19:04:17.849557527Z transforming...
+2026-07-14T19:04:18.897954943Z src/components/ui/tooltip.tsx (2:0): Error when using sourcemap for reporting an error: Can't resolve original location of error.
+2026-07-14T19:04:20.016442282Z src/components/ui/sheet.tsx (2:0): Error when using sourcemap for reporting an error: Can't resolve original location of error.
+2026-07-14T19:04:23.240037356Z ✓ 2943 modules transformed.
+2026-07-14T19:04:23.578961448Z rendering chunks...
+2026-07-14T19:04:23.902605182Z computing gzip size...
+2026-07-14T19:04:23.933560393Z dist/public/index.html                     1.53 kB │ gzip:   0.59 kB
+2026-07-14T19:04:23.933636394Z dist/public/assets/index-DQtPcOE1.css    159.19 kB │ gzip:  23.91 kB
+2026-07-14T19:04:23.933796716Z dist/public/assets/index-BCN4B5Gl.js      15.89 kB │ gzip:   6.87 kB
+2026-07-14T19:04:23.933802926Z dist/public/assets/index-BSjNL8C9.js   1,241.53 kB │ gzip: 340.50 kB
+2026-07-14T19:04:23.933851297Z 
+2026-07-14T19:04:23.933857277Z (!) Some chunks are larger than 500 kB after minification. Consider:
+2026-07-14T19:04:23.933861727Z - Using dynamic import() to code-split the application
+2026-07-14T19:04:23.933867567Z - Use build.rollupOptions.output.manualChunks to improve chunking: https://rollupjs.org/configuration-options/#output-manualchunks
+2026-07-14T19:04:23.933871467Z - Adjust chunk size limit for this warning via build.chunkSizeWarningLimit.
+2026-07-14T19:04:23.93409698Z ✓ built in 6.13s
+2026-07-14T19:04:24.388900249Z 
+2026-07-14T19:04:24.388953069Z > @workspace/api-server@0.0.0 build /opt/render/project/src/artifacts/api-server
+2026-07-14T19:04:24.388958689Z > node ./build.mjs
+2026-07-14T19:04:24.388962709Z 
+2026-07-14T19:04:25.091253556Z 
+2026-07-14T19:04:25.091282526Z   dist/index.mjs                       3.5mb ⚠️
+2026-07-14T19:04:25.091304406Z   dist/pino-worker.mjs               153.4kb
+2026-07-14T19:04:25.091308626Z   dist/pino-file.mjs                 142.1kb
+2026-07-14T19:04:25.091312297Z   dist/pino-pretty.mjs               114.4kb
+2026-07-14T19:04:25.091315697Z   dist/thread-stream-worker.mjs        7.3kb
+2026-07-14T19:04:25.091319246Z   dist/index.mjs.map                   6.9mb
+2026-07-14T19:04:25.091322717Z   dist/pino-worker.mjs.map           256.9kb
+2026-07-14T19:04:25.091326297Z   dist/pino-file.mjs.map             229.0kb
+2026-07-14T19:04:25.091330197Z   dist/pino-pretty.mjs.map           203.6kb
+2026-07-14T19:04:25.091333927Z   dist/thread-stream-worker.mjs.map   12.0kb
+2026-07-14T19:04:25.091337317Z 
+2026-07-14T19:04:25.091341597Z ⚡ Done in 645ms
+2026-07-14T19:04:28.217604286Z ==> Uploading build...
+2026-07-14T19:04:36.788319423Z ==> Uploaded in 4.2s. Compression took 4.4s
+2026-07-14T19:04:36.825488908Z ==> Build successful 🎉
+2026-07-14T19:04:39.520593085Z ==> Deploying...
+2026-07-14T19:04:39.642659788Z ==> Setting WEB_CONCURRENCY=1 by default, based on available CPUs in the instance
+2026-07-14T19:04:58.097352614Z ==> Running 'node --enable-source-maps artifacts/api-server/dist/index.mjs'
+2026-07-14T19:05:01.394731221Z /opt/render/project/src/lib/db/src/index.ts:8
+2026-07-14T19:05:01.394747882Z   throw new Error(
+2026-07-14T19:05:01.394752272Z         ^
+2026-07-14T19:05:01.394756123Z 
+2026-07-14T19:05:01.394763233Z Error: DATABASE_URL must be set. Did you forget to provision a database?
+2026-07-14T19:05:01.394766973Z     at <anonymous> (/opt/render/project/src/lib/db/src/index.ts:8:9)
+2026-07-14T19:05:01.394770393Z     at ModuleJob.run (node:internal/modules/esm/module_job:343:25)
+2026-07-14T19:05:01.394774104Z     at async onImport.tracePromise.__proto__ (node:internal/modules/esm/loader:681:26)
+2026-07-14T19:05:01.394777404Z     at async asyncRunEntryPointWithESMLoader (node:internal/modules/run_main:117:5)
+2026-07-14T19:05:01.394780674Z 
+2026-07-14T19:05:01.394784534Z Node.js v22.23.1
+2026-07-14T19:05:08.208300927Z ==> Exited with status 1
+2026-07-14T19:05:08.211554196Z ==> Common ways to troubleshoot your deploy: https://render.com/docs/troubleshooting-deploys
+2026-07-14T19:05:12.804551534Z ==> Running 'node --enable-source-maps artifacts/api-server/dist/index.mjs'
