@@ -8,6 +8,7 @@ services:
       npm install -g pnpm@10 &&
       pnpm install --ignore-scripts &&
       pnpm rebuild esbuild tesseract.js &&
+      pnpm --filter @workspace/db run push &&
       BASE_PATH=/ pnpm --filter @workspace/svenska-learn run build &&
       pnpm --filter @workspace/api-server run build
     startCommand: >-
