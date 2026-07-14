@@ -2,8 +2,28 @@ import { Router } from "express";
 import { db } from "@workspace/db";
 import { chatMessagesTable } from "@workspace/db";
 import { eq, asc } from "drizzle-orm";
+import { getOpenAI } from "../lib/openai";
 
 const router = Router();
+
+const TUTOR_SYSTEM_PROMPT = `أنت "المعلم الذكي"، مساعد ودود لتعليم اللغة السويدية للناطقين بالعربية داخل تطبيق تعلم لغة. تحدّث بالعربية مع إبراز الكلمات والجمل السويدية بوضوح. إذا كتب المستخدم بالسويدية، صحّح أخطاءه بلطف وردّ عليه محادثةً، وإذا سأل بالعربية عن قاعدة أو كلمة اشرحها ببساطة مع أمثلة. اجعل ردودك قصيرة ومشجعة (3-5 أسطر) واستخدم رموزاً تعبيرية بشكل معتدل.`;
+
+async function generateAITutorResponse(userMessage: string, history: { role: string; content: string }[]): Promise<string | null> {
+  const openai = getOpenAI();
+  if (!openai) return null;
+
+  const completion = await openai.chat.completions.create({
+    model: "gpt-5.4",
+    max_completion_tokens: 600,
+    messages: [
+      { role: "system", content: TUTOR_SYSTEM_PROMPT },
+      ...history.slice(-10).map((m) => ({ role: m.role as "user" | "assistant", content: m.content })),
+      { role: "user", content: userMessage },
+    ],
+  });
+
+  return completion.choices[0]?.message?.content ?? null;
+}
 
 // Simple Swedish tutor response engine
 function generateTutorResponse(userMessage: string): string {
@@ -130,8 +150,18 @@ router.post("/chat/:sessionId/messages", async (req, res) => {
       content: content.trim(),
     });
 
-    // Generate and save assistant reply
-    const replyContent = generateTutorResponse(content.trim());
+    // Generate reply: real AI if configured, else the built-in rule-based tutor
+    const history = await db
+      .select()
+      .from(chatMessagesTable)
+      .where(eq(chatMessagesTable.sessionId, sessionId))
+      .orderBy(asc(chatMessagesTable.createdAt));
+
+    const aiReply = await generateAITutorResponse(content.trim(), history).catch((err) => {
+      req.log.error({ err }, "AI tutor call failed, falling back to rule-based tutor");
+      return null;
+    });
+    const replyContent = aiReply ?? generateTutorResponse(content.trim());
     const [reply] = await db
       .insert(chatMessagesTable)
       .values({ sessionId, role: "assistant", content: replyContent })

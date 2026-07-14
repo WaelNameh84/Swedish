@@ -9,7 +9,12 @@ import LessonsPage from '@/pages/LessonsPage';
 import LessonDetailPage from '@/pages/LessonDetailPage';
 import DictionaryPage from '@/pages/DictionaryPage';
 import VerbsPage from '@/pages/VerbsPage';
+import AiTeacherHubPage from '@/pages/AiTeacherHubPage';
+import AiToolPage from '@/pages/AiToolPage';
+import PronunciationPage from '@/pages/PronunciationPage';
 import BottomNav from '@/components/BottomNav';
+import AppSidebar from '@/components/AppSidebar';
+import VoiceTranslator from '@/components/VoiceTranslator';
 import { Route, Switch, Router as WouterRouter } from 'wouter';
 
 const queryClient = new QueryClient();
@@ -24,6 +29,9 @@ function Router() {
       <Route path="/verbs" component={VerbsPage} />
       <Route path="/conversations" component={ConversationsPage} />
       <Route path="/chat" component={ChatPage} />
+      <Route path="/ai-teacher" component={AiTeacherHubPage} />
+      <Route path="/ai-teacher/pronunciation" component={PronunciationPage} />
+      <Route path="/ai-teacher/:tool" component={AiToolPage} />
       <Route path="/stats" component={Home} />
       <Route component={NotFound} />
     </Switch>
@@ -38,6 +46,8 @@ function App() {
           <div className="pb-[64px]">
             <Router />
           </div>
+          <AppSidebar />
+          <VoiceTranslator />
           <BottomNav />
         </WouterRouter>
         <Toaster />

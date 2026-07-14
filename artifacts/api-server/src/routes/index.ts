@@ -10,6 +10,7 @@ import conversationsRouter from "./conversations";
 import chatRouter from "./chat";
 import dictionaryRouter from "./dictionary";
 import verbsRouter from "./verbs";
+import aiTeacherRouter from "./aiTeacher";
 
 const router: IRouter = Router();
 
@@ -24,5 +25,6 @@ router.use(conversationsRouter);
 router.use(chatRouter);
 router.use(dictionaryRouter);
 router.use(verbsRouter);
+router.use(aiTeacherRouter);
 
 export default router;
