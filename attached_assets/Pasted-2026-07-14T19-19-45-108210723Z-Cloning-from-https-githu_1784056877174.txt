@@ -1,0 +1,69 @@
+2026-07-14T19:19:45.108210723Z ==> Cloning from https://github.com/WaelNameh84/Swedish
+2026-07-14T19:19:45.569011851Z ==> Checking out commit a8015ea888b5bee435ae163ce8b26ee5d49aa713 in branch main
+2026-07-14T19:19:50.178994869Z ==> Requesting Node.js version 22
+2026-07-14T19:19:50.372154132Z ==> Using Node.js version 22.23.1 via /opt/render/project/src/.node-version
+2026-07-14T19:19:50.372164802Z ==> Docs on specifying a Node.js version: https://render.com/docs/node-version
+2026-07-14T19:19:50.372321346Z ==> Installing Node.js version 22.23.1...
+2026-07-14T19:19:51.463112815Z ==> Running build command 'npm install -g pnpm@10 && pnpm install --ignore-scripts && pnpm rebuild esbuild tesseract.js && BASE_PATH=/ pnpm --filter @workspace/svenska-learn run build && pnpm --filter @workspace/api-server run build'...
+2026-07-14T19:19:52.994182193Z 
+2026-07-14T19:19:52.994207523Z added 1 package in 1s
+2026-07-14T19:19:52.994219903Z 
+2026-07-14T19:19:52.994225373Z 1 package is looking for funding
+2026-07-14T19:19:52.994230623Z   run `npm fund` for details
+2026-07-14T19:20:02.939142119Z 
+2026-07-14T19:20:02.93917188Z > @workspace/svenska-learn@0.0.0 build /opt/render/project/src/artifacts/svenska-learn
+2026-07-14T19:20:02.93917754Z > vite build --config vite.config.ts
+2026-07-14T19:20:02.93918173Z 
+2026-07-14T19:20:03.229125459Z vite v7.3.6 building client environment for production...
+2026-07-14T19:20:03.313370039Z transforming...
+2026-07-14T19:20:04.341807104Z src/components/ui/tooltip.tsx (2:0): Error when using sourcemap for reporting an error: Can't resolve original location of error.
+2026-07-14T19:20:05.549784054Z src/components/ui/sheet.tsx (2:0): Error when using sourcemap for reporting an error: Can't resolve original location of error.
+2026-07-14T19:20:08.759075549Z ✓ 2943 modules transformed.
+2026-07-14T19:20:09.06725773Z rendering chunks...
+2026-07-14T19:20:09.424525183Z computing gzip size...
+2026-07-14T19:20:09.454954935Z dist/public/index.html                     1.53 kB │ gzip:   0.59 kB
+2026-07-14T19:20:09.455108518Z dist/public/assets/index-DQtPcOE1.css    159.19 kB │ gzip:  23.91 kB
+2026-07-14T19:20:09.455267651Z dist/public/assets/index-BCN4B5Gl.js      15.89 kB │ gzip:   6.87 kB
+2026-07-14T19:20:09.455286811Z dist/public/assets/index-BSjNL8C9.js   1,241.53 kB │ gzip: 340.50 kB
+2026-07-14T19:20:09.455376753Z 
+2026-07-14T19:20:09.455385004Z (!) Some chunks are larger than 500 kB after minification. Consider:
+2026-07-14T19:20:09.455392173Z - Using dynamic import() to code-split the application
+2026-07-14T19:20:09.455397244Z - Use build.rollupOptions.output.manualChunks to improve chunking: https://rollupjs.org/configuration-options/#output-manualchunks
+2026-07-14T19:20:09.455401414Z - Adjust chunk size limit for this warning via build.chunkSizeWarningLimit.
+2026-07-14T19:20:09.455646079Z ✓ built in 6.20s
+2026-07-14T19:20:09.993007818Z 
+2026-07-14T19:20:09.993034859Z > @workspace/api-server@0.0.0 build /opt/render/project/src/artifacts/api-server
+2026-07-14T19:20:09.993041689Z > node ./build.mjs
+2026-07-14T19:20:09.993046829Z 
+2026-07-14T19:20:10.723708055Z 
+2026-07-14T19:20:10.723754836Z   dist/index.mjs                       3.5mb ⚠️
+2026-07-14T19:20:10.723776046Z   dist/pino-worker.mjs               153.4kb
+2026-07-14T19:20:10.723779236Z   dist/pino-file.mjs                 142.1kb
+2026-07-14T19:20:10.723781846Z   dist/pino-pretty.mjs               114.4kb
+2026-07-14T19:20:10.723784256Z   dist/thread-stream-worker.mjs        7.3kb
+2026-07-14T19:20:10.723786796Z   dist/index.mjs.map                   6.9mb
+2026-07-14T19:20:10.723789166Z   dist/pino-worker.mjs.map           256.9kb
+2026-07-14T19:20:10.723791757Z   dist/pino-file.mjs.map             229.0kb
+2026-07-14T19:20:10.723794177Z   dist/pino-pretty.mjs.map           203.6kb
+2026-07-14T19:20:10.723796677Z   dist/thread-stream-worker.mjs.map   12.0kb
+2026-07-14T19:20:10.723799067Z 
+2026-07-14T19:20:10.723802187Z ⚡ Done in 654ms
+2026-07-14T19:20:13.296251Z ==> Uploading build...
+2026-07-14T19:20:21.303372791Z ==> Uploaded in 3.6s. Compression took 4.4s
+2026-07-14T19:20:21.339845636Z ==> Build successful 🎉
+2026-07-14T19:20:24.823876964Z ==> Deploying...
+2026-07-14T19:20:24.963867641Z ==> Setting WEB_CONCURRENCY=1 by default, based on available CPUs in the instance
+2026-07-14T19:20:43.873363028Z ==> Running 'node --enable-source-maps artifacts/api-server/dist/index.mjs'
+2026-07-14T19:20:45.871480642Z {"level":30,"time":1784056845870,"pid":70,"hostname":"srv-d9b7aqdaeets73ag6ld0-hibernate-7968c76d5-7phlw","staticDir":"artifacts/svenska-learn/dist/public","msg":"Serving static frontend"}
+2026-07-14T19:20:45.873873991Z (node:70) [DEP0040] DeprecationWarning: The `punycode` module is deprecated. Please use a userland alternative instead.
+2026-07-14T19:20:45.873884772Z (Use `node --trace-deprecation ...` to show where the warning was created)
+2026-07-14T19:20:45.874727001Z {"level":30,"time":1784056845874,"pid":70,"hostname":"srv-d9b7aqdaeets73ag6ld0-hibernate-7968c76d5-7phlw","port":10000,"msg":"Server listening"}
+2026-07-14T19:20:46.400450111Z {"level":30,"time":1784056846400,"pid":70,"hostname":"srv-d9b7aqdaeets73ag6ld0-hibernate-7968c76d5-7phlw","req":{"id":1,"method":"HEAD","url":"/"},"res":{"statusCode":200},"responseTime":4,"msg":"request completed"}
+2026-07-14T19:20:55.54236595Z ==> Your service is live 🎉
+2026-07-14T19:20:55.688337623Z ==> 
+2026-07-14T19:20:55.690914875Z ==> ///////////////////////////////////////////////////////////
+2026-07-14T19:20:55.693186881Z ==> 
+2026-07-14T19:20:55.695914766Z ==> Available at your primary URL https://swedish-caah.onrender.com
+2026-07-14T19:20:55.698547739Z ==> 
+2026-07-14T19:20:55.701144612Z ==> ///////////////////////////////////////////////////////////
+2026-07-14T19:20:55.610886185Z {"level":30,"time":1784056855610,"pid":70,"hostname":"srv-d9b7aqdaeets73ag6ld0-hibernate-7968c76d5-7phlw","req":{"id":2,"method":"GET","url":"/"},"res":{"statusCode":200},"responseTime":3,"msg":"request completed"}
