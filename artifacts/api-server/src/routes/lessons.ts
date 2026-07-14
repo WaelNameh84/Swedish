@@ -32,6 +32,7 @@ router.get("/lessons", async (req, res) => {
         durationMinutes: row.durationMinutes,
         isLocked: row.isLocked,
         completionPercentage: row.completionPercentage,
+        imageUrl: row.imageUrl ?? null,
         lastAccessedAt: row.lastAccessedAt ? row.lastAccessedAt.toISOString() : null,
       }))
     );

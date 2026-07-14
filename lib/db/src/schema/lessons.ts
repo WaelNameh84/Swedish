@@ -14,6 +14,7 @@ export const lessonsTable = pgTable("lessons", {
   durationMinutes: integer("duration_minutes").notNull().default(15),
   isLocked: boolean("is_locked").notNull().default(false),
   completionPercentage: integer("completion_percentage").notNull().default(0),
+  imageUrl: text("image_url"),
   lastAccessedAt: timestamp("last_accessed_at"),
   createdAt: timestamp("created_at").defaultNow(),
 });

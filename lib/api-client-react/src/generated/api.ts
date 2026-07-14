@@ -29,6 +29,9 @@ import type {
   HealthStatus,
   LearningStats,
   Lesson,
+  LessonDetail,
+  LessonProgressInput,
+  LessonProgressResult,
   UserProgress,
   Word
 } from './api.schemas';
@@ -297,6 +300,155 @@ export function useGetLessons<TData = Awaited<ReturnType<typeof getLessons>>, TE
 
 
 
+
+export const getGetLessonDetailUrl = (id: number,) => {
+
+
+
+
+  return `/api/lessons/${id}`
+}
+
+/**
+ * @summary Get full lesson content with sections
+ */
+export const getLessonDetail = async (id: number, options?: RequestInit): Promise<LessonDetail> => {
+
+  return customFetch<LessonDetail>(getGetLessonDetailUrl(id),
+  {
+    ...options,
+    method: 'GET'
+
+
+  }
+);}
+
+
+
+
+
+export const getGetLessonDetailQueryKey = (id: number,) => {
+    return [
+    `/api/lessons/${id}`
+    ] as const;
+    }
+
+
+export const getGetLessonDetailQueryOptions = <TData = Awaited<ReturnType<typeof getLessonDetail>>, TError = ErrorType<unknown>>(id: number, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof getLessonDetail>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
+) => {
+
+const {query: queryOptions, request: requestOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getGetLessonDetailQueryKey(id);
+
+
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof getLessonDetail>>> = ({ signal }) => getLessonDetail(id, { signal, ...requestOptions });
+
+
+
+
+
+   return  { queryKey, queryFn, enabled: id !== null && id !== undefined, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof getLessonDetail>>, TError, TData> & { queryKey: QueryKey }
+}
+
+export type GetLessonDetailQueryResult = NonNullable<Awaited<ReturnType<typeof getLessonDetail>>>
+export type GetLessonDetailQueryError = ErrorType<unknown>
+
+
+/**
+ * @summary Get full lesson content with sections
+ */
+
+export function useGetLessonDetail<TData = Awaited<ReturnType<typeof getLessonDetail>>, TError = ErrorType<unknown>>(
+ id: number, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof getLessonDetail>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
+
+ ):  UseQueryResult<TData, TError> & { queryKey: QueryKey } {
+
+  const queryOptions = getGetLessonDetailQueryOptions(id,options)
+
+  const query = useQuery(queryOptions) as  UseQueryResult<TData, TError> & { queryKey: QueryKey };
+
+  return withQueryKey(query, queryOptions.queryKey);
+}
+
+
+
+
+
+
+
+export const getUpdateLessonProgressUrl = (id: number,) => {
+
+
+
+
+  return `/api/lessons/${id}/progress`
+}
+
+/**
+ * @summary Update lesson completion percentage
+ */
+export const updateLessonProgress = async (id: number,
+    lessonProgressInput: LessonProgressInput, options?: RequestInit): Promise<LessonProgressResult> => {
+
+  return customFetch<LessonProgressResult>(getUpdateLessonProgressUrl(id),
+  {
+    ...options,
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...options?.headers },
+    body: JSON.stringify(lessonProgressInput)
+  }
+);}
+
+
+
+
+
+export const getUpdateLessonProgressMutationOptions = <TError = ErrorType<unknown>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof updateLessonProgress>>, TError,{id: number;data: BodyType<LessonProgressInput>}, TContext>, request?: SecondParameter<typeof customFetch>}
+): UseMutationOptions<Awaited<ReturnType<typeof updateLessonProgress>>, TError,{id: number;data: BodyType<LessonProgressInput>}, TContext> => {
+
+const mutationKey = ['updateLessonProgress'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof updateLessonProgress>>, {id: number;data: BodyType<LessonProgressInput>}> = (props) => {
+          const {id,data} = props ?? {};
+
+          return  updateLessonProgress(id,data,requestOptions)
+        }
+
+
+
+
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type UpdateLessonProgressMutationResult = NonNullable<Awaited<ReturnType<typeof updateLessonProgress>>>
+    export type UpdateLessonProgressMutationBody = BodyType<LessonProgressInput>
+    export type UpdateLessonProgressMutationError = ErrorType<unknown>
+
+    /**
+ * @summary Update lesson completion percentage
+ */
+export const useUpdateLessonProgress = <TError = ErrorType<unknown>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof updateLessonProgress>>, TError,{id: number;data: BodyType<LessonProgressInput>}, TContext>, request?: SecondParameter<typeof customFetch>}
+ ): UseMutationResult<
+        Awaited<ReturnType<typeof updateLessonProgress>>,
+        TError,
+        {id: number;data: BodyType<LessonProgressInput>},
+        TContext
+      > => {
+      return useMutation(getUpdateLessonProgressMutationOptions(options));
+    }
 
 export const getGetRecentLessonUrl = () => {
 

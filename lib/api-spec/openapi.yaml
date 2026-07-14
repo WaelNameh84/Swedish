@@ -79,6 +79,50 @@ paths:
                 items:
                   $ref: "#/components/schemas/Lesson"
 
+  /lessons/{id}:
+    get:
+      operationId: getLessonDetail
+      tags: [lessons]
+      summary: Get full lesson content with sections
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Full lesson with sections
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/LessonDetail"
+
+  /lessons/{id}/progress:
+    post:
+      operationId: updateLessonProgress
+      tags: [lessons]
+      summary: Update lesson completion percentage
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/LessonProgressInput"
+      responses:
+        "200":
+          description: Updated progress
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/LessonProgressResult"
+
   /lessons/recent:
     get:
       operationId: getRecentLesson
@@ -449,3 +493,49 @@ components:
       properties:
         content:
           type: string
+
+    LessonSection:
+      type: object
+      required: [id, orderIndex, sectionType, titleAr, content]
+      properties:
+        id:
+          type: integer
+        orderIndex:
+          type: integer
+        sectionType:
+          type: string
+          enum: [intro, vocabulary, grammar, reading, listening, exercise, quiz]
+        titleAr:
+          type: string
+        content:
+          type: object
+          additionalProperties: true
+
+    LessonDetail:
+      allOf:
+        - $ref: "#/components/schemas/Lesson"
+        - type: object
+          required: [sections]
+          properties:
+            sections:
+              type: array
+              items:
+                $ref: "#/components/schemas/LessonSection"
+
+    LessonProgressInput:
+      type: object
+      required: [completionPercentage]
+      properties:
+        completionPercentage:
+          type: integer
+          minimum: 0
+          maximum: 100
+
+    LessonProgressResult:
+      type: object
+      required: [id, completionPercentage]
+      properties:
+        id:
+          type: integer
+        completionPercentage:
+          type: integer

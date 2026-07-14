@@ -57,6 +57,59 @@ export const GetLessonsResponse = zod.array(GetLessonsResponseItem)
 
 
 /**
+ * @summary Get full lesson content with sections
+ */
+export const GetLessonDetailParams = zod.object({
+  "id": zod.coerce.number()
+})
+
+export const GetLessonDetailResponse = zod.object({
+  "id": zod.number(),
+  "title": zod.string(),
+  "titleSv": zod.string(),
+  "description": zod.string().nullish(),
+  "category": zod.string(),
+  "difficulty": zod.enum(['beginner', 'intermediate', 'advanced']),
+  "level": zod.enum(['A1', 'A2', 'B1', 'B2', 'C1', 'C2']),
+  "skill": zod.enum(['reading', 'writing', 'listening', 'speaking', 'grammar', 'tests']),
+  "durationMinutes": zod.number(),
+  "isLocked": zod.boolean(),
+  "completionPercentage": zod.number(),
+  "lastAccessedAt": zod.coerce.date().nullish()
+}).and(zod.object({
+  "sections": zod.array(zod.object({
+  "id": zod.number(),
+  "orderIndex": zod.number(),
+  "sectionType": zod.enum(['intro', 'vocabulary', 'grammar', 'reading', 'listening', 'exercise', 'quiz']),
+  "titleAr": zod.string(),
+  "content": zod.record(zod.string(), zod.unknown())
+}))
+}))
+
+
+/**
+ * @summary Update lesson completion percentage
+ */
+export const UpdateLessonProgressParams = zod.object({
+  "id": zod.coerce.number()
+})
+
+export const updateLessonProgressBodyCompletionPercentageMin = 0;
+export const updateLessonProgressBodyCompletionPercentageMax = 100;
+
+
+
+export const UpdateLessonProgressBody = zod.object({
+  "completionPercentage": zod.number().min(updateLessonProgressBodyCompletionPercentageMin).max(updateLessonProgressBodyCompletionPercentageMax)
+})
+
+export const UpdateLessonProgressResponse = zod.object({
+  "id": zod.number(),
+  "completionPercentage": zod.number()
+})
+
+
+/**
  * @summary Get most recently accessed lesson
  */
 export const GetRecentLessonResponse = zod.object({

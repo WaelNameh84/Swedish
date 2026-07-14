@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useLocation } from "wouter";
 import { 
   BookOpen, 
   PenLine, 
@@ -9,6 +10,7 @@ import {
   Clock, 
   Lock, 
   Star,
+  ChevronRight,
   type LucideIcon
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
@@ -64,6 +66,7 @@ const DIFFICULTY_LABELS = {
 };
 
 export default function LessonsPage() {
+  const [, navigate] = useLocation();
   const [selectedLevel, setSelectedLevel] = useState<Level>("A1");
   const [selectedSkill, setSelectedSkill] = useState<Skill>(undefined);
 
@@ -171,14 +174,40 @@ export default function LessonsPage() {
                   return (
                     <div
                       key={lesson.id}
+                      onClick={() => !isLocked && navigate(`/lessons/${lesson.id}`)}
                       className={cn(
-                        "relative bg-card border border-card-border rounded-2xl p-5 overflow-hidden transition-all duration-300",
+                        "relative bg-card border border-card-border rounded-2xl overflow-hidden transition-all duration-300",
                         !isLocked && "hover:border-primary/40 active:scale-[0.98] cursor-pointer shadow-sm hover:shadow-md",
                         isLocked && "opacity-70 grayscale-[0.3]"
                       )}
                     >
-                      {/* Lock Overlay */}
-                      {isLocked && (
+                      {/* Cover Image */}
+                      {(lesson as any).imageUrl && (
+                        <div className="relative w-full h-36 overflow-hidden">
+                          <img
+                            src={(lesson as any).imageUrl}
+                            alt={lesson.title}
+                            className="w-full h-full object-cover"
+                            onError={(e) => { (e.target as HTMLImageElement).style.display = "none"; }}
+                          />
+                          <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent" />
+                          <div className="absolute bottom-2 right-2 flex items-center gap-1">
+                            <span className={cn("text-[10px] font-bold px-2 py-0.5 rounded-md uppercase tracking-wider", DIFFICULTY_COLORS[lesson.difficulty])}>
+                              {DIFFICULTY_LABELS[lesson.difficulty]}
+                            </span>
+                          </div>
+                          {isLocked && (
+                            <div className="absolute inset-0 bg-black/40 backdrop-blur-[2px] flex items-center justify-center">
+                              <div className="w-10 h-10 bg-white/20 backdrop-blur-sm rounded-full flex items-center justify-center">
+                                <Lock className="w-5 h-5 text-white" />
+                              </div>
+                            </div>
+                          )}
+                        </div>
+                      )}
+
+                      {/* Lock Overlay (no image) */}
+                      {isLocked && !(lesson as any).imageUrl && (
                         <div className="absolute inset-0 z-10 bg-background/40 backdrop-blur-[2px] flex flex-col items-center justify-center gap-2">
                           <div className="w-12 h-12 bg-background/80 rounded-full flex items-center justify-center shadow-sm">
                             <Lock className="w-5 h-5 text-muted-foreground" />
@@ -189,7 +218,7 @@ export default function LessonsPage() {
                         </div>
                       )}
 
-                      <div className="flex justify-between items-start gap-4 relative z-0">
+                      <div className="flex justify-between items-start gap-4 relative z-0 p-5">
                         <div className="flex-1 min-w-0">
                           <div className="flex items-center gap-2 mb-3">
                             <div className="w-8 h-8 rounded-xl bg-primary/10 flex items-center justify-center shrink-0 text-primary">
@@ -215,24 +244,28 @@ export default function LessonsPage() {
                             </p>
                           )}
 
-                          <div className="flex items-center gap-4">
-                            <div className="flex items-center gap-1.5 text-muted-foreground">
-                              <Clock className="w-3.5 h-3.5" />
-                              <span className="text-xs font-medium">{lesson.durationMinutes} دقيقة</span>
-                            </div>
-                            
-                            {!isCompleted && lesson.completionPercentage > 0 && (
-                              <div className="flex-1 flex items-center gap-2 max-w-[120px]">
-                                <div className="flex-1 h-1.5 bg-secondary rounded-full overflow-hidden">
-                                  <div 
-                                    className="h-full bg-primary rounded-full transition-all duration-500"
-                                    style={{ width: `${lesson.completionPercentage}%` }}
-                                  />
-                                </div>
-                                <span className="text-[10px] font-bold text-primary">
-                                  {lesson.completionPercentage}%
-                                </span>
+                          <div className="flex items-center justify-between">
+                            <div className="flex items-center gap-3">
+                              <div className="flex items-center gap-1.5 text-muted-foreground">
+                                <Clock className="w-3.5 h-3.5" />
+                                <span className="text-xs font-medium">{lesson.durationMinutes} دقيقة</span>
                               </div>
+                              {!isCompleted && lesson.completionPercentage > 0 && (
+                                <div className="flex items-center gap-1.5 max-w-[90px]">
+                                  <div className="flex-1 h-1.5 bg-secondary rounded-full overflow-hidden">
+                                    <div
+                                      className="h-full bg-primary rounded-full transition-all duration-500"
+                                      style={{ width: `${lesson.completionPercentage}%` }}
+                                    />
+                                  </div>
+                                  <span className="text-[10px] font-bold text-primary">
+                                    {lesson.completionPercentage}%
+                                  </span>
+                                </div>
+                              )}
+                            </div>
+                            {!isLocked && (
+                              <ChevronRight className="w-4 h-4 text-muted-foreground/60 shrink-0" />
                             )}
                           </div>
                         </div>

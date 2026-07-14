@@ -171,6 +171,46 @@ export interface ChatMessageInput {
   content: string;
 }
 
+export type LessonSectionSectionType = typeof LessonSectionSectionType[keyof typeof LessonSectionSectionType];
+
+
+export const LessonSectionSectionType = {
+  intro: 'intro',
+  vocabulary: 'vocabulary',
+  grammar: 'grammar',
+  reading: 'reading',
+  listening: 'listening',
+  exercise: 'exercise',
+  quiz: 'quiz',
+} as const;
+
+export type LessonSectionContent = { [key: string]: unknown };
+
+export interface LessonSection {
+  id: number;
+  orderIndex: number;
+  sectionType: LessonSectionSectionType;
+  titleAr: string;
+  content: LessonSectionContent;
+}
+
+export type LessonDetail = Lesson & {
+  sections: LessonSection[];
+};
+
+export interface LessonProgressInput {
+  /**
+     * @minimum 0
+     * @maximum 100
+     */
+  completionPercentage: number;
+}
+
+export interface LessonProgressResult {
+  id: number;
+  completionPercentage: number;
+}
+
 export type GetLessonsParams = {
 level?: GetLessonsLevel;
 skill?: GetLessonsSkill;
