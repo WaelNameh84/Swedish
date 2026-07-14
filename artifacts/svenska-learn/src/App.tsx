@@ -270,25 +270,46 @@ function ProtectedApp() {
   );
 }
 
+// Admin pages still guard themselves with a password (see AdminAIKeysPage-style
+// session check), but that password now just *claims* admin rights for the
+// signer's own normal account — so we require a real sign-in before letting
+// anyone reach that password prompt at all.
+function AdminGate({ Component }: { Component: () => JSX.Element }) {
+  return (
+    <>
+      <Show when="signed-in">
+        <Component />
+      </Show>
+      <Show when="signed-out">
+        <div className="flex min-h-[100dvh] flex-col items-center justify-center gap-4 bg-background px-4 text-center" dir="rtl">
+          <p className="text-lg font-medium">سجّل الدخول بحسابك العادي أولاً للوصول إلى لوحة تحكم المسؤول</p>
+          <SignIn routing="path" path={`${basePath}/sign-in`} signUpUrl={`${basePath}/sign-up`} />
+        </div>
+      </Show>
+    </>
+  );
+}
+
 function AppRoutes() {
   return (
     <Switch>
       <Route path="/" component={HomeGate} />
       <Route path="/sign-in/*?" component={SignInPage} />
       <Route path="/sign-up/*?" component={SignUpPage} />
-      {/* Admin area keeps its own separate password-based auth, untouched by Clerk. */}
-      <Route path="/admin" component={AdminDashboardPage} />
-      <Route path="/admin/users" component={AdminUsersPage} />
-      <Route path="/admin/lessons" component={AdminLessonsPage} />
-      <Route path="/admin/words" component={AdminWordsPage} />
-      <Route path="/admin/conversations" component={AdminConversationsPage} />
-      <Route path="/admin/exams" component={AdminExamsPage} />
-      <Route path="/admin/ai" component={AdminAIPage} />
-      <Route path="/admin/ai-keys" component={AdminAIKeysPage} />
-      <Route path="/admin/reports" component={AdminReportsPage} />
-      <Route path="/admin/backup" component={AdminBackupPage} />
-      <Route path="/admin/languages" component={AdminLanguagesPage} />
-      <Route path="/admin/settings" component={AdminSettingsPage} />
+      {/* Admin pages require a normal sign-in; the account then claims admin
+          rights once via the ADMIN_PASSWORD prompt inside each page. */}
+      <Route path="/admin" component={() => <AdminGate Component={AdminDashboardPage} />} />
+      <Route path="/admin/users" component={() => <AdminGate Component={AdminUsersPage} />} />
+      <Route path="/admin/lessons" component={() => <AdminGate Component={AdminLessonsPage} />} />
+      <Route path="/admin/words" component={() => <AdminGate Component={AdminWordsPage} />} />
+      <Route path="/admin/conversations" component={() => <AdminGate Component={AdminConversationsPage} />} />
+      <Route path="/admin/exams" component={() => <AdminGate Component={AdminExamsPage} />} />
+      <Route path="/admin/ai" component={() => <AdminGate Component={AdminAIPage} />} />
+      <Route path="/admin/ai-keys" component={() => <AdminGate Component={AdminAIKeysPage} />} />
+      <Route path="/admin/reports" component={() => <AdminGate Component={AdminReportsPage} />} />
+      <Route path="/admin/backup" component={() => <AdminGate Component={AdminBackupPage} />} />
+      <Route path="/admin/languages" component={() => <AdminGate Component={AdminLanguagesPage} />} />
+      <Route path="/admin/settings" component={() => <AdminGate Component={AdminSettingsPage} />} />
       <Route component={ProtectedApp} />
     </Switch>
   );

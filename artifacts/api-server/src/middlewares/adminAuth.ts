@@ -1,5 +1,8 @@
 import crypto from "node:crypto";
 import type { Request, Response, NextFunction } from "express";
+import { getAuth } from "@clerk/express";
+import { db, userProgressTable } from "@workspace/db";
+import { eq } from "drizzle-orm";
 
 export const ADMIN_COOKIE_NAME = "admin_session";
 const SESSION_TTL_MS = 12 * 60 * 60 * 1000; // 12h
@@ -50,11 +53,44 @@ export function checkAdminPassword(candidate: string): boolean {
   return crypto.timingSafeEqual(a, b);
 }
 
-/** Route guard: rejects requests without a valid admin session cookie. */
-export function requireAdmin(req: Request, res: Response, next: NextFunction) {
-  const token = req.cookies?.[ADMIN_COOKIE_NAME];
-  if (!isValidAdminSession(token)) {
-    return res.status(401).json({ error: "غير مصرح — يلزم تسجيل دخول المسؤول" });
+/** Looks up whether a Clerk-authenticated user has been granted admin access. */
+export async function getIsAdminForUser(userId: string): Promise<boolean> {
+  const rows = await db
+    .select({ isAdmin: userProgressTable.isAdmin })
+    .from(userProgressTable)
+    .where(eq(userProgressTable.userId, userId))
+    .limit(1);
+  return rows[0]?.isAdmin ?? false;
+}
+
+/** Grants (or revokes) admin access for a Clerk-authenticated user's account. */
+export async function setIsAdminForUser(userId: string, isAdmin: boolean): Promise<void> {
+  const existing = await db.select({ id: userProgressTable.id }).from(userProgressTable).where(eq(userProgressTable.userId, userId)).limit(1);
+  if (existing.length > 0) {
+    await db.update(userProgressTable).set({ isAdmin }).where(eq(userProgressTable.userId, userId));
+  } else {
+    await db.insert(userProgressTable).values({ userId, isAdmin });
   }
-  next();
+}
+
+/**
+ * Route guard: allows either the legacy password-session cookie, or a normal
+ * Clerk-signed-in account that has been granted admin access (isAdmin=true).
+ * This lets an admin just sign in with their regular account going forward —
+ * the password is only needed once, to claim admin access the first time.
+ */
+export async function requireAdmin(req: Request, res: Response, next: NextFunction) {
+  const token = req.cookies?.[ADMIN_COOKIE_NAME];
+  if (isValidAdminSession(token)) return next();
+
+  const auth = getAuth(req);
+  const userId = auth?.userId;
+  if (userId) {
+    const isAdmin = await getIsAdminForUser(userId);
+    if (isAdmin) {
+      req.userId = userId;
+      return next();
+    }
+  }
+  return res.status(401).json({ error: "غير مصرح — يلزم تسجيل دخول المسؤول" });
 }
