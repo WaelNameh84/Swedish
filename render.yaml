@@ -9,6 +9,13 @@ services:
       pnpm install --ignore-scripts &&
       pnpm rebuild esbuild tesseract.js &&
       pnpm --filter @workspace/db run push &&
+      pnpm --filter @workspace/scripts run seed &&
+      pnpm --filter @workspace/scripts run seed:dictionary &&
+      pnpm --filter @workspace/scripts run seed:verbs &&
+      pnpm --filter @workspace/scripts run seed:conversations &&
+      pnpm --filter @workspace/scripts run seed:conversations:extra &&
+      pnpm --filter @workspace/scripts run seed:verbs:extra &&
+      pnpm --filter @workspace/scripts run seed:verbs:extra2 &&
       BASE_PATH=/ pnpm --filter @workspace/svenska-learn run build &&
       pnpm --filter @workspace/api-server run build
     startCommand: >-

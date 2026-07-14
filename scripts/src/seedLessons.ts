@@ -1567,6 +1567,12 @@ const allLessons: LessonData[] = [
 async function seed() {
   console.log("🌱 Seeding lessons database...");
 
+  const [{ count }] = await db.execute(sql`SELECT count(*) as count FROM lessons`);
+  if (Number(count) > 0) {
+    console.log(`⏭️  Lessons already seeded (${count} rows), skipping.`);
+    process.exit(0);
+  }
+
   // Clear existing data
   await db.execute(sql`TRUNCATE lesson_sections, lessons RESTART IDENTITY CASCADE`);
   console.log("🗑️  Cleared existing data");

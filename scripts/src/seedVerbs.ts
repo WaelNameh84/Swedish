@@ -1881,6 +1881,11 @@ const uniqueVerbs = verbs.filter((v, i, arr) =>
 
 async function seed() {
   console.log("🌱 Seeding verbs...");
+  const existing = await db.select().from(verbsTable).limit(1);
+  if (existing.length > 0) {
+    console.log("⏭️  Verbs already seeded, skipping.");
+    process.exit(0);
+  }
   await db.delete(verbsTable);
   console.log("🗑️  Cleared existing verbs");
 

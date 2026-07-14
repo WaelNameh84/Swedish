@@ -1626,6 +1626,11 @@ const words: Array<{
 
 async function seed() {
   console.log("🌱 Seeding dictionary...");
+  const existing = await db.select().from(dictionaryTable).limit(1);
+  if (existing.length > 0) {
+    console.log("⏭️  Dictionary already seeded, skipping.");
+    process.exit(0);
+  }
   await db.delete(dictionaryTable);
   console.log("🗑️  Cleared existing dictionary data");
 

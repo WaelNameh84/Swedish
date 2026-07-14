@@ -2072,6 +2072,11 @@ const scenarios: ScenarioData[] = [
 
 async function seed() {
   console.log("🌱 Seeding conversations...");
+  const existing = await db.select().from(conversationsTable).limit(1);
+  if (existing.length > 0) {
+    console.log("⏭️  Conversations already seeded, skipping.");
+    process.exit(0);
+  }
   await db.delete(conversationLinesTable);
   await db.delete(conversationsTable);
   console.log("🗑️  Cleared existing conversations");
