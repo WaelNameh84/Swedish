@@ -5,8 +5,9 @@ services:
     plan: free
     region: frankfurt
     buildCommand: >-
-      npm install -g pnpm@9 &&
-      pnpm install --no-frozen-lockfile &&
+      npm install -g pnpm@10 &&
+      pnpm install --ignore-scripts &&
+      pnpm rebuild esbuild tesseract.js &&
       BASE_PATH=/ pnpm --filter @workspace/svenska-learn run build &&
       pnpm --filter @workspace/api-server run build
     startCommand: >-
