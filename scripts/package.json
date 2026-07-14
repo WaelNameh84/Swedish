@@ -7,6 +7,7 @@
     "hello": "tsx ./src/hello.ts",
     "seed": "tsx ./src/seedLessons.ts",
     "seed:dictionary": "tsx ./src/seedDictionary.ts",
+    "seed:verbs": "tsx ./src/seedVerbs.ts",
     "typecheck": "tsc -p tsconfig.json --noEmit"
   },
   "dependencies": {

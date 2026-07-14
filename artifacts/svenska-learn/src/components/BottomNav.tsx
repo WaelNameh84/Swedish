@@ -1,5 +1,5 @@
 import { Link, useLocation } from "wouter";
-import { Home, MessageSquare, Bot, BookOpen, BookMarked } from "lucide-react";
+import { Home, Bot, BookOpen, BookMarked, Languages } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 export default function BottomNav() {
@@ -9,7 +9,7 @@ export default function BottomNav() {
     { href: "/", label: "الرئيسية", icon: Home },
     { href: "/lessons", label: "الدروس", icon: BookOpen },
     { href: "/dictionary", label: "القاموس", icon: BookMarked },
-    { href: "/conversations", label: "المحادثات", icon: MessageSquare },
+    { href: "/verbs", label: "الأفعال", icon: Languages },
     { href: "/chat", label: "تدرب", icon: Bot },
   ];
 

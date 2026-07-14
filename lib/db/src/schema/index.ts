@@ -6,3 +6,4 @@ export * from "./dailyChallenges";
 export * from "./conversations";
 export * from "./chatMessages";
 export * from "./dictionary";
+export * from "./verbs";

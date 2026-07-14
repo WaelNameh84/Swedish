@@ -9,6 +9,7 @@ import challengesRouter from "./challenges";
 import conversationsRouter from "./conversations";
 import chatRouter from "./chat";
 import dictionaryRouter from "./dictionary";
+import verbsRouter from "./verbs";
 
 const router: IRouter = Router();
 
@@ -22,5 +23,6 @@ router.use(challengesRouter);
 router.use(conversationsRouter);
 router.use(chatRouter);
 router.use(dictionaryRouter);
+router.use(verbsRouter);
 
 export default router;
