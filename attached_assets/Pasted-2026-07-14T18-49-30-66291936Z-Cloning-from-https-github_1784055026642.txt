@@ -1,0 +1,48 @@
+2026-07-14T18:49:30.66291936Z ==> Cloning from https://github.com/WaelNameh84/Swedish
+2026-07-14T18:49:31.912242103Z ==> Checking out commit 34dd1933b6d2d8a7ad70caabc1c1b635c4d7fcd5 in branch main
+2026-07-14T18:49:42.546323299Z ==> Requesting Node.js version 22
+2026-07-14T18:49:42.790940077Z ==> Using Node.js version 22.23.1 via /opt/render/project/src/.node-version
+2026-07-14T18:49:42.790957568Z ==> Docs on specifying a Node.js version: https://render.com/docs/node-version
+2026-07-14T18:49:42.791537046Z ==> Installing Node.js version 22.23.1...
+2026-07-14T18:49:44.254655117Z ==> Running build command 'npm install -g pnpm && pnpm install && pnpm --filter @workspace/svenska-learn run build && pnpm --filter @workspace/api-server run build'...
+2026-07-14T18:49:46.000584137Z 
+2026-07-14T18:49:46.000607668Z added 1 package in 1s
+2026-07-14T18:49:46.000610748Z 
+2026-07-14T18:49:46.000632988Z 1 package is looking for funding
+2026-07-14T18:49:46.000642818Z   run `npm fund` for details
+2026-07-14T18:49:46.687744269Z [WARN] The "pnpm" field in package.json is no longer read by pnpm. The following keys were ignored: "pnpm.onlyBuiltDependencies". See https://pnpm.io/settings for the new home of each setting.
+2026-07-14T18:49:46.727787093Z Scope: all 9 workspace projects
+2026-07-14T18:49:47.001908984Z ? Verifying lockfile against supply-chain policies (521 entries)...
+2026-07-14T18:49:47.015269116Z Lockfile is up to date, resolution step is skipped
+2026-07-14T18:49:47.115254777Z Progress: resolved 1, reused 0, downloaded 0, added 0
+2026-07-14T18:49:47.17206644Z Packages: +519
+2026-07-14T18:49:47.17208848Z ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+2026-07-14T18:49:48.117754879Z Progress: resolved 519, reused 0, downloaded 34, added 0
+2026-07-14T18:49:49.122250029Z Progress: resolved 519, reused 0, downloaded 60, added 0
+2026-07-14T18:49:50.1224086Z Progress: resolved 519, reused 0, downloaded 62, added 0
+2026-07-14T18:49:51.193074691Z Progress: resolved 519, reused 0, downloaded 130, added 8
+2026-07-14T18:49:51.408055926Z ✓ Lockfile passes supply-chain policies (521 entries in 4.4s)
+2026-07-14T18:49:52.192765955Z Progress: resolved 519, reused 0, downloaded 286, added 16
+2026-07-14T18:49:53.192918915Z Progress: resolved 519, reused 0, downloaded 328, added 20
+2026-07-14T18:49:54.193613843Z Progress: resolved 519, reused 0, downloaded 348, added 20
+2026-07-14T18:49:55.194284941Z Progress: resolved 519, reused 0, downloaded 358, added 20
+2026-07-14T18:49:56.194130216Z Progress: resolved 519, reused 0, downloaded 408, added 24
+2026-07-14T18:49:57.194273207Z Progress: resolved 519, reused 0, downloaded 441, added 28
+2026-07-14T18:49:58.194301515Z Progress: resolved 519, reused 0, downloaded 519, added 347
+2026-07-14T18:49:59.194499056Z Progress: resolved 519, reused 0, downloaded 519, added 398
+2026-07-14T18:50:00.125213621Z Progress: resolved 519, reused 0, downloaded 519, added 519, done
+2026-07-14T18:50:01.096246475Z 
+2026-07-14T18:50:01.096273155Z dependencies:
+2026-07-14T18:50:01.096279045Z + @replit/connectors-sdk 0.4.1
+2026-07-14T18:50:01.096282935Z 
+2026-07-14T18:50:01.096287085Z devDependencies:
+2026-07-14T18:50:01.096301646Z + prettier 3.9.5
+2026-07-14T18:50:01.096305246Z + typescript 5.9.3
+2026-07-14T18:50:01.096307686Z 
+2026-07-14T18:50:01.113572701Z . preinstall$ sh -c 'rm -f package-lock.json yarn.lock; case "$npm_config_user_agent" in pnpm/*) ;; *) echo "Use pnpm instead" >&2; exit 1 ;; esac'
+2026-07-14T18:50:01.134877101Z . preinstall: Done
+2026-07-14T18:50:01.493782015Z [ERR_PNPM_IGNORED_BUILDS] Ignored build scripts: esbuild@0.27.3, tesseract.js@7.0.0
+2026-07-14T18:50:01.493800465Z 
+2026-07-14T18:50:01.493804745Z Run "pnpm approve-builds" to pick which dependencies should be allowed to run scripts.
+2026-07-14T18:50:02.281147829Z ==> Build failed 😞
+2026-07-14T18:50:02.317027247Z ==> Common ways to troubleshoot your deploy: https://render.com/docs/troubleshooting-deploys
