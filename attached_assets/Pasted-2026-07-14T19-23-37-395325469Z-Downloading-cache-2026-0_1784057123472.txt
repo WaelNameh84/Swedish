@@ -1,0 +1,95 @@
+2026-07-14T19:23:37.395325469Z ==> Downloading cache...
+2026-07-14T19:23:37.429507607Z ==> Cloning from https://github.com/WaelNameh84/Swedish
+2026-07-14T19:23:37.893474958Z ==> Checking out commit 7b4fa0c524b26c1a05641f83f1ad6518a25cdcf2 in branch main
+2026-07-14T19:23:43.986775594Z ==> Downloaded 128MB in 1s. Extraction took 5s.
+2026-07-14T19:23:48.657765271Z ==> Requesting Node.js version 22
+2026-07-14T19:23:48.773797247Z ==> Using Node.js version 22.23.1 via /opt/render/project/src/.node-version
+2026-07-14T19:23:48.773813178Z ==> Docs on specifying a Node.js version: https://render.com/docs/node-version
+2026-07-14T19:23:48.773981951Z ==> Installing Node.js version 22.23.1...
+2026-07-14T19:23:50.014331306Z ==> Running build command 'npm install -g pnpm@10 && pnpm install --ignore-scripts && pnpm rebuild esbuild tesseract.js && pnpm --filter @workspace/db run push && BASE_PATH=/ pnpm --filter @workspace/svenska-learn run build && pnpm --filter @workspace/api-server run build'...
+2026-07-14T19:23:51.187449679Z 
+2026-07-14T19:23:51.18746844Z added 1 package in 1s
+2026-07-14T19:23:51.187600772Z 
+2026-07-14T19:23:51.187606492Z 1 package is looking for funding
+2026-07-14T19:23:51.187610532Z   run `npm fund` for details
+2026-07-14T19:23:53.021101342Z 
+2026-07-14T19:23:53.021125063Z > @workspace/db@0.0.0 push /opt/render/project/src/lib/db
+2026-07-14T19:23:53.021129393Z > drizzle-kit push --config ./drizzle.config.ts
+2026-07-14T19:23:53.021131533Z 
+2026-07-14T19:23:53.158515485Z Reading config file '/opt/render/project/src/lib/db/drizzle.config.ts'
+2026-07-14T19:23:53.532956011Z Using 'pg' driver for database querying
+2026-07-14T19:23:53.846931933Z [⣷] Pulling schema from database...
+2026-07-14T19:23:53.847292971Z (node:121) Warning: SECURITY WARNING: The SSL modes 'prefer', 'require', and 'verify-ca' are treated as aliases for 'verify-full'.
+2026-07-14T19:23:53.847300531Z In the next major version (pg-connection-string v3.0.0 and pg v9.0.0), these modes will adopt standard libpq semantics, which have weaker security guarantees.
+2026-07-14T19:23:53.847304901Z 
+2026-07-14T19:23:53.847308621Z To prepare for this change:
+2026-07-14T19:23:53.847311561Z - If you want the current behavior, explicitly use 'sslmode=verify-full'
+2026-07-14T19:23:53.847314081Z - If you want libpq compatibility now, use 'uselibpqcompat=true&sslmode=require'
+2026-07-14T19:23:53.847316351Z 
+2026-07-14T19:23:53.847319281Z See https://www.postgresql.org/docs/current/libpq-ssl.html for libpq SSL mode definitions.
+2026-07-14T19:23:53.847321831Z (Use `node --trace-warnings ...` to show where the warning was created)
+2026-07-14T19:23:53.969100325Z [⣯] Pulling schema from database...
+2026-07-14T19:23:54.096708837Z [⣟] Pulling schema from database...
+2026-07-14T19:23:54.225041235Z [⡿] Pulling schema from database...
+2026-07-14T19:23:54.353402712Z [⢿] Pulling schema from database...
+2026-07-14T19:23:54.481689618Z [⣻] Pulling schema from database...
+2026-07-14T19:23:54.609467324Z [⣽] Pulling schema from database...
+2026-07-14T19:23:54.686446594Z [✓] Pulling schema from database...
+2026-07-14T19:23:55.2898823Z [✓] Changes applied
+2026-07-14T19:23:55.671209205Z 
+2026-07-14T19:23:55.671237246Z > @workspace/svenska-learn@0.0.0 build /opt/render/project/src/artifacts/svenska-learn
+2026-07-14T19:23:55.671258857Z > vite build --config vite.config.ts
+2026-07-14T19:23:55.671261906Z 
+2026-07-14T19:23:55.971241934Z vite v7.3.6 building client environment for production...
+2026-07-14T19:23:56.040420934Z transforming...
+2026-07-14T19:23:57.102236098Z src/components/ui/tooltip.tsx (2:0): Error when using sourcemap for reporting an error: Can't resolve original location of error.
+2026-07-14T19:23:58.146773108Z src/components/ui/sheet.tsx (2:0): Error when using sourcemap for reporting an error: Can't resolve original location of error.
+2026-07-14T19:24:01.205517693Z ✓ 2943 modules transformed.
+2026-07-14T19:24:01.514412621Z rendering chunks...
+2026-07-14T19:24:01.863680644Z computing gzip size...
+2026-07-14T19:24:01.893543713Z dist/public/index.html                     1.53 kB │ gzip:   0.59 kB
+2026-07-14T19:24:01.893596764Z dist/public/assets/index-DQtPcOE1.css    159.19 kB │ gzip:  23.91 kB
+2026-07-14T19:24:01.893780228Z dist/public/assets/index-BCN4B5Gl.js      15.89 kB │ gzip:   6.87 kB
+2026-07-14T19:24:01.893807708Z dist/public/assets/index-BSjNL8C9.js   1,241.53 kB │ gzip: 340.50 kB
+2026-07-14T19:24:01.8938894Z 
+2026-07-14T19:24:01.8938994Z (!) Some chunks are larger than 500 kB after minification. Consider:
+2026-07-14T19:24:01.89391001Z - Using dynamic import() to code-split the application
+2026-07-14T19:24:01.89391644Z - Use build.rollupOptions.output.manualChunks to improve chunking: https://rollupjs.org/configuration-options/#output-manualchunks
+2026-07-14T19:24:01.893940391Z - Adjust chunk size limit for this warning via build.chunkSizeWarningLimit.
+2026-07-14T19:24:01.894180076Z ✓ built in 5.89s
+2026-07-14T19:24:02.337059957Z 
+2026-07-14T19:24:02.337087937Z > @workspace/api-server@0.0.0 build /opt/render/project/src/artifacts/api-server
+2026-07-14T19:24:02.337093697Z > node ./build.mjs
+2026-07-14T19:24:02.337097678Z 
+2026-07-14T19:24:03.067682155Z 
+2026-07-14T19:24:03.067710836Z   dist/index.mjs                       3.5mb ⚠️
+2026-07-14T19:24:03.067716456Z   dist/pino-worker.mjs               153.4kb
+2026-07-14T19:24:03.067720536Z   dist/pino-file.mjs                 142.1kb
+2026-07-14T19:24:03.067724387Z   dist/pino-pretty.mjs               114.4kb
+2026-07-14T19:24:03.067752887Z   dist/thread-stream-worker.mjs        7.3kb
+2026-07-14T19:24:03.067758807Z   dist/index.mjs.map                   6.9mb
+2026-07-14T19:24:03.067763027Z   dist/pino-worker.mjs.map           256.9kb
+2026-07-14T19:24:03.067766997Z   dist/pino-file.mjs.map             229.0kb
+2026-07-14T19:24:03.067770877Z   dist/pino-pretty.mjs.map           203.6kb
+2026-07-14T19:24:03.067774788Z   dist/thread-stream-worker.mjs.map   12.0kb
+2026-07-14T19:24:03.067778568Z 
+2026-07-14T19:24:03.067783368Z ⚡ Done in 664ms
+2026-07-14T19:24:08.59418398Z ==> Uploading build...
+2026-07-14T19:24:17.035225771Z ==> Uploaded in 4.0s. Compression took 4.5s
+2026-07-14T19:24:17.072075762Z ==> Build successful 🎉
+2026-07-14T19:24:19.960475175Z ==> Deploying...
+2026-07-14T19:24:20.077003785Z ==> Setting WEB_CONCURRENCY=1 by default, based on available CPUs in the instance
+2026-07-14T19:24:38.04692052Z ==> Running 'node --enable-source-maps artifacts/api-server/dist/index.mjs'
+2026-07-14T19:24:40.25262194Z {"level":30,"time":1784057080251,"pid":71,"hostname":"srv-d9b7aqdaeets73ag6ld0-hibernate-748b4dc4cd-mtr6d","staticDir":"artifacts/svenska-learn/dist/public","msg":"Serving static frontend"}
+2026-07-14T19:24:40.255551992Z (node:71) [DEP0040] DeprecationWarning: The `punycode` module is deprecated. Please use a userland alternative instead.
+2026-07-14T19:24:40.255568903Z (Use `node --trace-deprecation ...` to show where the warning was created)
+2026-07-14T19:24:40.256474698Z {"level":30,"time":1784057080255,"pid":71,"hostname":"srv-d9b7aqdaeets73ag6ld0-hibernate-748b4dc4cd-mtr6d","port":10000,"msg":"Server listening"}
+2026-07-14T19:24:40.563737027Z {"level":30,"time":1784057080563,"pid":71,"hostname":"srv-d9b7aqdaeets73ag6ld0-hibernate-748b4dc4cd-mtr6d","req":{"id":1,"method":"HEAD","url":"/"},"res":{"statusCode":200},"responseTime":5,"msg":"request completed"}
+2026-07-14T19:24:50.924618111Z ==> Your service is live 🎉
+2026-07-14T19:24:51.057497414Z {"level":30,"time":1784057091057,"pid":71,"hostname":"srv-d9b7aqdaeets73ag6ld0-hibernate-748b4dc4cd-mtr6d","req":{"id":2,"method":"GET","url":"/"},"res":{"statusCode":200},"responseTime":4,"msg":"request completed"}
+2026-07-14T19:24:51.094456134Z ==> 
+2026-07-14T19:24:51.096508992Z ==> ///////////////////////////////////////////////////////////
+2026-07-14T19:24:51.098385318Z ==> 
+2026-07-14T19:24:51.100302927Z ==> Available at your primary URL https://swedish-caah.onrender.com
+2026-07-14T19:24:51.102270999Z ==> 
+2026-07-14T19:24:51.104177517Z ==> ///////////////////////////////////////////////////////////
