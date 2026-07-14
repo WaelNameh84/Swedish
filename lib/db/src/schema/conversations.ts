@@ -5,6 +5,7 @@ import { z } from "zod/v4";
 export type VocabItem = { sv: string; ar: string; phonetic?: string };
 export type GrammarTip = { title: string; explanation: string; example: string; exampleAr: string };
 export type UsefulPhrase = { sv: string; ar: string; phonetic?: string };
+export type ConversationQuizQuestion = { question: string; options: string[]; correct: number; explanation?: string };
 
 export const conversationsTable = pgTable("conversations", {
   id: serial("id").primaryKey(),
@@ -21,6 +22,7 @@ export const conversationsTable = pgTable("conversations", {
   grammarTips: jsonb("grammar_tips").$type<GrammarTip[]>().default([]),
   culturalNotes: text("cultural_notes"),
   usefulPhrases: jsonb("useful_phrases").$type<UsefulPhrase[]>().default([]),
+  quiz: jsonb("quiz").$type<ConversationQuizQuestion[]>().default([]),
   createdAt: timestamp("created_at").defaultNow(),
 });
 

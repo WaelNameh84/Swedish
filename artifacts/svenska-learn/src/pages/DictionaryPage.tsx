@@ -1,11 +1,13 @@
 import { useState, useEffect, useRef, useCallback } from "react";
 import {
   Search, X, BookMarked, Clock, ChevronRight, Volume2,
-  Star, BookOpen, Layers, Tag, Filter, Sparkles
+  Star, BookOpen, Layers, Tag, Filter, Sparkles, ClipboardCheck
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { cn } from "@/lib/utils";
 import WordDetailSheet from "@/components/WordDetailSheet";
+import { MCQuizModal } from "@/components/MCQuizModal";
+import type { MCQQuestion } from "@/components/MCQuiz";
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 export interface DictionaryWord {
@@ -112,6 +114,22 @@ export default function DictionaryPage() {
   const [selectedWord, setSelectedWord] = useState<DictionaryWord | null>(null);
   const [randomWord, setRandomWord] = useState<DictionaryWord | null>(null);
   const [activeTab, setActiveTab] = useState<"search" | "favorites" | "review">("search");
+  const [quizOpen, setQuizOpen] = useState(false);
+  const [quizLoading, setQuizLoading] = useState(false);
+  const [quizQuestions, setQuizQuestions] = useState<MCQQuestion[]>([]);
+
+  const startQuiz = () => {
+    setQuizOpen(true);
+    setQuizLoading(true);
+    const params = new URLSearchParams({ count: "10" });
+    if (selectedLevel) params.set("level", selectedLevel);
+    if (selectedCategory) params.set("category", selectedCategory);
+    fetch(`${BASE}/api/dictionary/quiz?${params}`)
+      .then((r) => r.json())
+      .then((d) => setQuizQuestions(Array.isArray(d) ? d : []))
+      .catch(() => setQuizQuestions([]))
+      .finally(() => setQuizLoading(false));
+  };
 
   const [favorites, toggleFavorite] = useLocalSet("dict_favorites");
   const [reviewLater, toggleReview] = useLocalSet("dict_review");
@@ -193,8 +211,17 @@ export default function DictionaryPage() {
               <h1 className="text-2xl font-black text-foreground tracking-tight">القاموس</h1>
               <p className="text-xs text-muted-foreground mt-0.5">{total} كلمة سويدية</p>
             </div>
-            <div className="w-10 h-10 bg-primary/10 rounded-2xl flex items-center justify-center">
-              <BookOpen className="w-5 h-5 text-primary" />
+            <div className="flex items-center gap-2">
+              <button
+                onClick={startQuiz}
+                className="flex items-center gap-1.5 px-3 h-10 bg-primary text-primary-foreground rounded-2xl text-xs font-bold active:scale-95 transition-all"
+              >
+                <ClipboardCheck className="w-4 h-4" />
+                اختبار
+              </button>
+              <div className="w-10 h-10 bg-primary/10 rounded-2xl flex items-center justify-center">
+                <BookOpen className="w-5 h-5 text-primary" />
+              </div>
             </div>
           </div>
 
@@ -403,6 +430,18 @@ export default function DictionaryPage() {
         onToggleFavorite={() => selectedWord && toggleFavorite(selectedWord.id)}
         onToggleReview={() => selectedWord && toggleReview(selectedWord.id)}
       />
+
+      {/* Vocabulary Quiz */}
+      <AnimatePresence>
+        {quizOpen && (
+          <MCQuizModal
+            title="اختبار المفردات"
+            questions={quizQuestions}
+            loading={quizLoading}
+            onClose={() => setQuizOpen(false)}
+          />
+        )}
+      </AnimatePresence>
     </div>
   );
 }

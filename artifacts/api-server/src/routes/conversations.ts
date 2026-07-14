@@ -75,6 +75,7 @@ function fmt(row: typeof conversationsTable.$inferSelect) {
     grammarTips: row.grammarTips ?? [],
     culturalNotes: row.culturalNotes ?? null,
     usefulPhrases: row.usefulPhrases ?? [],
+    quiz: row.quiz ?? [],
   };
 }
 

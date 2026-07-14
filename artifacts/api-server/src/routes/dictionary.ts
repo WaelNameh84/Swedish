@@ -35,6 +35,70 @@ router.get("/dictionary/random", async (req, res) => {
   }
 });
 
+// GET /dictionary/quiz?level=&category=&count= — MCQ quiz generated from real words, with correction
+router.get("/dictionary/quiz", async (req, res) => {
+  try {
+    const level = req.query.level as string | undefined;
+    const category = req.query.category as string | undefined;
+    const count = Math.min(Number(req.query.count) || 10, 20);
+
+    const conditions: any[] = [];
+    if (level) conditions.push(eq(dictionaryTable.level, level));
+    if (category) conditions.push(eq(dictionaryTable.category, category));
+    const whereClause =
+      conditions.length === 0
+        ? undefined
+        : conditions.length === 1
+          ? conditions[0]
+          : sql`${conditions.reduce((a: any, b: any) => sql`${a} AND ${b}`)}`;
+
+    const rows = await db
+      .select()
+      .from(dictionaryTable)
+      .$dynamic()
+      .where(whereClause as any)
+      .orderBy(sql`random()`)
+      .limit(count);
+
+    if (rows.length === 0) return res.json([]);
+
+    // Broad pool for building distractor options (ignores filters so there are always enough choices)
+    const pool = await db.select().from(dictionaryTable).orderBy(sql`random()`).limit(80);
+
+    const questions = rows.map((word) => {
+      const askMeaning = Math.random() < 0.5;
+      const distractorPool = pool.filter(
+        (p) => p.id !== word.id && p.translation !== word.translation && p.word !== word.word
+      );
+      const shuffledPool = [...distractorPool].sort(() => Math.random() - 0.5).slice(0, 3);
+
+      const correctValue = askMeaning ? word.translation : word.word;
+      const options = [correctValue, ...shuffledPool.map((d) => (askMeaning ? d.translation : d.word))];
+      for (let i = options.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [options[i], options[j]] = [options[j], options[i]];
+      }
+      const correct = options.indexOf(correctValue);
+
+      return {
+        wordId: word.id,
+        word: word.word,
+        phonetic: word.phonetic,
+        imageUrl: word.imageUrl,
+        question: askMeaning ? `ما معنى كلمة "${word.word}"؟` : `ما هي الكلمة السويدية لمعنى "${word.translation}"؟`,
+        options,
+        correct,
+        explanation: word.examples?.[0] ? `مثال: ${word.examples[0].sv} — ${word.examples[0].ar}` : undefined,
+      };
+    });
+
+    res.json(questions);
+  } catch (err) {
+    req.log.error({ err }, "Failed to get dictionary quiz");
+    res.status(500).json({ error: "Internal server error" });
+  }
+});
+
 // GET /dictionary/search?q=&level=&category=&limit=&offset=
 router.get("/dictionary/search", async (req, res) => {
   try {

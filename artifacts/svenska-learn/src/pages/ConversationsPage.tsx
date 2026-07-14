@@ -3,9 +3,10 @@ import { motion, AnimatePresence } from "framer-motion";
 import {
   Search, X, Volume2, ChevronRight, ChevronLeft,
   BookOpen, Lightbulb, Globe, Mic, Play, Pause,
-  Star, MessageCircle, GraduationCap, List
+  Star, MessageCircle, GraduationCap, List, ClipboardCheck
 } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { MCQuiz } from "@/components/MCQuiz";
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 interface ConvLine {
@@ -21,6 +22,7 @@ interface Conversation {
   grammarTips: { title: string; explanation: string; example: string; exampleAr: string }[];
   culturalNotes: string | null;
   usefulPhrases: { sv: string; ar: string; phonetic?: string }[];
+  quiz?: { question: string; options: string[]; correct: number; explanation?: string }[];
   lines?: ConvLine[];
 }
 
@@ -182,7 +184,7 @@ function ConvCard({ conv, index, onClick }: { conv: Conversation; index: number;
 }
 
 // ─── Conversation Detail ───────────────────────────────────────────────────────
-type Tab = "dialogue" | "vocab" | "grammar" | "phrases";
+type Tab = "dialogue" | "vocab" | "grammar" | "phrases" | "quiz";
 
 function ConversationDetail({ conv, onBack }: { conv: Conversation; onBack: () => void }) {
   const [full, setFull] = useState<Conversation | null>(null);
@@ -231,6 +233,7 @@ function ConversationDetail({ conv, onBack }: { conv: Conversation; onBack: () =
     { key: "vocab",    label: "المفردات", icon: BookOpen },
     { key: "grammar",  label: "القواعد",  icon: GraduationCap },
     { key: "phrases",  label: "عبارات",   icon: List },
+    { key: "quiz",     label: "اختبار",   icon: ClipboardCheck },
   ];
 
   return (
@@ -316,6 +319,11 @@ function ConversationDetail({ conv, onBack }: { conv: Conversation; onBack: () =
           )}
           {tab === "phrases" && (
             <PhrasesTab key="phrases" phrases={data.usefulPhrases} />
+          )}
+          {tab === "quiz" && (
+            <motion.div key="quiz" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="px-4 py-5 pb-10">
+              <MCQuiz questions={data.quiz ?? []} />
+            </motion.div>
           )}
         </AnimatePresence>
       </div>
