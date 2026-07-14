@@ -1,4 +1,4 @@
-import { pgTable, serial, integer, numeric, text, timestamp } from "drizzle-orm/pg-core";
+import { pgTable, serial, integer, numeric, text, timestamp, jsonb } from "drizzle-orm/pg-core";
 import { createInsertSchema } from "drizzle-zod";
 import { z } from "zod/v4";
 
@@ -12,6 +12,11 @@ export const userProgressTable = pgTable("user_progress", {
   totalDaysLearned: integer("total_days_learned").notNull().default(0),
   totalMinutesLearned: integer("total_minutes_learned").notNull().default(0),
   completionPercentage: numeric("completion_percentage", { precision: 5, scale: 2 }).notNull().default("0"),
+  displayName: text("display_name").notNull().default("متعلّم السويدية"),
+  avatarEmoji: text("avatar_emoji").notNull().default("🧑‍🎓"),
+  avatarColor: text("avatar_color").notNull().default("blue"),
+  joinedGroupIds: jsonb("joined_group_ids").$type<string[]>().notNull().default([]),
+  friendIds: jsonb("friend_ids").$type<string[]>().notNull().default([]),
   updatedAt: timestamp("updated_at").defaultNow(),
 });
 

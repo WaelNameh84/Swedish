@@ -25,18 +25,22 @@
 - `artifacts/svenska-learn` — the web app (React + Vite frontend, Wouter routing, RTL Arabic UI)
 - `artifacts/api-server` — Express API (raw routes for new features; Orval-generated hooks for older CRUD-style features)
 - `lib/db` — Drizzle schema (source of truth for DB tables), migrations via `pnpm --filter @workspace/db run push`
-- New sections live under `src/pages/games/*`, `src/pages/exams/*`, `src/pages/translator/*`, `src/pages/pronunciation/*`, each with a hub page (`GamesHubPage`, `ExamsHubPage`, `TranslatorHubPage`, `PronunciationHubPage`) and matching `AppSidebar.tsx` tool arrays (`gamesTools`, `examsTools`, `translatorTools`, `pronunciationTools`)
+- New sections live under `src/pages/games/*`, `src/pages/exams/*`, `src/pages/translator/*`, `src/pages/pronunciation/*`, `src/pages/community/*`, each with a hub page (`GamesHubPage`, `ExamsHubPage`, `TranslatorHubPage`, `PronunciationHubPage`, `CommunityHubPage`) and matching `AppSidebar.tsx` tool arrays (`gamesTools`, `examsTools`, `translatorTools`, `pronunciationTools`, `communityTools`)
+- `StatisticsPage.tsx` and `ProfilePage.tsx` are single comprehensive dashboard pages (not hub+subpages) linked directly from `mainLinks` in `AppSidebar.tsx`
 - `SettingsPage.tsx` — placeholder UI for enabling AI features later (no key is requested yet)
 
 ## Architecture decisions
 
-- New feature routes (games/exams/translator/pronunciation) use plain Express routes + raw `fetch` on the frontend, not the OpenAPI/Orval codegen pipeline — faster to iterate and matches existing precedent (`VerbsPage`/`DictionaryPage`).
+- New feature routes (games/exams/translator/pronunciation/statistics/achievements/community) use plain Express routes + raw `fetch` on the frontend, not the OpenAPI/Orval codegen pipeline — faster to iterate and matches existing precedent (`VerbsPage`/`DictionaryPage`).
 - Games/Exams/Translator/Pronunciation are built to work with **zero AI dependency**: free Google Translate endpoint (server-proxied to avoid CORS/key issues), browser-native `speechSynthesis`/`SpeechRecognition` for TTS/STT, and client-side `tesseract.js` OCR for camera/image translation. Exams are auto-graded from `dictionaryTable` words (no AI grading).
 - AI-only features (smart correction, AI pronunciation evaluation, grammar explanations, AI chat) remain gated behind a **user-supplied OpenAI API key** entered via the Settings page (not yet built out — currently just an informational placeholder). The user explicitly declined the Replit AI Integrations OpenAI proxy; do not re-propose it — route new AI features through the same "bring your own key via Settings" flow instead.
+- Successful `/pronunciation/evaluate` results are persisted to `pronunciationAttemptsTable` (via `/pronunciation/attempts`) so Statistics/Profile can show a real "مستوى النطق" derived from actual scored attempts; shows "لم يبدأ التقييم بعد" until AI is enabled and used at least once.
+- **Community section is demo/mock data** (leaderboard other-learners, friends, groups, competitions) since there is no auth/multi-user system yet — see `svenska-community-demo-data` memory. The real user's own row (from `userProgressTable`) is merged into the leaderboard with `isYou: true` so their rank/XP is always accurate. Friend-add/group-join actions persist for real (via `friendIds`/`joinedGroupIds` jsonb columns on `userProgressTable`). Daily challenges (`/community/challenges`) and achievement-sharing (`/community/share`) use fully real data — no mocking.
+- Achievements are computed on the fly (not stored) in `artifacts/api-server/src/lib/achievements.ts` from real progress/exam/pronunciation data, shared between `/achievements` and `/user/profile`.
 
 ## Product
 
-Svenska teaches Swedish to Arabic speakers. Core sections: Lessons, Dictionary, Verbs, Conversations, AI-teacher chat, Audio Learning, Pronunciation practice, Games (7 word/vocab games), Exams (daily/weekly/monthly/level tests with certificates + performance reports), and a Live Translator (text/voice/camera OCR/two-person conversation mode, ~130+ languages) — all translation/voice/OCR features work without any AI key.
+Svenska teaches Swedish to Arabic speakers. Core sections: Lessons, Dictionary, Verbs, Conversations, AI-teacher chat, Audio Learning, Pronunciation practice, Games (7 word/vocab games), Exams (daily/weekly/monthly/level tests with certificates + performance reports), a Live Translator (text/voice/camera OCR/two-person conversation mode, ~130+ languages — works without any AI key), Statistics (real learning-hours/words/success-rate/pronunciation-level/streak dashboard with charts and week/month comparisons), Community (demo leaderboard/friends/groups/competitions + real daily challenges and achievement-sharing), and Profile (avatar, level/XP, achievements, certificates, languages).
 
 ## User preferences
 

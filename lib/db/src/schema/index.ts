@@ -8,3 +8,4 @@ export * from "./chatMessages";
 export * from "./dictionary";
 export * from "./verbs";
 export * from "./examAttempts";
+export * from "./pronunciationAttempts";

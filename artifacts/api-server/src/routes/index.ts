@@ -14,6 +14,9 @@ import aiTeacherRouter from "./aiTeacher";
 import pronunciationRouter from "./pronunciation";
 import examsRouter from "./exams";
 import translateRouter from "./translate";
+import statisticsRouter from "./statistics";
+import achievementsRouter from "./achievements";
+import communityRouter from "./community";
 
 const router: IRouter = Router();
 
@@ -32,5 +35,8 @@ router.use(aiTeacherRouter);
 router.use(pronunciationRouter);
 router.use(examsRouter);
 router.use(translateRouter);
+router.use(statisticsRouter);
+router.use(achievementsRouter);
+router.use(communityRouter);
 
 export default router;

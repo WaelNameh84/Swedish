@@ -48,6 +48,13 @@ export default function AIEvaluationPage() {
         return;
       }
       setResult(data);
+      if (typeof data.score === "number") {
+        fetch(`${BASE_URL}/api/pronunciation/attempts`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ targetText: word.word, score: data.score, feedback: data.feedback }),
+        }).catch(() => {});
+      }
     } catch {
       setError("تعذر الاتصال بالخادم");
     } finally {

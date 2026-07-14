@@ -1,6 +1,9 @@
 import { Router, type IRouter } from "express";
 import multer from "multer";
 import { getOpenAI, AI_NOT_CONFIGURED_MESSAGE } from "../lib/openai";
+import { db } from "@workspace/db";
+import { pronunciationAttemptsTable } from "@workspace/db";
+import { desc, sql } from "drizzle-orm";
 
 const router: IRouter = Router();
 const upload = multer({ storage: multer.memoryStorage(), limits: { fileSize: 25 * 1024 * 1024 } });
@@ -114,6 +117,54 @@ router.post("/pronunciation/errors", upload.single("audio"), async (req, res) =>
   } catch (err) {
     req.log.error({ err }, "Pronunciation error analysis failed");
     res.status(500).json({ error: "حدث خطأ أثناء تحليل أخطاء النطق" });
+  }
+});
+
+/**
+ * Persist a pronunciation attempt's score (only ever called after a real AI
+ * evaluation succeeds) so Statistics/Profile can show a real "مستوى النطق"
+ * derived from actual scored attempts rather than a placeholder.
+ */
+router.post("/pronunciation/attempts", async (req, res) => {
+  try {
+    const { targetText, score, feedback } = (req.body ?? {}) as {
+      targetText?: string;
+      score?: number;
+      feedback?: string;
+    };
+    if (!targetText?.trim() || typeof score !== "number" || score < 0 || score > 100) {
+      return res.status(400).json({ error: "بيانات المحاولة غير صالحة" });
+    }
+    const [row] = await db
+      .insert(pronunciationAttemptsTable)
+      .values({ targetText: targetText.trim(), score: Math.round(score), feedback: feedback ?? null })
+      .returning();
+    res.json(row);
+  } catch (err) {
+    req.log.error({ err }, "Failed to save pronunciation attempt");
+    res.status(500).json({ error: "Internal server error" });
+  }
+});
+
+// GET /pronunciation/attempts?limit=
+router.get("/pronunciation/attempts", async (req, res) => {
+  try {
+    const limit = Math.min(Number(req.query.limit) || 20, 200);
+    const rows = await db
+      .select()
+      .from(pronunciationAttemptsTable)
+      .orderBy(desc(pronunciationAttemptsTable.createdAt))
+      .limit(limit);
+    const [{ avg, count }] = await db
+      .select({
+        avg: sql<number>`coalesce(avg(${pronunciationAttemptsTable.score}), 0)`,
+        count: sql<number>`count(*)`,
+      })
+      .from(pronunciationAttemptsTable);
+    res.json({ attempts: rows, averageScore: Math.round(Number(avg)), totalAttempts: Number(count) });
+  } catch (err) {
+    req.log.error({ err }, "Failed to list pronunciation attempts");
+    res.status(500).json({ error: "Internal server error" });
   }
 });
 

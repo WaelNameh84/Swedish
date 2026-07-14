@@ -45,6 +45,15 @@ import VoiceTranslatePage from '@/pages/translator/VoiceTranslatePage';
 import CameraTranslatePage from '@/pages/translator/CameraTranslatePage';
 import ConversationModePage from '@/pages/translator/ConversationModePage';
 import SettingsPage from '@/pages/SettingsPage';
+import StatisticsPage from '@/pages/StatisticsPage';
+import ProfilePage from '@/pages/ProfilePage';
+import CommunityHubPage from '@/pages/CommunityHubPage';
+import FriendsPage from '@/pages/community/FriendsPage';
+import CompetitionsPage from '@/pages/community/CompetitionsPage';
+import LeaderboardPage from '@/pages/community/LeaderboardPage';
+import GroupsPage from '@/pages/community/GroupsPage';
+import ChallengesPage from '@/pages/community/ChallengesPage';
+import ShareAchievementsPage from '@/pages/community/ShareAchievementsPage';
 import BottomNav from '@/components/BottomNav';
 import AppSidebar from '@/components/AppSidebar';
 import VoiceTranslator from '@/components/VoiceTranslator';
@@ -100,6 +109,15 @@ function Router() {
       <Route path="/translator/camera" component={CameraTranslatePage} />
       <Route path="/translator/conversation" component={ConversationModePage} />
       <Route path="/settings" component={SettingsPage} />
+      <Route path="/statistics" component={StatisticsPage} />
+      <Route path="/profile" component={ProfilePage} />
+      <Route path="/community" component={CommunityHubPage} />
+      <Route path="/community/friends" component={FriendsPage} />
+      <Route path="/community/competitions" component={CompetitionsPage} />
+      <Route path="/community/leaderboard" component={LeaderboardPage} />
+      <Route path="/community/groups" component={GroupsPage} />
+      <Route path="/community/challenges" component={ChallengesPage} />
+      <Route path="/community/share" component={ShareAchievementsPage} />
       <Route path="/stats" component={Home} />
       <Route component={NotFound} />
     </Switch>

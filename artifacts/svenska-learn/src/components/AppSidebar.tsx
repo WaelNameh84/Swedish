@@ -50,6 +50,13 @@ import {
   Type,
   Camera,
   Settings as SettingsIcon,
+  Users2,
+  UserCircle2,
+  UserPlus,
+  Swords,
+  Trophy,
+  Share2,
+  CheckCircle2,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import {
@@ -67,7 +74,18 @@ const mainLinks = [
   { href: "/verbs", label: "الأفعال", icon: Languages },
   { href: "/conversations", label: "المحادثات", icon: MessageCircle },
   { href: "/chat", label: "تدرب", icon: Bot },
+  { href: "/statistics", label: "الإحصائيات", icon: BarChart3 },
+  { href: "/profile", label: "الملف الشخصي", icon: UserCircle2 },
   { href: "/settings", label: "الإعدادات", icon: SettingsIcon },
+];
+
+export const communityTools = [
+  { href: "/community/friends", label: "الأصدقاء", icon: UserPlus },
+  { href: "/community/competitions", label: "المنافسات", icon: Swords },
+  { href: "/community/leaderboard", label: "الترتيب العالمي", icon: Trophy },
+  { href: "/community/groups", label: "المجموعات", icon: Users2 },
+  { href: "/community/challenges", label: "التحديات", icon: CheckCircle2 },
+  { href: "/community/share", label: "مشاركة الإنجازات", icon: Share2 },
 ];
 
 export const gamesTools = [
@@ -136,6 +154,7 @@ export default function AppSidebar() {
   const [gamesOpen, setGamesOpen] = useState(location.startsWith("/games"));
   const [examsOpen, setExamsOpen] = useState(location.startsWith("/exams"));
   const [translatorOpen, setTranslatorOpen] = useState(location.startsWith("/translator"));
+  const [communityOpen, setCommunityOpen] = useState(location.startsWith("/community"));
 
   const isActive = (href: string) =>
     location === href || (href !== "/" && location.startsWith(href));
@@ -430,6 +449,55 @@ export default function AppSidebar() {
                 كل أدوات الترجمة
               </Link>
               {translatorTools.map((tool) => {
+                const Icon = tool.icon;
+                const active = location === tool.href;
+                return (
+                  <Link
+                    key={tool.href + tool.label}
+                    href={tool.href}
+                    onClick={() => setOpen(false)}
+                    className={cn(
+                      "flex items-center gap-2.5 px-3 py-2 rounded-lg text-sm transition-colors",
+                      active
+                        ? "bg-primary/10 text-primary font-semibold"
+                        : "text-muted-foreground hover:bg-secondary hover:text-foreground"
+                    )}
+                  >
+                    <Icon className="w-4 h-4 shrink-0" />
+                    {tool.label}
+                  </Link>
+                );
+              })}
+            </div>
+          )}
+
+          <button
+            onClick={() => setCommunityOpen((v) => !v)}
+            className={cn(
+              "flex items-center gap-3 px-3 py-2.5 rounded-xl text-[15px] font-semibold transition-colors mt-1",
+              location.startsWith("/community")
+                ? "bg-primary/10 text-primary"
+                : "text-foreground hover:bg-secondary"
+            )}
+          >
+            <Users2 className="w-[18px] h-[18px]" />
+            <span className="flex-1 text-right">المجتمع</span>
+            <ChevronDown
+              className={cn("w-4 h-4 transition-transform", communityOpen && "rotate-180")}
+            />
+          </button>
+
+          {communityOpen && (
+            <div className="flex flex-col gap-1 pr-4 border-r-2 border-primary/15 mr-[19px] mt-1">
+              <Link
+                href="/community"
+                onClick={() => setOpen(false)}
+                className="flex items-center gap-2.5 px-3 py-2 rounded-lg text-sm text-muted-foreground hover:bg-secondary hover:text-foreground"
+              >
+                <Users2 className="w-4 h-4 shrink-0" />
+                كل ميزات المجتمع
+              </Link>
+              {communityTools.map((tool) => {
                 const Icon = tool.icon;
                 const active = location === tool.href;
                 return (
