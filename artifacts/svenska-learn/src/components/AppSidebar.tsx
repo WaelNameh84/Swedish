@@ -19,6 +19,14 @@ import {
   ClipboardList,
   MessagesSquare,
   CalendarClock,
+  Headphones,
+  Radio,
+  Moon,
+  Repeat,
+  Gauge,
+  Languages as TranslateIcon,
+  Cast,
+  DownloadCloud,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import {
@@ -50,10 +58,21 @@ export const aiTeacherTools = [
   { href: "/ai-teacher/plan", label: "خطة تعلم تلقائية", icon: CalendarClock },
 ];
 
+export const audioLearningTools = [
+  { href: "/audio-learning/radio", label: "راديو اللغة", icon: Radio },
+  { href: "/audio-learning/sleep", label: "تشغيل أثناء النوم", icon: Moon },
+  { href: "/audio-learning/repeat", label: "تكرار الكلمات", icon: Repeat },
+  { href: "/audio-learning/speed", label: "سرعة الصوت", icon: Gauge },
+  { href: "/audio-learning/translate", label: "ترجمة تلقائية", icon: TranslateIcon },
+  { href: "/audio-learning/background", label: "تشغيل بالخلفية", icon: Cast },
+  { href: "/audio-learning/offline", label: "تنزيل للاستماع بدون إنترنت", icon: DownloadCloud },
+];
+
 export default function AppSidebar() {
   const [location] = useLocation();
   const [open, setOpen] = useState(false);
   const [aiOpen, setAiOpen] = useState(location.startsWith("/ai-teacher"));
+  const [audioOpen, setAudioOpen] = useState(location.startsWith("/audio-learning"));
 
   const isActive = (href: string) =>
     location === href || (href !== "/" && location.startsWith(href));
@@ -119,6 +138,47 @@ export default function AppSidebar() {
           {aiOpen && (
             <div className="flex flex-col gap-1 pr-4 border-r-2 border-primary/15 mr-[19px] mt-1">
               {aiTeacherTools.map((tool) => {
+                const Icon = tool.icon;
+                const active = location === tool.href;
+                return (
+                  <Link
+                    key={tool.href + tool.label}
+                    href={tool.href}
+                    onClick={() => setOpen(false)}
+                    className={cn(
+                      "flex items-center gap-2.5 px-3 py-2 rounded-lg text-sm transition-colors",
+                      active
+                        ? "bg-primary/10 text-primary font-semibold"
+                        : "text-muted-foreground hover:bg-secondary hover:text-foreground"
+                    )}
+                  >
+                    <Icon className="w-4 h-4 shrink-0" />
+                    {tool.label}
+                  </Link>
+                );
+              })}
+            </div>
+          )}
+
+          <button
+            onClick={() => setAudioOpen((v) => !v)}
+            className={cn(
+              "flex items-center gap-3 px-3 py-2.5 rounded-xl text-[15px] font-semibold transition-colors mt-1",
+              location.startsWith("/audio-learning")
+                ? "bg-primary/10 text-primary"
+                : "text-foreground hover:bg-secondary"
+            )}
+          >
+            <Headphones className="w-[18px] h-[18px]" />
+            <span className="flex-1 text-right">تعلم بالصوت</span>
+            <ChevronDown
+              className={cn("w-4 h-4 transition-transform", audioOpen && "rotate-180")}
+            />
+          </button>
+
+          {audioOpen && (
+            <div className="flex flex-col gap-1 pr-4 border-r-2 border-primary/15 mr-[19px] mt-1">
+              {audioLearningTools.map((tool) => {
                 const Icon = tool.icon;
                 const active = location === tool.href;
                 return (

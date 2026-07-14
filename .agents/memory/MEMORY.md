@@ -1,0 +1,1 @@
+- [Svenska audio features without API key](svenska-audio-tts.md) — speechSynthesis (browser-native) powers all TTS/audio-learning features; no OpenAI key needed for these.
