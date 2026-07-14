@@ -1,0 +1,50 @@
+2026-07-14T21:57:18.28716025Z   dist/public/workbox-9c191d2f.js
+2026-07-14T21:57:18.828583625Z 
+2026-07-14T21:57:18.828608465Z > @workspace/api-server@0.0.0 build /opt/render/project/src/artifacts/api-server
+2026-07-14T21:57:18.828611745Z > node ./build.mjs
+2026-07-14T21:57:18.828613825Z 
+2026-07-14T21:57:19.831237777Z 
+2026-07-14T21:57:19.831264168Z   dist/index.mjs                       4.9mb ⚠️
+2026-07-14T21:57:19.831270008Z   dist/pino-worker.mjs               153.4kb
+2026-07-14T21:57:19.831275578Z   dist/pino-file.mjs                 142.1kb
+2026-07-14T21:57:19.831279478Z   dist/pino-pretty.mjs               114.4kb
+2026-07-14T21:57:19.831283248Z   dist/thread-stream-worker.mjs        7.3kb
+2026-07-14T21:57:19.831286968Z   dist/index.mjs.map                   9.7mb
+2026-07-14T21:57:19.831290968Z   dist/pino-worker.mjs.map           256.9kb
+2026-07-14T21:57:19.831295129Z   dist/pino-file.mjs.map             229.0kb
+2026-07-14T21:57:19.831299019Z   dist/pino-pretty.mjs.map           203.6kb
+2026-07-14T21:57:19.831301529Z   dist/thread-stream-worker.mjs.map   12.0kb
+2026-07-14T21:57:19.831303879Z 
+2026-07-14T21:57:19.831306869Z ⚡ Done in 944ms
+2026-07-14T21:57:20.93180724Z ==> Uploading build...
+2026-07-14T21:57:29.850889753Z ==> Uploaded in 3.8s. Compression took 5.1s
+2026-07-14T21:57:29.893938967Z ==> Build successful 🎉
+2026-07-14T21:57:33.089487011Z ==> Deploying...
+2026-07-14T21:57:33.205759758Z ==> Setting WEB_CONCURRENCY=1 by default, based on available CPUs in the instance
+2026-07-14T21:57:55.449335133Z ==> Running 'node --enable-source-maps artifacts/api-server/dist/index.mjs'
+2026-07-14T21:57:58.54911621Z {"level":30,"time":1784066278548,"pid":71,"hostname":"srv-d9b7aqdaeets73ag6ld0-hibernate-bdfd64c97-dmq9c","staticDir":"artifacts/svenska-learn/dist/public","msg":"Serving static frontend"}
+2026-07-14T21:57:58.551493606Z (node:71) [DEP0040] DeprecationWarning: The `punycode` module is deprecated. Please use a userland alternative instead.
+2026-07-14T21:57:58.551516957Z (Use `node --trace-deprecation ...` to show where the warning was created)
+2026-07-14T21:57:58.552283169Z {"level":30,"time":1784066278551,"pid":71,"hostname":"srv-d9b7aqdaeets73ag6ld0-hibernate-bdfd64c97-dmq9c","port":10000,"msg":"Server listening"}
+2026-07-14T21:57:59.503164406Z Attention: Clerk collects telemetry data from its SDKs when connected to development instances.
+2026-07-14T21:57:59.503187806Z The data collected is used to inform Clerk's product roadmap.
+2026-07-14T21:57:59.503222687Z To learn more, including how to opt-out from the telemetry program, visit: https://clerk.com/docs/telemetry.
+2026-07-14T21:57:59.503230637Z 
+2026-07-14T21:57:59.740773434Z {"level":30,"time":1784066279740,"pid":71,"hostname":"srv-d9b7aqdaeets73ag6ld0-hibernate-bdfd64c97-dmq9c","req":{"id":1,"method":"HEAD","url":"/"},"res":{"statusCode":200},"responseTime":243,"msg":"request completed"}
+2026-07-14T21:58:04.02053792Z ==> Your service is live 🎉
+2026-07-14T21:58:04.086113554Z {"level":30,"time":1784066284085,"pid":71,"hostname":"srv-d9b7aqdaeets73ag6ld0-hibernate-bdfd64c97-dmq9c","req":{"id":2,"method":"GET","url":"/"},"res":{"statusCode":200},"responseTime":4,"msg":"request completed"}
+2026-07-14T21:58:04.160812407Z ==> 
+2026-07-14T21:58:04.162547925Z ==> ///////////////////////////////////////////////////////////
+2026-07-14T21:58:04.16425679Z ==> 
+2026-07-14T21:58:04.165844317Z ==> Available at your primary URL https://swedish-caah.onrender.com
+2026-07-14T21:58:04.16780585Z ==> 
+2026-07-14T21:58:04.169519546Z ==> ///////////////////////////////////////////////////////////
+2026-07-14T21:58:11.801173299Z {"level":30,"time":1784066291800,"pid":71,"hostname":"srv-d9b7aqdaeets73ag6ld0-hibernate-bdfd64c97-dmq9c","req":{"id":3,"method":"GET","url":"/icon-512.png"},"res":{"statusCode":200},"responseTime":8,"msg":"request completed"}
+2026-07-14T21:58:12.05349332Z {"level":30,"time":1784066292052,"pid":71,"hostname":"srv-d9b7aqdaeets73ag6ld0-hibernate-bdfd64c97-dmq9c","req":{"id":4,"method":"GET","url":"/icon-512.png"},"res":{"statusCode":304},"responseTime":3,"msg":"request completed"}
+2026-07-14T21:58:12.256035026Z {"level":30,"time":1784066292255,"pid":71,"hostname":"srv-d9b7aqdaeets73ag6ld0-hibernate-bdfd64c97-dmq9c","req":{"id":5,"method":"GET","url":"/favicon.svg"},"res":{"statusCode":200},"responseTime":6,"msg":"request completed"}
+2026-07-14T21:58:12.626299972Z {"level":30,"time":1784066292625,"pid":71,"hostname":"srv-d9b7aqdaeets73ag6ld0-hibernate-bdfd64c97-dmq9c","req":{"id":6,"method":"GET","url":"/sw.js"},"res":{"statusCode":200},"responseTime":3,"msg":"request completed"}
+2026-07-14T21:58:13.124226396Z {"level":30,"time":1784066293123,"pid":71,"hostname":"srv-d9b7aqdaeets73ag6ld0-hibernate-bdfd64c97-dmq9c","req":{"id":7,"method":"GET","url":"/workbox-9c191d2f.js"},"res":{"statusCode":200},"responseTime":2,"msg":"request completed"}
+2026-07-14T21:58:53.74905339Z {"level":30,"time":1784066333748,"pid":71,"hostname":"srv-d9b7aqdaeets73ag6ld0-hibernate-bdfd64c97-dmq9c","req":{"id":8,"method":"GET","url":"/"},"res":{"statusCode":200},"responseTime":2,"msg":"request completed"}
+2026-07-14T21:58:53.856305635Z {"level":30,"time":1784066333856,"pid":71,"hostname":"srv-d9b7aqdaeets73ag6ld0-hibernate-bdfd64c97-dmq9c","req":{"id":9,"method":"GET","url":"/assets/index-wV__K2Mm.js"},"res":{"statusCode":200},"responseTime":8,"msg":"request completed"}
+2026-07-14T21:58:54.025441465Z {"level":30,"time":1784066334025,"pid":71,"hostname":"srv-d9b7aqdaeets73ag6ld0-hibernate-bdfd64c97-dmq9c","req":{"id":10,"method":"GET","url":"/"},"res":{"statusCode":200},"responseTime":4,"msg":"request completed"}
+2026-07-14T21:58:54.127983119Z {"level":30,"time":1784066334127,"pid":71,"hostname":"srv-d9b7aqdaeets73ag6ld0-hibernate-bdfd64c97-dmq9c","req":{"id":11,"method":"GET","url":"/assets/index-wV__K2Mm.js"},"res":{"statusCode":200},"responseTime":5,"msg":"request completed"}
