@@ -1,0 +1,50 @@
+2026-07-14T20:47:54.041338435Z     'beställa',
+2026-07-14T20:47:54.041342716Z     'beställer',
+2026-07-14T20:47:54.041345716Z     'beställde',
+2026-07-14T20:47:54.041348716Z     'beställt',
+2026-07-14T20:47:54.041351776Z     'beställ',
+2026-07-14T20:47:54.041354896Z     'ska beställa',
+2026-07-14T20:47:54.041357617Z     'beställande',
+2026-07-14T20:47:54.041359967Z     'beställd',
+2026-07-14T20:47:54.041362247Z     'beställs',
+2026-07-14T20:47:54.041364477Z     'beställdes',
+2026-07-14T20:47:54.041367737Z     'يطلب (طلباً / أمراً)',
+2026-07-14T20:47:54.041370017Z     '/bɛˈɛtːəla/',
+2026-07-14T20:47:54.041372258Z     '2a',
+2026-07-14T20:47:54.041374558Z     'A2',
+2026-07-14T20:47:54.041376738Z     'handel',
+2026-07-14T20:47:54.041379788Z     'https://images.pexels.com/photos/5632388/pexels-photo-5632388.jpeg?auto=compress&cs=tinysrgb&w=612&h=408&dpr=1',
+2026-07-14T20:47:54.041382228Z     'يُستخدم لطلب الطعام أو البضاعة. مجموعة 2a: ينتهي الماضي بـ -de.',
+2026-07-14T20:47:54.041386479Z     '[{"sv":"Jag vill beställa pizza.","ar":"أريد طلب بيتزا."},{"sv":"Hon beställde en ny bok online.","ar":"طلبت كتاباً جديداً على الإنترنت."},{"sv":"Beställ det nu, annars slutar det!","ar":"اطلبه الآن وإلا ينتهي!"}]',
+2026-07-14T20:47:54.041389179Z     '[{"form":"presens","sentence":"Jag ___ mat från restaurangen.","answer":"beställer","translation":"أنا أطلب طعاماً من المطعم."},{"form":"preteritum","sentence":"Vi ___ bord till fredag.","answer":"beställde","translation":"حجزنا طاولة ليوم الجمعة."},{"form":"imperativ","sentence":"___ den nu om du vill ha den!","answer":"Beställ","translation":"اطلبها الآن إذا أردتها!"}]'
+2026-07-14T20:47:54.041391899Z   ],
+2026-07-14T20:47:54.041394679Z   cause: error: duplicate key value violates unique constraint "verbs_infinitiv_unique"
+2026-07-14T20:47:54.041420201Z       at /opt/render/project/src/node_modules/.pnpm/pg-pool@3.14.0_pg@8.22.0/node_modules/pg-pool/index.js:45:11
+2026-07-14T20:47:54.041423431Z       at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+2026-07-14T20:47:54.041426001Z       at async <anonymous> (/opt/render/project/src/node_modules/.pnpm/drizzle-orm@0.45.2_@types+pg@8.20.0_pg@8.22.0/node_modules/src/node-postgres/session.ts:149:14)
+2026-07-14T20:47:54.041445592Z       at async NodePgPreparedQuery.queryWithCache (/opt/render/project/src/node_modules/.pnpm/drizzle-orm@0.45.2_@types+pg@8.20.0_pg@8.22.0/node_modules/src/pg-core/session.ts:71:12)
+2026-07-14T20:47:54.041448733Z       at async seed (/opt/render/project/src/scripts/src/seedVerbsExtra.ts:1674:7) {
+2026-07-14T20:47:54.041451103Z     length: 219,
+2026-07-14T20:47:54.041453443Z     severity: 'ERROR',
+2026-07-14T20:47:54.041455723Z     code: '23505',
+2026-07-14T20:47:54.041458523Z     detail: 'Key (infinitiv)=(beställa) already exists.',
+2026-07-14T20:47:54.041460843Z     hint: undefined,
+2026-07-14T20:47:54.041463134Z     position: undefined,
+2026-07-14T20:47:54.041465924Z     internalPosition: undefined,
+2026-07-14T20:47:54.041468384Z     internalQuery: undefined,
+2026-07-14T20:47:54.041471644Z     where: undefined,
+2026-07-14T20:47:54.041474394Z     schema: 'public',
+2026-07-14T20:47:54.041476884Z     table: 'verbs',
+2026-07-14T20:47:54.041479975Z     column: undefined,
+2026-07-14T20:47:54.041482795Z     dataType: undefined,
+2026-07-14T20:47:54.041486025Z     constraint: 'verbs_infinitiv_unique',
+2026-07-14T20:47:54.041488705Z     file: 'nbtinsert.c',
+2026-07-14T20:47:54.041491585Z     line: '667',
+2026-07-14T20:47:54.041494396Z     routine: '_bt_check_unique'
+2026-07-14T20:47:54.041497196Z   }
+2026-07-14T20:47:54.041500116Z }
+2026-07-14T20:47:54.083910391Z /opt/render/project/src/scripts:
+2026-07-14T20:47:54.083929762Z  ERR_PNPM_RECURSIVE_RUN_FIRST_FAIL  @workspace/scripts@0.0.0 seed:verbs:extra: `tsx ./src/seedVerbsExtra.ts`
+2026-07-14T20:47:54.083933052Z Exit status 1
+2026-07-14T20:47:54.133604454Z ==> Build failed 😞
+2026-07-14T20:47:54.133624765Z ==> Common ways to troubleshoot your deploy: https://render.com/docs/troubleshooting-deploys
