@@ -1,4 +1,5 @@
 import React from "react";
+import { Link } from "wouter";
 import { 
   Flame, 
   BookOpen, 
@@ -11,7 +12,11 @@ import {
   Headphones,
   Mic,
   AlignLeft,
-  MessageSquare
+  MessageSquare,
+  Gamepad2,
+  ClipboardCheck,
+  Languages,
+  AudioLines
 } from "lucide-react";
 import { motion } from "framer-motion";
 import { 
@@ -223,6 +228,36 @@ export default function Home() {
                 </div>
               )}
             </div>
+          </div>
+        </motion.section>
+
+        {/* Quick Access */}
+        <motion.section variants={itemVariants} className="flex flex-col gap-4">
+          <h2 className="text-lg font-bold text-foreground flex items-center gap-2">
+            <Star className="w-5 h-5 text-primary" />
+            استكشف
+          </h2>
+          <div className="grid grid-cols-2 gap-3">
+            {[
+              { href: "/pronunciation", label: "النطق", icon: AudioLines, color: "text-purple-500" },
+              { href: "/games", label: "الألعاب", icon: Gamepad2, color: "text-emerald-500" },
+              { href: "/exams", label: "الاختبارات", icon: ClipboardCheck, color: "text-orange-500" },
+              { href: "/translator", label: "المترجم الفوري", icon: Languages, color: "text-blue-500" },
+            ].map((item) => {
+              const Icon = item.icon;
+              return (
+                <Link
+                  key={item.href}
+                  href={item.href}
+                  className="bg-card border border-card-border shadow-sm rounded-xl p-4 flex items-center gap-3 hover:border-primary/40 hover:shadow-md transition-all active:scale-[0.98]"
+                >
+                  <div className="w-10 h-10 rounded-xl bg-secondary flex items-center justify-center shrink-0">
+                    <Icon className={`w-5 h-5 ${item.color}`} />
+                  </div>
+                  <span className="text-sm font-semibold text-foreground">{item.label}</span>
+                </Link>
+              );
+            })}
           </div>
         </motion.section>
 

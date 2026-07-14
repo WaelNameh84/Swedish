@@ -7,3 +7,4 @@ export * from "./conversations";
 export * from "./chatMessages";
 export * from "./dictionary";
 export * from "./verbs";
+export * from "./examAttempts";

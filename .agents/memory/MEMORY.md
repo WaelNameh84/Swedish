@@ -1,1 +1,2 @@
 - [Svenska audio features without API key](svenska-audio-tts.md) — speechSynthesis (browser-native) powers all TTS/audio-learning features; no OpenAI key needed for these.
+- [Svenska AI feature gating](svenska-ai-key-gating.md) — AI features wait on a user-supplied OpenAI key via Settings; user declined the Replit AI proxy, don't re-propose it.

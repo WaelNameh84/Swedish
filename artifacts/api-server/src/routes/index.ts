@@ -12,6 +12,8 @@ import dictionaryRouter from "./dictionary";
 import verbsRouter from "./verbs";
 import aiTeacherRouter from "./aiTeacher";
 import pronunciationRouter from "./pronunciation";
+import examsRouter from "./exams";
+import translateRouter from "./translate";
 
 const router: IRouter = Router();
 
@@ -28,5 +30,7 @@ router.use(dictionaryRouter);
 router.use(verbsRouter);
 router.use(aiTeacherRouter);
 router.use(pronunciationRouter);
+router.use(examsRouter);
+router.use(translateRouter);
 
 export default router;

@@ -34,6 +34,22 @@ import {
   AlertTriangle,
   Waves,
   Dumbbell,
+  Gamepad2,
+  Shuffle,
+  ListTree,
+  Layers,
+  PenLine,
+  Timer,
+  ImageIcon,
+  Ear,
+  ClipboardCheck,
+  CalendarDays,
+  CalendarRange,
+  Award,
+  BarChart3,
+  Type,
+  Camera,
+  Settings as SettingsIcon,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import {
@@ -51,6 +67,33 @@ const mainLinks = [
   { href: "/verbs", label: "الأفعال", icon: Languages },
   { href: "/conversations", label: "المحادثات", icon: MessageCircle },
   { href: "/chat", label: "تدرب", icon: Bot },
+  { href: "/settings", label: "الإعدادات", icon: SettingsIcon },
+];
+
+export const gamesTools = [
+  { href: "/games/word-order", label: "ترتيب الكلمات", icon: Shuffle },
+  { href: "/games/multiple-choice", label: "اختيار من متعدد", icon: ListTree },
+  { href: "/games/flashcards", label: "البطاقات التعليمية", icon: Layers },
+  { href: "/games/missing-word", label: "الكلمة الناقصة", icon: PenLine },
+  { href: "/games/speed-challenge", label: "تحدي السرعة", icon: Timer },
+  { href: "/games/picture-game", label: "لعبة الصور", icon: ImageIcon },
+  { href: "/games/listening-game", label: "لعبة الاستماع", icon: Ear },
+];
+
+export const examsTools = [
+  { href: "/exams/run/daily", label: "الاختبار اليومي", icon: CalendarDays },
+  { href: "/exams/run/weekly", label: "الاختبار الأسبوعي", icon: CalendarRange },
+  { href: "/exams/run/monthly", label: "الاختبار الشهري", icon: CalendarClock },
+  { href: "/exams/run/level", label: "اختبار المستوى", icon: GraduationCap },
+  { href: "/exams/certificate", label: "الشهادة", icon: Award },
+  { href: "/exams/report", label: "تقرير الأداء", icon: BarChart3 },
+];
+
+export const translatorTools = [
+  { href: "/translator/text", label: "ترجمة نصية", icon: Type },
+  { href: "/translator/voice", label: "صوت لصوت", icon: Mic2 },
+  { href: "/translator/camera", label: "الكاميرا والصور", icon: Camera },
+  { href: "/translator/conversation", label: "محادثة مباشرة", icon: MessagesSquare },
 ];
 
 export const aiTeacherTools = [
@@ -90,6 +133,9 @@ export default function AppSidebar() {
   const [aiOpen, setAiOpen] = useState(location.startsWith("/ai-teacher"));
   const [audioOpen, setAudioOpen] = useState(location.startsWith("/audio-learning"));
   const [pronOpen, setPronOpen] = useState(location.startsWith("/pronunciation"));
+  const [gamesOpen, setGamesOpen] = useState(location.startsWith("/games"));
+  const [examsOpen, setExamsOpen] = useState(location.startsWith("/exams"));
+  const [translatorOpen, setTranslatorOpen] = useState(location.startsWith("/translator"));
 
   const isActive = (href: string) =>
     location === href || (href !== "/" && location.startsWith(href));
@@ -237,6 +283,153 @@ export default function AppSidebar() {
           {pronOpen && (
             <div className="flex flex-col gap-1 pr-4 border-r-2 border-primary/15 mr-[19px] mt-1">
               {pronunciationTools.map((tool) => {
+                const Icon = tool.icon;
+                const active = location === tool.href;
+                return (
+                  <Link
+                    key={tool.href + tool.label}
+                    href={tool.href}
+                    onClick={() => setOpen(false)}
+                    className={cn(
+                      "flex items-center gap-2.5 px-3 py-2 rounded-lg text-sm transition-colors",
+                      active
+                        ? "bg-primary/10 text-primary font-semibold"
+                        : "text-muted-foreground hover:bg-secondary hover:text-foreground"
+                    )}
+                  >
+                    <Icon className="w-4 h-4 shrink-0" />
+                    {tool.label}
+                  </Link>
+                );
+              })}
+            </div>
+          )}
+
+          <button
+            onClick={() => setGamesOpen((v) => !v)}
+            className={cn(
+              "flex items-center gap-3 px-3 py-2.5 rounded-xl text-[15px] font-semibold transition-colors mt-1",
+              location.startsWith("/games")
+                ? "bg-primary/10 text-primary"
+                : "text-foreground hover:bg-secondary"
+            )}
+          >
+            <Gamepad2 className="w-[18px] h-[18px]" />
+            <span className="flex-1 text-right">الألعاب</span>
+            <ChevronDown
+              className={cn("w-4 h-4 transition-transform", gamesOpen && "rotate-180")}
+            />
+          </button>
+
+          {gamesOpen && (
+            <div className="flex flex-col gap-1 pr-4 border-r-2 border-primary/15 mr-[19px] mt-1">
+              <Link
+                href="/games"
+                onClick={() => setOpen(false)}
+                className="flex items-center gap-2.5 px-3 py-2 rounded-lg text-sm text-muted-foreground hover:bg-secondary hover:text-foreground"
+              >
+                <Gamepad2 className="w-4 h-4 shrink-0" />
+                كل الألعاب
+              </Link>
+              {gamesTools.map((tool) => {
+                const Icon = tool.icon;
+                const active = location === tool.href;
+                return (
+                  <Link
+                    key={tool.href + tool.label}
+                    href={tool.href}
+                    onClick={() => setOpen(false)}
+                    className={cn(
+                      "flex items-center gap-2.5 px-3 py-2 rounded-lg text-sm transition-colors",
+                      active
+                        ? "bg-primary/10 text-primary font-semibold"
+                        : "text-muted-foreground hover:bg-secondary hover:text-foreground"
+                    )}
+                  >
+                    <Icon className="w-4 h-4 shrink-0" />
+                    {tool.label}
+                  </Link>
+                );
+              })}
+            </div>
+          )}
+
+          <button
+            onClick={() => setExamsOpen((v) => !v)}
+            className={cn(
+              "flex items-center gap-3 px-3 py-2.5 rounded-xl text-[15px] font-semibold transition-colors mt-1",
+              location.startsWith("/exams")
+                ? "bg-primary/10 text-primary"
+                : "text-foreground hover:bg-secondary"
+            )}
+          >
+            <ClipboardCheck className="w-[18px] h-[18px]" />
+            <span className="flex-1 text-right">الاختبارات</span>
+            <ChevronDown
+              className={cn("w-4 h-4 transition-transform", examsOpen && "rotate-180")}
+            />
+          </button>
+
+          {examsOpen && (
+            <div className="flex flex-col gap-1 pr-4 border-r-2 border-primary/15 mr-[19px] mt-1">
+              <Link
+                href="/exams"
+                onClick={() => setOpen(false)}
+                className="flex items-center gap-2.5 px-3 py-2 rounded-lg text-sm text-muted-foreground hover:bg-secondary hover:text-foreground"
+              >
+                <ClipboardCheck className="w-4 h-4 shrink-0" />
+                كل الاختبارات
+              </Link>
+              {examsTools.map((tool) => {
+                const Icon = tool.icon;
+                const active = location === tool.href;
+                return (
+                  <Link
+                    key={tool.href + tool.label}
+                    href={tool.href}
+                    onClick={() => setOpen(false)}
+                    className={cn(
+                      "flex items-center gap-2.5 px-3 py-2 rounded-lg text-sm transition-colors",
+                      active
+                        ? "bg-primary/10 text-primary font-semibold"
+                        : "text-muted-foreground hover:bg-secondary hover:text-foreground"
+                    )}
+                  >
+                    <Icon className="w-4 h-4 shrink-0" />
+                    {tool.label}
+                  </Link>
+                );
+              })}
+            </div>
+          )}
+
+          <button
+            onClick={() => setTranslatorOpen((v) => !v)}
+            className={cn(
+              "flex items-center gap-3 px-3 py-2.5 rounded-xl text-[15px] font-semibold transition-colors mt-1",
+              location.startsWith("/translator")
+                ? "bg-primary/10 text-primary"
+                : "text-foreground hover:bg-secondary"
+            )}
+          >
+            <TranslateIcon className="w-[18px] h-[18px]" />
+            <span className="flex-1 text-right">المترجم الفوري</span>
+            <ChevronDown
+              className={cn("w-4 h-4 transition-transform", translatorOpen && "rotate-180")}
+            />
+          </button>
+
+          {translatorOpen && (
+            <div className="flex flex-col gap-1 pr-4 border-r-2 border-primary/15 mr-[19px] mt-1">
+              <Link
+                href="/translator"
+                onClick={() => setOpen(false)}
+                className="flex items-center gap-2.5 px-3 py-2 rounded-lg text-sm text-muted-foreground hover:bg-secondary hover:text-foreground"
+              >
+                <TranslateIcon className="w-4 h-4 shrink-0" />
+                كل أدوات الترجمة
+              </Link>
+              {translatorTools.map((tool) => {
                 const Icon = tool.icon;
                 const active = location === tool.href;
                 return (

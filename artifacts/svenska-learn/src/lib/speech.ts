@@ -55,6 +55,27 @@ export function speak(
   });
 }
 
+/** Speak text in any language code (e.g. from the translator), best-effort voice match. */
+export function speakAny(text: string, langCode: string, rate = 0.95): Promise<void> {
+  return new Promise((resolve) => {
+    if (!isSpeechSupported() || !text) {
+      resolve();
+      return;
+    }
+    const utter = new SpeechSynthesisUtterance(text);
+    utter.lang = langCode;
+    utter.rate = rate;
+    const voice =
+      voicesCache.find((v) => v.lang === langCode) ??
+      voicesCache.find((v) => v.lang.toLowerCase().startsWith(langCode.toLowerCase())) ??
+      undefined;
+    if (voice) utter.voice = voice;
+    utter.onend = () => resolve();
+    utter.onerror = () => resolve();
+    window.speechSynthesis.speak(utter);
+  });
+}
+
 /** Speak Swedish text, optionally followed by its Arabic translation. */
 export async function speakWithTranslation(
   sv: string,

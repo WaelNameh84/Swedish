@@ -22,19 +22,25 @@
 
 ## Where things live
 
-_Populate as you build — short repo map plus pointers to the source-of-truth file for DB schema, API contracts, theme files, etc._
+- `artifacts/svenska-learn` — the web app (React + Vite frontend, Wouter routing, RTL Arabic UI)
+- `artifacts/api-server` — Express API (raw routes for new features; Orval-generated hooks for older CRUD-style features)
+- `lib/db` — Drizzle schema (source of truth for DB tables), migrations via `pnpm --filter @workspace/db run push`
+- New sections live under `src/pages/games/*`, `src/pages/exams/*`, `src/pages/translator/*`, `src/pages/pronunciation/*`, each with a hub page (`GamesHubPage`, `ExamsHubPage`, `TranslatorHubPage`, `PronunciationHubPage`) and matching `AppSidebar.tsx` tool arrays (`gamesTools`, `examsTools`, `translatorTools`, `pronunciationTools`)
+- `SettingsPage.tsx` — placeholder UI for enabling AI features later (no key is requested yet)
 
 ## Architecture decisions
 
-_Populate as you build — non-obvious choices a reader couldn't infer from the code (3-5 bullets)._
+- New feature routes (games/exams/translator/pronunciation) use plain Express routes + raw `fetch` on the frontend, not the OpenAPI/Orval codegen pipeline — faster to iterate and matches existing precedent (`VerbsPage`/`DictionaryPage`).
+- Games/Exams/Translator/Pronunciation are built to work with **zero AI dependency**: free Google Translate endpoint (server-proxied to avoid CORS/key issues), browser-native `speechSynthesis`/`SpeechRecognition` for TTS/STT, and client-side `tesseract.js` OCR for camera/image translation. Exams are auto-graded from `dictionaryTable` words (no AI grading).
+- AI-only features (smart correction, AI pronunciation evaluation, grammar explanations, AI chat) remain gated behind a **user-supplied OpenAI API key** entered via the Settings page (not yet built out — currently just an informational placeholder). The user explicitly declined the Replit AI Integrations OpenAI proxy; do not re-propose it — route new AI features through the same "bring your own key via Settings" flow instead.
 
 ## Product
 
-_Describe the high-level user-facing capabilities of this app once they exist._
+Svenska teaches Swedish to Arabic speakers. Core sections: Lessons, Dictionary, Verbs, Conversations, AI-teacher chat, Audio Learning, Pronunciation practice, Games (7 word/vocab games), Exams (daily/weekly/monthly/level tests with certificates + performance reports), and a Live Translator (text/voice/camera OCR/two-person conversation mode, ~130+ languages) — all translation/voice/OCR features work without any AI key.
 
 ## User preferences
 
-_Populate as you build — explicit user instructions worth remembering across sessions._
+- Build features to work fully without requiring an AI/OpenAI key when a non-AI approach (browser APIs, free public endpoints, deterministic logic) can cover the same need.
 
 ## Gotchas
 
