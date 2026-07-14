@@ -35,6 +35,18 @@ services:
         value: /
       - key: SESSION_SECRET
         generateValue: true
+      # Auth uses your own external Clerk project on Render (not Replit-managed
+      # Clerk, which is bound to Replit's own domains). Get these from
+      # https://dashboard.clerk.com -> your app -> API Keys, and add
+      # https://<your-render-domain>.onrender.com to Clerk's allowed origins.
+      # `sync: false` means Render will prompt you to enter the value in the
+      # dashboard instead of storing it in this file.
+      - key: CLERK_SECRET_KEY
+        sync: false
+      - key: CLERK_PUBLISHABLE_KEY
+        sync: false
+      - key: VITE_CLERK_PUBLISHABLE_KEY
+        sync: false
 
 databases:
   - name: svenska-db
