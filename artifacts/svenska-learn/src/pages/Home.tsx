@@ -16,7 +16,9 @@ import {
   Gamepad2,
   ClipboardCheck,
   Languages,
-  AudioLines
+  AudioLines,
+  Users2,
+  UserCircle2
 } from "lucide-react";
 import { motion } from "framer-motion";
 import { 
@@ -179,10 +181,12 @@ export default function Home() {
                   </svg>
                 </div>
               </div>
-              <Button className="w-full gap-2 group font-medium" size="lg">
-                متابعة التعلم
-                <ChevronLeft className="w-4 h-4 transition-transform group-hover:-translate-x-1" />
-              </Button>
+              <Link href={recentLesson ? `/lessons/${recentLesson.id}` : "/lessons"} className="w-full">
+                <Button className="w-full gap-2 group font-medium" size="lg">
+                  متابعة التعلم
+                  <ChevronLeft className="w-4 h-4 transition-transform group-hover:-translate-x-1" />
+                </Button>
+              </Link>
             </div>
           ) : (
             <div className="bg-card border border-card-border rounded-2xl p-5 text-center text-muted-foreground">
@@ -237,12 +241,14 @@ export default function Home() {
             <Star className="w-5 h-5 text-primary" />
             استكشف
           </h2>
-          <div className="grid grid-cols-2 gap-3">
+          <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
             {[
               { href: "/pronunciation", label: "النطق", icon: AudioLines, color: "text-purple-500" },
               { href: "/games", label: "الألعاب", icon: Gamepad2, color: "text-emerald-500" },
               { href: "/exams", label: "الاختبارات", icon: ClipboardCheck, color: "text-orange-500" },
               { href: "/translator", label: "المترجم الفوري", icon: Languages, color: "text-blue-500" },
+              { href: "/community", label: "المجتمع", icon: Users2, color: "text-pink-500" },
+              { href: "/profile", label: "ملفي", icon: UserCircle2, color: "text-slate-500" },
             ].map((item) => {
               const Icon = item.icon;
               return (
@@ -373,9 +379,11 @@ export default function Home() {
                 <Clock className="w-3.5 h-3.5" />
                 تعلمت لمدة {formatDuration(userProgress?.totalMinutesLearned || 0)} حتى الآن
               </div>
-              <Button className="w-full h-14 text-lg font-bold rounded-xl shadow-lg shadow-primary/25 hover:shadow-primary/40 transition-all bg-gradient-to-r from-primary to-blue-600 border-0">
-                ابدأ التعلم الآن
-              </Button>
+              <Link href="/lessons" className="w-full">
+                <Button className="w-full h-14 text-lg font-bold rounded-xl shadow-lg shadow-primary/25 hover:shadow-primary/40 transition-all bg-gradient-to-r from-primary to-blue-600 border-0">
+                  ابدأ التعلم الآن
+                </Button>
+              </Link>
             </div>
           )}
         </div>

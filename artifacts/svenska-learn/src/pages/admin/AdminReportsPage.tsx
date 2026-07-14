@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { BarChart2, TrendingUp } from "lucide-react";
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid } from "recharts";
+import GameHeader from "@/components/GameHeader";
 
 const BASE = import.meta.env.BASE_URL.replace(/\/$/, "");
 
@@ -18,14 +19,7 @@ export default function AdminReportsPage() {
 
   return (
     <div className="min-h-[100dvh] w-full max-w-4xl mx-auto pb-24" dir="rtl">
-      <header className="sticky top-0 z-30 bg-background/95 backdrop-blur-md border-b border-border px-4 py-4 flex items-center gap-3">
-        <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center border border-primary/20">
-          <BarChart2 className="w-5 h-5 text-primary" />
-        </div>
-        <div>
-          <h1 className="text-lg font-bold text-foreground leading-tight">التقارير والإحصائيات العامة</h1>
-        </div>
-      </header>
+      <GameHeader title="التقارير والإحصائيات العامة" backHref="/admin" />
 
       <div className="p-4 flex flex-col gap-6">
         {!report ? (

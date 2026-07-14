@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { Link } from "wouter";
 import {
   Settings as SettingsIcon,
   Moon,
@@ -339,12 +340,30 @@ export default function SettingsPage() {
               <span className="font-semibold">حالة المزامنة</span>
               <span className="text-muted-foreground text-xs" dir="ltr">Last sync: {new Date().toLocaleTimeString('en-GB')}</span>
             </div>
-            <button
-              onClick={handleBackup}
+            <Link
+              href="/admin/backup"
               className="w-full flex items-center justify-center gap-2 py-3 mt-1 rounded-xl bg-primary text-primary-foreground font-semibold text-sm active:scale-[0.98] transition-transform"
             >
-              <HardDrive className="w-4 h-4" /> تصدير نسخة احتياطية (JSON)
-            </button>
+              <HardDrive className="w-4 h-4" /> عرض إعدادات النسخ الاحتياطي
+            </Link>
+          </div>
+        </section>
+
+        {/* Quick Links */}
+        <section className="bg-card border border-card-border rounded-2xl overflow-hidden">
+          <div className="p-4 border-b border-border flex items-center gap-3 bg-muted/20">
+            <SettingsIcon className="w-5 h-5 text-indigo-500" />
+            <h2 className="font-bold text-foreground">الإحصائيات والإعدادات</h2>
+          </div>
+          <div className="p-4 flex flex-col gap-2">
+            <Link href="/statistics" className="flex items-center justify-between p-3 rounded-xl bg-muted/40 hover:bg-muted transition-colors">
+              <span className="text-sm font-semibold text-foreground">الإحصائيات</span>
+              <span className="text-muted-foreground text-xs">←</span>
+            </Link>
+            <Link href="/profile" className="flex items-center justify-between p-3 rounded-xl bg-muted/40 hover:bg-muted transition-colors">
+              <span className="text-sm font-semibold text-foreground">الملف الشخصي</span>
+              <span className="text-muted-foreground text-xs">←</span>
+            </Link>
           </div>
         </section>
       </div>

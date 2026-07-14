@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { Link } from "wouter";
 import {
   Clock,
   BookMarked,
@@ -224,6 +225,25 @@ export default function StatisticsPage() {
                   />
                 </div>
               )}
+            </section>
+
+            {/* Quick links */}
+            <section className="bg-card border border-card-border rounded-2xl p-4">
+              <h3 className="text-sm font-bold text-foreground mb-3">روابط سريعة</h3>
+              <div className="grid grid-cols-1 gap-2">
+                <Link href="/profile" className="flex items-center justify-between p-3 rounded-xl bg-muted/40 hover:bg-muted transition-colors">
+                  <span className="text-sm font-semibold text-foreground">عرض الملف الشخصي</span>
+                  <span className="text-muted-foreground text-xs">←</span>
+                </Link>
+                <Link href="/exams" className="flex items-center justify-between p-3 rounded-xl bg-muted/40 hover:bg-muted transition-colors">
+                  <span className="text-sm font-semibold text-foreground">الذهاب إلى الاختبارات</span>
+                  <span className="text-muted-foreground text-xs">←</span>
+                </Link>
+                <Link href="/community/leaderboard" className="flex items-center justify-between p-3 rounded-xl bg-muted/40 hover:bg-muted transition-colors">
+                  <span className="text-sm font-semibold text-foreground">الترتيب العالمي</span>
+                  <span className="text-muted-foreground text-xs">←</span>
+                </Link>
+              </div>
             </section>
           </>
         )}

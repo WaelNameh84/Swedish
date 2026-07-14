@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { Link } from "wouter";
-import { Users2, BookOpen, BookMarked, MessageCircle, ClipboardCheck, Bot, BarChart2, HardDrive, Settings, Globe, Bell, Award } from "lucide-react";
+import { Users2, BookOpen, BookMarked, MessageCircle, ClipboardCheck, Bot, BarChart2, HardDrive, Settings, Globe, Bell, Award, Home } from "lucide-react";
 
 const BASE = import.meta.env.BASE_URL.replace(/\/$/, "");
 
@@ -18,7 +18,8 @@ export default function AdminDashboardPage() {
     { title: "المحادثات", value: data?.conversations ?? "-", icon: MessageCircle, link: "/admin/conversations", color: "text-purple-500" },
     { title: "الاختبارات", value: data?.exams ?? "-", icon: ClipboardCheck, link: "/admin/exams", color: "text-rose-500" },
     { title: "سجل الذكاء الاصطناعي", value: data?.aiHistory ?? "-", icon: Bot, link: "/admin/ai", color: "text-cyan-500" },
-    { title: "الإحصائيات", value: "عرض", icon: BarChart2, link: "/admin/reports", color: "text-indigo-500" },
+    { title: "الإحصائيات", value: "عرض", icon: BarChart2, link: "/statistics", color: "text-indigo-500" },
+    { title: "التقارير", value: "عرض", icon: BarChart2, link: "/admin/reports", color: "text-blue-600" },
     { title: "الإشعارات", value: data?.notifications ?? "-", icon: Bell, link: "/admin/settings", color: "text-yellow-500" },
     { title: "الشهادات", value: data?.certificates ?? "-", icon: Award, link: "/admin/exams", color: "text-indigo-500" }
   ];
@@ -26,6 +27,9 @@ export default function AdminDashboardPage() {
   return (
     <div className="min-h-[100dvh] w-full max-w-4xl mx-auto pb-24" dir="rtl">
       <header className="sticky top-0 z-30 bg-background/95 backdrop-blur-md border-b border-border px-4 py-4 flex items-center gap-3">
+        <Link href="/" className="w-9 h-9 rounded-full bg-muted flex items-center justify-center shrink-0">
+          <Home className="w-5 h-5" />
+        </Link>
         <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center border border-primary/20">
           <Settings className="w-5 h-5 text-primary" />
         </div>

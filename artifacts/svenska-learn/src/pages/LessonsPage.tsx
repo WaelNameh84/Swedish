@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useLocation } from "wouter";
+import { useLocation, Link } from "wouter";
 import { 
   BookOpen, 
   PenLine, 
@@ -172,11 +172,12 @@ export default function LessonsPage() {
                   const isCompleted = lesson.completionPercentage === 100;
 
                   return (
-                    <div
+                    <Link
                       key={lesson.id}
-                      onClick={() => !isLocked && navigate(`/lessons/${lesson.id}`)}
+                      href={!isLocked ? `/lessons/${lesson.id}` : undefined}
+                      onClick={(e) => { if (isLocked) e.preventDefault(); }}
                       className={cn(
-                        "relative bg-card border border-card-border rounded-2xl overflow-hidden transition-all duration-300",
+                        "relative bg-card border border-card-border rounded-2xl overflow-hidden transition-all duration-300 block",
                         !isLocked && "hover:border-primary/40 active:scale-[0.98] cursor-pointer shadow-sm hover:shadow-md",
                         isLocked && "opacity-70 grayscale-[0.3]"
                       )}
@@ -270,7 +271,7 @@ export default function LessonsPage() {
                           </div>
                         </div>
                       </div>
-                    </div>
+                    </Link>
                   );
                 })}
               </motion.div>
