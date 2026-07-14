@@ -17,6 +17,8 @@ import translateRouter from "./translate";
 import statisticsRouter from "./statistics";
 import achievementsRouter from "./achievements";
 import communityRouter from "./community";
+import adminRouter from "./admin";
+import userSettingsRouter from "./userSettings";
 
 const router: IRouter = Router();
 
@@ -38,5 +40,7 @@ router.use(translateRouter);
 router.use(statisticsRouter);
 router.use(achievementsRouter);
 router.use(communityRouter);
+router.use(adminRouter);
+router.use(userSettingsRouter);
 
 export default router;

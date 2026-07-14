@@ -57,6 +57,10 @@ import {
   Trophy,
   Share2,
   CheckCircle2,
+  LayoutDashboard,
+  BarChart2,
+  HardDrive,
+  Globe
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import {
@@ -69,6 +73,7 @@ import {
 
 const mainLinks = [
   { href: "/", label: "الرئيسية", icon: Home },
+  { href: "/admin", label: "لوحة الإدارة", icon: LayoutDashboard },
   { href: "/lessons", label: "الدروس", icon: BookOpen },
   { href: "/dictionary", label: "القاموس", icon: BookMarked },
   { href: "/verbs", label: "الأفعال", icon: Languages },
@@ -77,6 +82,20 @@ const mainLinks = [
   { href: "/statistics", label: "الإحصائيات", icon: BarChart3 },
   { href: "/profile", label: "الملف الشخصي", icon: UserCircle2 },
   { href: "/settings", label: "الإعدادات", icon: SettingsIcon },
+];
+
+export const adminTools = [
+  { href: "/admin/users", label: "المستخدمون", icon: Users2 },
+  { href: "/admin/languages", label: "اللغات", icon: Globe },
+  { href: "/admin/lessons", label: "الدروس", icon: BookOpen },
+  { href: "/admin/words", label: "الكلمات", icon: BookMarked },
+  { href: "/admin/conversations", label: "المحادثات", icon: MessageCircle },
+  { href: "/admin/exams", label: "الاختبارات", icon: ClipboardCheck },
+  { href: "/admin/ai", label: "الذكاء الاصطناعي", icon: Bot },
+  { href: "/admin/reports", label: "التقارير", icon: BarChart2 },
+  { href: "/statistics", label: "الإحصائيات", icon: BarChart3 },
+  { href: "/admin/backup", label: "النسخ الاحتياطي", icon: HardDrive },
+  { href: "/admin/settings", label: "الإعدادات", icon: SettingsIcon },
 ];
 
 export const communityTools = [
@@ -155,6 +174,7 @@ export default function AppSidebar() {
   const [examsOpen, setExamsOpen] = useState(location.startsWith("/exams"));
   const [translatorOpen, setTranslatorOpen] = useState(location.startsWith("/translator"));
   const [communityOpen, setCommunityOpen] = useState(location.startsWith("/community"));
+  const [adminOpen, setAdminOpen] = useState(location.startsWith("/admin"));
 
   const isActive = (href: string) =>
     location === href || (href !== "/" && location.startsWith(href));
@@ -200,6 +220,55 @@ export default function AppSidebar() {
               </Link>
             );
           })}
+
+          <button
+            onClick={() => setAdminOpen((v) => !v)}
+            className={cn(
+              "flex items-center gap-3 px-3 py-2.5 rounded-xl text-[15px] font-semibold transition-colors mt-2",
+              location.startsWith("/admin")
+                ? "bg-primary/10 text-primary"
+                : "text-foreground hover:bg-secondary"
+            )}
+          >
+            <LayoutDashboard className="w-[18px] h-[18px]" />
+            <span className="flex-1 text-right">الإدارة</span>
+            <ChevronDown
+              className={cn("w-4 h-4 transition-transform", adminOpen && "rotate-180")}
+            />
+          </button>
+
+          {adminOpen && (
+            <div className="flex flex-col gap-1 pr-4 border-r-2 border-primary/15 mr-[19px] mt-1">
+              <Link
+                href="/admin"
+                onClick={() => setOpen(false)}
+                className="flex items-center gap-2.5 px-3 py-2 rounded-lg text-sm text-muted-foreground hover:bg-secondary hover:text-foreground"
+              >
+                <LayoutDashboard className="w-4 h-4 shrink-0" />
+                لوحة الإدارة
+              </Link>
+              {adminTools.map((tool) => {
+                const Icon = tool.icon;
+                const active = location === tool.href;
+                return (
+                  <Link
+                    key={tool.href + tool.label}
+                    href={tool.href}
+                    onClick={() => setOpen(false)}
+                    className={cn(
+                      "flex items-center gap-2.5 px-3 py-2 rounded-lg text-sm transition-colors",
+                      active
+                        ? "bg-primary/10 text-primary font-semibold"
+                        : "text-muted-foreground hover:bg-secondary hover:text-foreground"
+                    )}
+                  >
+                    <Icon className="w-4 h-4 shrink-0" />
+                    {tool.label}
+                  </Link>
+                );
+              })}
+            </div>
+          )}
 
           <button
             onClick={() => setAiOpen((v) => !v)}

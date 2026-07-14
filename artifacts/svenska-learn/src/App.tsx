@@ -54,6 +54,17 @@ import LeaderboardPage from '@/pages/community/LeaderboardPage';
 import GroupsPage from '@/pages/community/GroupsPage';
 import ChallengesPage from '@/pages/community/ChallengesPage';
 import ShareAchievementsPage from '@/pages/community/ShareAchievementsPage';
+import AdminDashboardPage from '@/pages/admin/AdminDashboardPage';
+import AdminUsersPage from '@/pages/admin/AdminUsersPage';
+import AdminLessonsPage from '@/pages/admin/AdminLessonsPage';
+import AdminWordsPage from '@/pages/admin/AdminWordsPage';
+import AdminConversationsPage from '@/pages/admin/AdminConversationsPage';
+import AdminExamsPage from '@/pages/admin/AdminExamsPage';
+import AdminAIPage from '@/pages/admin/AdminAIPage';
+import AdminReportsPage from '@/pages/admin/AdminReportsPage';
+import AdminBackupPage from '@/pages/admin/AdminBackupPage';
+import AdminLanguagesPage from '@/pages/admin/AdminLanguagesPage';
+import AdminSettingsPage from '@/pages/admin/AdminSettingsPage';
 import BottomNav from '@/components/BottomNav';
 import AppSidebar from '@/components/AppSidebar';
 import VoiceTranslator from '@/components/VoiceTranslator';
@@ -118,6 +129,17 @@ function Router() {
       <Route path="/community/groups" component={GroupsPage} />
       <Route path="/community/challenges" component={ChallengesPage} />
       <Route path="/community/share" component={ShareAchievementsPage} />
+      <Route path="/admin" component={AdminDashboardPage} />
+      <Route path="/admin/users" component={AdminUsersPage} />
+      <Route path="/admin/lessons" component={AdminLessonsPage} />
+      <Route path="/admin/words" component={AdminWordsPage} />
+      <Route path="/admin/conversations" component={AdminConversationsPage} />
+      <Route path="/admin/exams" component={AdminExamsPage} />
+      <Route path="/admin/ai" component={AdminAIPage} />
+      <Route path="/admin/reports" component={AdminReportsPage} />
+      <Route path="/admin/backup" component={AdminBackupPage} />
+      <Route path="/admin/languages" component={AdminLanguagesPage} />
+      <Route path="/admin/settings" component={AdminSettingsPage} />
       <Route path="/stats" component={Home} />
       <Route component={NotFound} />
     </Switch>
