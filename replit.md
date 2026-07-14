@@ -1,6 +1,6 @@
-# [Project name]
+# Svenska — تعلم السويدية
 
-_Replace the heading above with the project's name, and this line with one sentence describing what this app does for users._
+تطبيق ويب لتعلم اللغة السويدية للناطقين بالعربية، يشمل دروساً، محادثات، مفردات يومية، وتدريب تفاعلي.
 
 ## Run & Operate
 

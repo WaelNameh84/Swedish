@@ -3,20 +3,33 @@ info:
   # Do not change the title, if the title changes, the import paths will be broken
   title: Api
   version: 0.1.0
-  description: API specification
+  description: Svenska - Swedish Language Learning App API
 servers:
   - url: /api
     description: Base API path
 tags:
   - name: health
     description: Health operations
+  - name: user
+    description: User progress and profile
+  - name: lessons
+    description: Lesson management
+  - name: words
+    description: Vocabulary management
+  - name: stats
+    description: Learning statistics
+  - name: challenges
+    description: Daily challenges
+  - name: conversations
+    description: Swedish conversation dialogues
+  - name: chat
+    description: Interactive chat practice
 paths:
   /healthz:
     get:
       operationId: healthCheck
       tags: [health]
       summary: Health check
-      description: Returns server health status
       responses:
         "200":
           description: Healthy
@@ -24,6 +37,188 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/HealthStatus"
+
+  /user/progress:
+    get:
+      operationId: getUserProgress
+      tags: [user]
+      summary: Get user learning progress
+      responses:
+        "200":
+          description: User progress data
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UserProgress"
+
+  /lessons/recent:
+    get:
+      operationId: getRecentLesson
+      tags: [lessons]
+      summary: Get most recently accessed lesson
+      responses:
+        "200":
+          description: Most recent lesson
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Lesson"
+
+  /words/new:
+    get:
+      operationId: getNewWords
+      tags: [words]
+      summary: Get recently learned vocabulary words
+      responses:
+        "200":
+          description: List of new words
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Word"
+
+  /words/daily:
+    get:
+      operationId: getDailyWords
+      tags: [words]
+      summary: Get today's rotating set of daily words
+      responses:
+        "200":
+          description: Today's daily words
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Word"
+
+  /stats:
+    get:
+      operationId: getStats
+      tags: [stats]
+      summary: Get overall learning statistics
+      responses:
+        "200":
+          description: Learning statistics
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/LearningStats"
+
+  /challenges/daily:
+    get:
+      operationId: getDailyChallenges
+      tags: [challenges]
+      summary: Get today's learning challenges
+      responses:
+        "200":
+          description: Today's challenges
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/DailyChallenge"
+
+  /challenges/{id}/complete:
+    post:
+      operationId: completeChallenge
+      tags: [challenges]
+      summary: Mark a challenge as completed
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Challenge marked completed
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/DailyChallenge"
+
+  /conversations:
+    get:
+      operationId: getConversations
+      tags: [conversations]
+      summary: Get all available conversation dialogues
+      responses:
+        "200":
+          description: List of conversations
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Conversation"
+
+  /conversations/{id}:
+    get:
+      operationId: getConversation
+      tags: [conversations]
+      summary: Get a specific conversation with all lines
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Conversation with lines
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ConversationDetail"
+
+  /chat/{sessionId}/messages:
+    get:
+      operationId: getChatMessages
+      tags: [chat]
+      summary: Get messages for a chat session
+      parameters:
+        - name: sessionId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Chat messages
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/ChatMessage"
+    post:
+      operationId: sendChatMessage
+      tags: [chat]
+      summary: Send a message and get a tutor response
+      parameters:
+        - name: sessionId
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ChatMessageInput"
+      responses:
+        "201":
+          description: Assistant reply
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ChatMessage"
+
 components:
   schemas:
     HealthStatus:
@@ -31,6 +226,186 @@ components:
       properties:
         status:
           type: string
-      required:
-        - status
+      required: [status]
 
+    UserProgress:
+      type: object
+      required: [level, levelName, xpPoints, xpToNextLevel, streakDays, totalDaysLearned, totalMinutesLearned, completionPercentage]
+      properties:
+        level:
+          type: integer
+        levelName:
+          type: string
+        xpPoints:
+          type: integer
+        xpToNextLevel:
+          type: integer
+        streakDays:
+          type: integer
+        totalDaysLearned:
+          type: integer
+        totalMinutesLearned:
+          type: integer
+        completionPercentage:
+          type: number
+
+    Lesson:
+      type: object
+      required: [id, title, titleSv, category, difficulty, completionPercentage]
+      properties:
+        id:
+          type: integer
+        title:
+          type: string
+        titleSv:
+          type: string
+        category:
+          type: string
+        difficulty:
+          type: string
+          enum: [beginner, intermediate, advanced]
+        completionPercentage:
+          type: integer
+        lastAccessedAt:
+          type: ["string", "null"]
+          format: date-time
+
+    Word:
+      type: object
+      required: [id, word, translation, phonetic, category]
+      properties:
+        id:
+          type: integer
+        word:
+          type: string
+        translation:
+          type: string
+        phonetic:
+          type: string
+        category:
+          type: string
+        isNew:
+          type: boolean
+        learnedAt:
+          type: ["string", "null"]
+          format: date-time
+
+    LearningStats:
+      type: object
+      required: [lessonsCompleted, wordsLearned, minutesThisWeek, weeklyGoalMinutes, weeklyProgress, accuracy]
+      properties:
+        lessonsCompleted:
+          type: integer
+        wordsLearned:
+          type: integer
+        minutesThisWeek:
+          type: integer
+        weeklyGoalMinutes:
+          type: integer
+        weeklyProgress:
+          type: number
+        accuracy:
+          type: number
+
+    DailyChallenge:
+      type: object
+      required: [id, title, description, type, xpReward, isCompleted]
+      properties:
+        id:
+          type: integer
+        title:
+          type: string
+        description:
+          type: string
+        type:
+          type: string
+          enum: [vocabulary, listening, speaking, grammar, reading]
+        xpReward:
+          type: integer
+        isCompleted:
+          type: boolean
+        expiresAt:
+          type: ["string", "null"]
+          format: date-time
+
+    Conversation:
+      type: object
+      required: [id, title, titleAr, scenario, category, difficulty]
+      properties:
+        id:
+          type: integer
+        title:
+          type: string
+        titleAr:
+          type: string
+        scenario:
+          type: string
+        category:
+          type: string
+        difficulty:
+          type: string
+          enum: [beginner, intermediate, advanced]
+
+    ConversationLine:
+      type: object
+      required: [id, orderIndex, speaker, speakerName, textSv, textAr]
+      properties:
+        id:
+          type: integer
+        orderIndex:
+          type: integer
+        speaker:
+          type: string
+        speakerName:
+          type: string
+        textSv:
+          type: string
+        textAr:
+          type: string
+        phonetic:
+          type: ["string", "null"]
+
+    ConversationDetail:
+      type: object
+      required: [id, title, titleAr, scenario, category, difficulty, lines]
+      properties:
+        id:
+          type: integer
+        title:
+          type: string
+        titleAr:
+          type: string
+        scenario:
+          type: string
+        category:
+          type: string
+        difficulty:
+          type: string
+        lines:
+          type: array
+          items:
+            $ref: "#/components/schemas/ConversationLine"
+
+    ChatMessage:
+      type: object
+      required: [id, sessionId, role, content, createdAt]
+      properties:
+        id:
+          type: integer
+        sessionId:
+          type: string
+        role:
+          type: string
+          enum: [user, assistant]
+        content:
+          type: string
+        createdAt:
+          type: string
+          format: date-time
+
+    ChatMessageInput:
+      type: object
+      required: [content]
+      properties:
+        content:
+          type: string
