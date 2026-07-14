@@ -6,7 +6,7 @@ services:
     region: frankfurt
     buildCommand: >-
       npm install -g pnpm@9 &&
-      pnpm install &&
+      pnpm install --no-frozen-lockfile &&
       BASE_PATH=/ pnpm --filter @workspace/svenska-learn run build &&
       pnpm --filter @workspace/api-server run build
     startCommand: >-
