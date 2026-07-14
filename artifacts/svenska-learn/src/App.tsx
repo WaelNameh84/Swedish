@@ -20,6 +20,13 @@ import AudioSpeedPage from '@/pages/audio/AudioSpeedPage';
 import AutoTranslatePage from '@/pages/audio/AutoTranslatePage';
 import BackgroundPlaybackPage from '@/pages/audio/BackgroundPlaybackPage';
 import OfflineDownloadPage from '@/pages/audio/OfflineDownloadPage';
+import PronunciationHubPage from '@/pages/PronunciationHubPage';
+import RecordVoicePage from '@/pages/pronunciation/RecordVoicePage';
+import ComparePronunciationPage from '@/pages/pronunciation/ComparePronunciationPage';
+import AIEvaluationPage from '@/pages/pronunciation/AIEvaluationPage';
+import ErrorCorrectionPage from '@/pages/pronunciation/ErrorCorrectionPage';
+import ArticulationPointsPage from '@/pages/pronunciation/ArticulationPointsPage';
+import PronunciationExercisesPage from '@/pages/pronunciation/PronunciationExercisesPage';
 import BottomNav from '@/components/BottomNav';
 import AppSidebar from '@/components/AppSidebar';
 import VoiceTranslator from '@/components/VoiceTranslator';
@@ -49,6 +56,13 @@ function Router() {
       <Route path="/audio-learning/translate" component={AutoTranslatePage} />
       <Route path="/audio-learning/background" component={BackgroundPlaybackPage} />
       <Route path="/audio-learning/offline" component={OfflineDownloadPage} />
+      <Route path="/pronunciation" component={PronunciationHubPage} />
+      <Route path="/pronunciation/record" component={RecordVoicePage} />
+      <Route path="/pronunciation/compare" component={ComparePronunciationPage} />
+      <Route path="/pronunciation/ai-evaluation" component={AIEvaluationPage} />
+      <Route path="/pronunciation/errors" component={ErrorCorrectionPage} />
+      <Route path="/pronunciation/articulation" component={ArticulationPointsPage} />
+      <Route path="/pronunciation/exercises" component={PronunciationExercisesPage} />
       <Route path="/stats" component={Home} />
       <Route component={NotFound} />
     </Switch>

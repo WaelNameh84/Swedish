@@ -27,6 +27,13 @@ import {
   Languages as TranslateIcon,
   Cast,
   DownloadCloud,
+  AudioLines,
+  Mic2,
+  GitCompare,
+  BadgeCheck,
+  AlertTriangle,
+  Waves,
+  Dumbbell,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import {
@@ -68,11 +75,21 @@ export const audioLearningTools = [
   { href: "/audio-learning/offline", label: "تنزيل للاستماع بدون إنترنت", icon: DownloadCloud },
 ];
 
+export const pronunciationTools = [
+  { href: "/pronunciation/record", label: "تسجيل صوتك", icon: Mic2 },
+  { href: "/pronunciation/compare", label: "مقارنة النطق", icon: GitCompare },
+  { href: "/pronunciation/ai-evaluation", label: "تقييم AI", icon: BadgeCheck },
+  { href: "/pronunciation/errors", label: "تصحيح الأخطاء", icon: AlertTriangle },
+  { href: "/pronunciation/articulation", label: "مخارج الحروف", icon: Waves },
+  { href: "/pronunciation/exercises", label: "تمارين النطق", icon: Dumbbell },
+];
+
 export default function AppSidebar() {
   const [location] = useLocation();
   const [open, setOpen] = useState(false);
   const [aiOpen, setAiOpen] = useState(location.startsWith("/ai-teacher"));
   const [audioOpen, setAudioOpen] = useState(location.startsWith("/audio-learning"));
+  const [pronOpen, setPronOpen] = useState(location.startsWith("/pronunciation"));
 
   const isActive = (href: string) =>
     location === href || (href !== "/" && location.startsWith(href));
@@ -179,6 +196,47 @@ export default function AppSidebar() {
           {audioOpen && (
             <div className="flex flex-col gap-1 pr-4 border-r-2 border-primary/15 mr-[19px] mt-1">
               {audioLearningTools.map((tool) => {
+                const Icon = tool.icon;
+                const active = location === tool.href;
+                return (
+                  <Link
+                    key={tool.href + tool.label}
+                    href={tool.href}
+                    onClick={() => setOpen(false)}
+                    className={cn(
+                      "flex items-center gap-2.5 px-3 py-2 rounded-lg text-sm transition-colors",
+                      active
+                        ? "bg-primary/10 text-primary font-semibold"
+                        : "text-muted-foreground hover:bg-secondary hover:text-foreground"
+                    )}
+                  >
+                    <Icon className="w-4 h-4 shrink-0" />
+                    {tool.label}
+                  </Link>
+                );
+              })}
+            </div>
+          )}
+
+          <button
+            onClick={() => setPronOpen((v) => !v)}
+            className={cn(
+              "flex items-center gap-3 px-3 py-2.5 rounded-xl text-[15px] font-semibold transition-colors mt-1",
+              location.startsWith("/pronunciation")
+                ? "bg-primary/10 text-primary"
+                : "text-foreground hover:bg-secondary"
+            )}
+          >
+            <AudioLines className="w-[18px] h-[18px]" />
+            <span className="flex-1 text-right">النطق</span>
+            <ChevronDown
+              className={cn("w-4 h-4 transition-transform", pronOpen && "rotate-180")}
+            />
+          </button>
+
+          {pronOpen && (
+            <div className="flex flex-col gap-1 pr-4 border-r-2 border-primary/15 mr-[19px] mt-1">
+              {pronunciationTools.map((tool) => {
                 const Icon = tool.icon;
                 const active = location === tool.href;
                 return (
