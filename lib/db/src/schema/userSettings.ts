@@ -4,6 +4,7 @@ import { z } from "zod/v4";
 
 export const userSettingsTable = pgTable("user_settings", {
   id: serial("id").primaryKey(),
+  userId: text("user_id").notNull().unique(),
   // UI
   appLanguage: text("app_language").notNull().default("ar"),
   darkMode: text("dark_mode").notNull().default("system"), // "light" | "dark" | "system"

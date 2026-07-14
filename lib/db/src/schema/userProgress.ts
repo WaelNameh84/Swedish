@@ -4,6 +4,7 @@ import { z } from "zod/v4";
 
 export const userProgressTable = pgTable("user_progress", {
   id: serial("id").primaryKey(),
+  userId: text("user_id").notNull().unique(),
   level: integer("level").notNull().default(1),
   levelName: text("level_name").notNull().default("Nybörjare"),
   xpPoints: integer("xp_points").notNull().default(0),

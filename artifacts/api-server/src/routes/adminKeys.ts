@@ -2,7 +2,7 @@ import { Router } from "express";
 import OpenAI from "openai";
 import { db } from "@workspace/db";
 import { userSettingsTable } from "@workspace/db";
-import { sql } from "drizzle-orm";
+import { sql, eq } from "drizzle-orm";
 import { requireAdmin } from "../middlewares/adminAuth";
 
 const router = Router();
@@ -10,10 +10,21 @@ const router = Router();
 const KEY_FIELDS = ["openaiApiKey", "geminiApiKey", "imageGenApiKey", "translationApiKey"] as const;
 type KeyField = (typeof KEY_FIELDS)[number];
 
+// AI provider keys are a single app-wide row, not tied to any one learner
+// account, so they use a fixed sentinel userId rather than a real Clerk id.
+const GLOBAL_SETTINGS_USER_ID = "__admin_global__";
+
 async function getOrCreateSettings() {
-  const existing = await db.select().from(userSettingsTable).limit(1);
+  const existing = await db
+    .select()
+    .from(userSettingsTable)
+    .where(eq(userSettingsTable.userId, GLOBAL_SETTINGS_USER_ID))
+    .limit(1);
   if (existing.length > 0) return existing[0];
-  const [created] = await db.insert(userSettingsTable).values({}).returning();
+  const [created] = await db
+    .insert(userSettingsTable)
+    .values({ userId: GLOBAL_SETTINGS_USER_ID })
+    .returning();
   return created;
 }
 

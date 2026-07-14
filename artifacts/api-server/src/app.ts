@@ -5,8 +5,15 @@ import pinoHttp from "pino-http";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { existsSync } from "node:fs";
+import { clerkMiddleware } from "@clerk/express";
+import { publishableKeyFromHost } from "@clerk/shared/keys";
 import router from "./routes";
 import { logger } from "./lib/logger";
+import {
+  CLERK_PROXY_PATH,
+  clerkProxyMiddleware,
+  getClerkProxyHost,
+} from "./middlewares/clerkProxyMiddleware";
 
 const app: Express = express();
 
@@ -30,6 +37,9 @@ app.use(
   }),
 );
 
+// Clerk proxy must be mounted before body parsers (it streams raw bytes).
+app.use(CLERK_PROXY_PATH, clerkProxyMiddleware());
+
 app.use(
   cors({
     origin: process.env.NODE_ENV === "production" ? false : true,
@@ -39,6 +49,17 @@ app.use(
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
+
+// Resolve the publishable key from the incoming request host so the same
+// server can serve multiple Clerk custom domains.
+app.use(
+  clerkMiddleware((req) => ({
+    publishableKey: publishableKeyFromHost(
+      getClerkProxyHost(req) ?? "",
+      process.env.CLERK_PUBLISHABLE_KEY,
+    ),
+  })),
+);
 
 // API routes always take priority
 app.use("/api", router);

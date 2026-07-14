@@ -2,8 +2,14 @@ import { Router } from "express";
 import { db } from "@workspace/db";
 import { userProgressTable } from "@workspace/db";
 import { eq } from "drizzle-orm";
+import { requireAuth } from "../middlewares/auth";
+import { getOrCreateUserProgress } from "../lib/userProvisioning";
 
 const router = Router();
+// Scoped to this router's own path prefix — see statistics.ts for why an
+// unscoped router.use(requireAuth) would break other routers sharing the
+// same mount point.
+router.use("/community", requireAuth);
 
 // Deterministic demo/showcase data — clearly not real accounts. Combined with
 // the single real learner's live progress so the current user always sees an
@@ -46,15 +52,14 @@ function startOfWeek(): Date {
   return d;
 }
 
-async function getProgress() {
-  const rows = await db.select().from(userProgressTable).limit(1);
-  return rows[0];
+async function getProgress(userId: string) {
+  return getOrCreateUserProgress(userId);
 }
 
 // GET /community/leaderboard
-router.get("/community/leaderboard", async (_req, res) => {
+router.get("/community/leaderboard", async (req, res) => {
   try {
-    const progress = await getProgress();
+    const progress = await getProgress(req.userId!);
     const you = {
       id: "you",
       name: progress?.displayName || "أنت",
@@ -68,20 +73,20 @@ router.get("/community/leaderboard", async (_req, res) => {
     const ranked = all.map((row, idx) => ({ ...row, rank: idx + 1 }));
     res.json({ leaderboard: ranked, yourRank: ranked.find((r) => r.isYou)?.rank ?? null, isDemoData: true });
   } catch (err) {
-    _req.log.error({ err }, "Failed to build leaderboard");
+    req.log.error({ err }, "Failed to build leaderboard");
     res.status(500).json({ error: "Internal server error" });
   }
 });
 
 // GET /community/friends
-router.get("/community/friends", async (_req, res) => {
+router.get("/community/friends", async (req, res) => {
   try {
-    const progress = await getProgress();
+    const progress = await getProgress(req.userId!);
     const friendIds = new Set(progress?.friendIds ?? []);
     const friends = DEMO_LEARNERS.map((l) => ({ ...l, isFriend: friendIds.has(l.id) }));
     res.json({ friends, isDemoData: true });
   } catch (err) {
-    _req.log.error({ err }, "Failed to list friends");
+    req.log.error({ err }, "Failed to list friends");
     res.status(500).json({ error: "Internal server error" });
   }
 });
@@ -93,7 +98,7 @@ router.post("/community/friends/:id/toggle", async (req, res) => {
     if (!DEMO_LEARNERS.some((l) => l.id === id)) {
       return res.status(404).json({ error: "غير موجود" });
     }
-    const progress = await getProgress();
+    const progress = await getProgress(req.userId!);
     if (!progress) return res.status(404).json({ error: "لا يوجد مستخدم" });
     const current = new Set(progress.friendIds ?? []);
     const nowFriend = !current.has(id);
@@ -111,14 +116,14 @@ router.post("/community/friends/:id/toggle", async (req, res) => {
 });
 
 // GET /community/groups
-router.get("/community/groups", async (_req, res) => {
+router.get("/community/groups", async (req, res) => {
   try {
-    const progress = await getProgress();
+    const progress = await getProgress(req.userId!);
     const joined = new Set(progress?.joinedGroupIds ?? []);
     const groups = DEMO_GROUPS.map((g) => ({ ...g, isJoined: joined.has(g.id) }));
     res.json({ groups, isDemoData: true });
   } catch (err) {
-    _req.log.error({ err }, "Failed to list groups");
+    req.log.error({ err }, "Failed to list groups");
     res.status(500).json({ error: "Internal server error" });
   }
 });
@@ -130,7 +135,7 @@ router.post("/community/groups/:id/toggle", async (req, res) => {
     if (!DEMO_GROUPS.some((g) => g.id === id)) {
       return res.status(404).json({ error: "غير موجود" });
     }
-    const progress = await getProgress();
+    const progress = await getProgress(req.userId!);
     if (!progress) return res.status(404).json({ error: "لا يوجد مستخدم" });
     const current = new Set(progress.joinedGroupIds ?? []);
     const nowJoined = !current.has(id);
@@ -148,9 +153,9 @@ router.post("/community/groups/:id/toggle", async (req, res) => {
 });
 
 // GET /community/competitions
-router.get("/community/competitions", async (_req, res) => {
+router.get("/community/competitions", async (req, res) => {
   try {
-    const progress = await getProgress();
+    const progress = await getProgress(req.userId!);
     const week = startOfWeek();
     const competitions = DEMO_COMPETITIONS.map((c) => {
       const endsAt = new Date(week);
@@ -163,7 +168,7 @@ router.get("/community/competitions", async (_req, res) => {
     });
     res.json({ competitions, isDemoData: true });
   } catch (err) {
-    _req.log.error({ err }, "Failed to list competitions");
+    req.log.error({ err }, "Failed to list competitions");
     res.status(500).json({ error: "Internal server error" });
   }
 });

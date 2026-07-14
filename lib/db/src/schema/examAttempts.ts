@@ -4,6 +4,7 @@ import { z } from "zod/v4";
 
 export const examAttemptsTable = pgTable("exam_attempts", {
   id: serial("id").primaryKey(),
+  userId: text("user_id").notNull(),
   examType: text("exam_type").notNull(), // daily | weekly | monthly | level
   level: text("level"), // A1..C2, null for daily/weekly/monthly
   score: integer("score").notNull(),

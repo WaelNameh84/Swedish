@@ -16,3 +16,4 @@ export * from "./aiHistory";
 export * from "./favorites";
 export * from "./notifications";
 export * from "./userSettings";
+export * from "./webauthnCredentials";

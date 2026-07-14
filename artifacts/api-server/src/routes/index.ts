@@ -21,6 +21,7 @@ import adminRouter from "./admin";
 import adminAuthRouter from "./adminAuth";
 import adminKeysRouter from "./adminKeys";
 import userSettingsRouter from "./userSettings";
+import webauthnRouter from "./webauthn";
 
 const router: IRouter = Router();
 
@@ -46,5 +47,6 @@ router.use(adminRouter);
 router.use(adminAuthRouter);
 router.use(adminKeysRouter);
 router.use(userSettingsRouter);
+router.use(webauthnRouter);
 
 export default router;

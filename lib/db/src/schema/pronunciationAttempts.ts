@@ -4,6 +4,7 @@ import { z } from "zod/v4";
 
 export const pronunciationAttemptsTable = pgTable("pronunciation_attempts", {
   id: serial("id").primaryKey(),
+  userId: text("user_id").notNull(),
   targetText: text("target_text").notNull(),
   score: integer("score").notNull(),
   feedback: text("feedback"),

@@ -1,10 +1,15 @@
 import { Router } from "express";
 import { db } from "@workspace/db";
 import { chatMessagesTable } from "@workspace/db";
-import { eq, asc } from "drizzle-orm";
+import { eq, and, asc } from "drizzle-orm";
 import { getOpenAI } from "../lib/openai";
+import { requireAuth } from "../middlewares/auth";
 
 const router = Router();
+// Scoped to this router's own path prefix — see statistics.ts for why an
+// unscoped router.use(requireAuth) would break other routers sharing the
+// same mount point.
+router.use("/chat", requireAuth);
 
 const TUTOR_SYSTEM_PROMPT = `أنت "المعلم الذكي"، مساعد ودود لتعليم اللغة السويدية للناطقين بالعربية داخل تطبيق تعلم لغة. تحدّث بالعربية مع إبراز الكلمات والجمل السويدية بوضوح. إذا كتب المستخدم بالسويدية، صحّح أخطاءه بلطف وردّ عليه محادثةً، وإذا سأل بالعربية عن قاعدة أو كلمة اشرحها ببساطة مع أمثلة. اجعل ردودك قصيرة ومشجعة (3-5 أسطر) واستخدم رموزاً تعبيرية بشكل معتدل.`;
 
@@ -116,7 +121,7 @@ router.get("/chat/:sessionId/messages", async (req, res) => {
     const messages = await db
       .select()
       .from(chatMessagesTable)
-      .where(eq(chatMessagesTable.sessionId, sessionId))
+      .where(and(eq(chatMessagesTable.sessionId, sessionId), eq(chatMessagesTable.userId, req.userId!)))
       .orderBy(asc(chatMessagesTable.createdAt));
 
     res.json(
@@ -145,6 +150,7 @@ router.post("/chat/:sessionId/messages", async (req, res) => {
 
     // Save user message
     await db.insert(chatMessagesTable).values({
+      userId: req.userId!,
       sessionId,
       role: "user",
       content: content.trim(),
@@ -154,7 +160,7 @@ router.post("/chat/:sessionId/messages", async (req, res) => {
     const history = await db
       .select()
       .from(chatMessagesTable)
-      .where(eq(chatMessagesTable.sessionId, sessionId))
+      .where(and(eq(chatMessagesTable.sessionId, sessionId), eq(chatMessagesTable.userId, req.userId!)))
       .orderBy(asc(chatMessagesTable.createdAt));
 
     const aiReply = await generateAITutorResponse(content.trim(), history).catch((err) => {
@@ -164,7 +170,7 @@ router.post("/chat/:sessionId/messages", async (req, res) => {
     const replyContent = aiReply ?? generateTutorResponse(content.trim());
     const [reply] = await db
       .insert(chatMessagesTable)
-      .values({ sessionId, role: "assistant", content: replyContent })
+      .values({ userId: req.userId!, sessionId, role: "assistant", content: replyContent })
       .returning();
 
     res.status(201).json({

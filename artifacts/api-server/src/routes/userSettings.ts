@@ -2,15 +2,10 @@ import { Router } from "express";
 import { db } from "@workspace/db";
 import { userSettingsTable } from "@workspace/db";
 import { sql } from "drizzle-orm";
+import { requireAuth } from "../middlewares/auth";
+import { getOrCreateUserSettings } from "../lib/userProvisioning";
 
 const router = Router();
-
-async function getOrCreateSettings() {
-  const existing = await db.select().from(userSettingsTable).limit(1);
-  if (existing.length > 0) return existing[0];
-  const [created] = await db.insert(userSettingsTable).values({}).returning();
-  return created;
-}
 
 // Fields intentionally excluded from this public endpoint: geminiApiKey,
 // openaiApiKey, imageGenApiKey, translationApiKey. Those are AI provider
@@ -19,9 +14,9 @@ async function getOrCreateSettings() {
 // set them here.
 
 // GET /settings/user
-router.get("/settings/user", async (_req, res) => {
+router.get("/settings/user", requireAuth, async (req, res) => {
   try {
-    const settings = await getOrCreateSettings();
+    const settings = await getOrCreateUserSettings(req.userId!);
     const { geminiApiKey, openaiApiKey, imageGenApiKey, translationApiKey, ...safeSettings } = settings;
     res.json(safeSettings);
   } catch (err) {
@@ -30,9 +25,9 @@ router.get("/settings/user", async (_req, res) => {
 });
 
 // PATCH /settings/user — partial update
-router.patch("/settings/user", async (req, res) => {
+router.patch("/settings/user", requireAuth, async (req, res) => {
   try {
-    const existing = await getOrCreateSettings();
+    const existing = await getOrCreateUserSettings(req.userId!);
     const allowed = [
       "appLanguage", "darkMode",
       "notificationsEnabled", "dailyReminderEnabled", "reminderTime",

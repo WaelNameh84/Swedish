@@ -8,8 +8,15 @@ import {
   dictionaryTable,
 } from "@workspace/db";
 import { eq, count, sql, desc, gte } from "drizzle-orm";
+import { requireAuth } from "../middlewares/auth";
+import { getOrCreateUserProgress } from "../lib/userProvisioning";
 
 const router = Router();
+// Scoped to this router's own path prefix — this router is mounted at the
+// shared root, so an unscoped router.use(requireAuth) would intercept every
+// request that flows through the shared router chain (including unrelated
+// public routes like /webauthn/login-options mounted later).
+router.use("/statistics", requireAuth);
 
 function pronunciationLevelLabel(avg: number, total: number): string {
   if (total === 0) return "لم يبدأ التقييم بعد";
@@ -19,26 +26,28 @@ function pronunciationLevelLabel(avg: number, total: number): string {
 }
 
 // GET /statistics/overview
-router.get("/statistics/overview", async (_req, res) => {
+router.get("/statistics/overview", async (req, res) => {
   try {
-    const [progressRows, wordRows, examAgg, pronAgg] = await Promise.all([
-      db.select().from(userProgressTable).limit(1),
+    const userId = req.userId!;
+    const [progress, wordRows, examAgg, pronAgg] = await Promise.all([
+      getOrCreateUserProgress(userId),
       db.select({ count: count() }).from(wordsTable).where(eq(wordsTable.isNew, false)),
       db
         .select({
           avg: sql<number>`coalesce(avg(${examAttemptsTable.percentage}), 0)`,
           total: sql<number>`count(*)`,
         })
-        .from(examAttemptsTable),
+        .from(examAttemptsTable)
+        .where(eq(examAttemptsTable.userId, userId)),
       db
         .select({
           avg: sql<number>`coalesce(avg(${pronunciationAttemptsTable.score}), 0)`,
           total: sql<number>`count(*)`,
         })
-        .from(pronunciationAttemptsTable),
+        .from(pronunciationAttemptsTable)
+        .where(eq(pronunciationAttemptsTable.userId, userId)),
     ]);
 
-    const progress = progressRows[0];
     const wordsLearned = wordRows[0]?.count ?? 0;
     const examAvg = Math.round(Number(examAgg[0]?.avg ?? 0));
     const examTotal = Number(examAgg[0]?.total ?? 0);
@@ -60,17 +69,18 @@ router.get("/statistics/overview", async (_req, res) => {
       levelName: progress?.levelName ?? "",
     });
   } catch (err) {
-    _req.log.error({ err }, "Failed to build statistics overview");
+    req.log.error({ err }, "Failed to build statistics overview");
     res.status(500).json({ error: "Internal server error" });
   }
 });
 
 // GET /statistics/charts
-router.get("/statistics/charts", async (_req, res) => {
+router.get("/statistics/charts", async (req, res) => {
   try {
+    const userId = req.userId!;
     const [examRows, pronRows, levelRows] = await Promise.all([
-      db.select().from(examAttemptsTable).orderBy(desc(examAttemptsTable.createdAt)).limit(60),
-      db.select().from(pronunciationAttemptsTable).orderBy(desc(pronunciationAttemptsTable.createdAt)).limit(60),
+      db.select().from(examAttemptsTable).where(eq(examAttemptsTable.userId, userId)).orderBy(desc(examAttemptsTable.createdAt)).limit(60),
+      db.select().from(pronunciationAttemptsTable).where(eq(pronunciationAttemptsTable.userId, userId)).orderBy(desc(pronunciationAttemptsTable.createdAt)).limit(60),
       db
         .select({ level: dictionaryTable.level, count: count() })
         .from(dictionaryTable)
@@ -121,14 +131,15 @@ router.get("/statistics/charts", async (_req, res) => {
 
     res.json({ examTimeline, pronunciationTimeline, wordsByLevel, activityCalendar: days });
   } catch (err) {
-    _req.log.error({ err }, "Failed to build statistics charts");
+    req.log.error({ err }, "Failed to build statistics charts");
     res.status(500).json({ error: "Internal server error" });
   }
 });
 
 // GET /statistics/comparison
-router.get("/statistics/comparison", async (_req, res) => {
+router.get("/statistics/comparison", async (req, res) => {
   try {
+    const userId = req.userId!;
     const now = new Date();
     const startOfThisWeek = new Date(now);
     startOfThisWeek.setDate(now.getDate() - now.getDay());
@@ -140,8 +151,8 @@ router.get("/statistics/comparison", async (_req, res) => {
     const startOfLastMonth = new Date(now.getFullYear(), now.getMonth() - 1, 1);
 
     const [allExams, allPron] = await Promise.all([
-      db.select().from(examAttemptsTable),
-      db.select().from(pronunciationAttemptsTable),
+      db.select().from(examAttemptsTable).where(eq(examAttemptsTable.userId, userId)),
+      db.select().from(pronunciationAttemptsTable).where(eq(pronunciationAttemptsTable.userId, userId)),
     ]);
 
     function bucket<T extends { createdAt: Date | null }>(rows: T[], start: Date, end?: Date) {
@@ -178,7 +189,7 @@ router.get("/statistics/comparison", async (_req, res) => {
       },
     });
   } catch (err) {
-    _req.log.error({ err }, "Failed to build statistics comparison");
+    req.log.error({ err }, "Failed to build statistics comparison");
     res.status(500).json({ error: "Internal server error" });
   }
 });

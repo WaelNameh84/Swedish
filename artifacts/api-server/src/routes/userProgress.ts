@@ -7,18 +7,16 @@ import {
   pronunciationAttemptsTable,
   lessonsTable,
 } from "@workspace/db";
-import { eq, count, sql } from "drizzle-orm";
+import { eq, count, sql, and } from "drizzle-orm";
 import { computeAchievements } from "../lib/achievements";
+import { requireAuth } from "../middlewares/auth";
+import { getOrCreateUserProgress } from "../lib/userProvisioning";
 
 const router = Router();
 
-router.get("/user/progress", async (req, res) => {
+router.get("/user/progress", requireAuth, async (req, res) => {
   try {
-    const rows = await db.select().from(userProgressTable).limit(1);
-    if (rows.length === 0) {
-      return res.status(404).json({ error: "User progress not found" });
-    }
-    const row = rows[0];
+    const row = await getOrCreateUserProgress(req.userId!);
     res.json({
       level: row.level,
       levelName: row.levelName,
@@ -37,24 +35,23 @@ router.get("/user/progress", async (req, res) => {
 
 // GET /user/profile — aggregated profile view (avatar, level, achievements
 // summary, certificates, languages) for the Profile section.
-router.get("/user/profile", async (req, res) => {
+router.get("/user/profile", requireAuth, async (req, res) => {
   try {
-    const rows = await db.select().from(userProgressTable).limit(1);
-    if (rows.length === 0) {
-      return res.status(404).json({ error: "User progress not found" });
-    }
-    const progress = rows[0];
+    const userId = req.userId!;
+    const progress = await getOrCreateUserProgress(userId);
 
     const [wordRows, lessonRows, examAgg, pronAgg, examAll] = await Promise.all([
       db.select({ count: count() }).from(wordsTable).where(eq(wordsTable.isNew, false)),
       db.select({ count: count() }).from(lessonsTable).where(eq(lessonsTable.completionPercentage, 100)),
       db
         .select({ avg: sql<number>`coalesce(avg(${examAttemptsTable.percentage}), 0)`, total: sql<number>`count(*)` })
-        .from(examAttemptsTable),
+        .from(examAttemptsTable)
+        .where(eq(examAttemptsTable.userId, userId)),
       db
         .select({ avg: sql<number>`coalesce(avg(${pronunciationAttemptsTable.score}), 0)`, total: sql<number>`count(*)` })
-        .from(pronunciationAttemptsTable),
-      db.select().from(examAttemptsTable),
+        .from(pronunciationAttemptsTable)
+        .where(eq(pronunciationAttemptsTable.userId, userId)),
+      db.select().from(examAttemptsTable).where(eq(examAttemptsTable.userId, userId)),
     ]);
 
     const certifiedLevels: Record<string, { percentage: number; date: string }> = {};
@@ -100,18 +97,15 @@ router.get("/user/profile", async (req, res) => {
   }
 });
 
-// PATCH /user/profile — update avatar/display name (single implicit user)
-router.patch("/user/profile", async (req, res) => {
+// PATCH /user/profile — update avatar/display name for the signed-in user
+router.patch("/user/profile", requireAuth, async (req, res) => {
   try {
     const { displayName, avatarEmoji, avatarColor } = (req.body ?? {}) as {
       displayName?: string;
       avatarEmoji?: string;
       avatarColor?: string;
     };
-    const rows = await db.select().from(userProgressTable).limit(1);
-    if (rows.length === 0) {
-      return res.status(404).json({ error: "User progress not found" });
-    }
+    const progress = await getOrCreateUserProgress(req.userId!);
     const update: Record<string, unknown> = {};
     if (typeof displayName === "string" && displayName.trim()) update.displayName = displayName.trim().slice(0, 40);
     if (typeof avatarEmoji === "string" && avatarEmoji.trim()) update.avatarEmoji = avatarEmoji.trim();
@@ -124,7 +118,7 @@ router.patch("/user/profile", async (req, res) => {
     const [updated] = await db
       .update(userProgressTable)
       .set(update)
-      .where(eq(userProgressTable.id, rows[0].id))
+      .where(eq(userProgressTable.id, progress.id))
       .returning();
 
     res.json({

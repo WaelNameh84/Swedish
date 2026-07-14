@@ -1,7 +1,8 @@
 import { Router } from "express";
 import { db } from "@workspace/db";
 import { dictionaryTable, examAttemptsTable } from "@workspace/db";
-import { eq, sql, desc } from "drizzle-orm";
+import { eq, and, sql, desc } from "drizzle-orm";
+import { requireAuth } from "../middlewares/auth";
 
 const router = Router();
 
@@ -108,7 +109,7 @@ router.get("/exams/questions", async (req, res) => {
 });
 
 // POST /exams/attempts
-router.post("/exams/attempts", async (req, res) => {
+router.post("/exams/attempts", requireAuth, async (req, res) => {
   try {
     const { examType, level, score, total, durationSeconds, details } = req.body ?? {};
     if (!examType || typeof score !== "number" || typeof total !== "number" || total <= 0) {
@@ -120,6 +121,7 @@ router.post("/exams/attempts", async (req, res) => {
     const [row] = await db
       .insert(examAttemptsTable)
       .values({
+        userId: req.userId!,
         examType,
         level: level ?? null,
         score,
@@ -139,12 +141,13 @@ router.post("/exams/attempts", async (req, res) => {
 });
 
 // GET /exams/attempts?limit=20&examType=
-router.get("/exams/attempts", async (req, res) => {
+router.get("/exams/attempts", requireAuth, async (req, res) => {
   try {
     const limit = Math.min(Number(req.query.limit) || 20, 100);
     const rows = await db
       .select()
       .from(examAttemptsTable)
+      .where(eq(examAttemptsTable.userId, req.userId!))
       .orderBy(desc(examAttemptsTable.createdAt))
       .limit(limit);
     res.json(rows);
@@ -155,11 +158,12 @@ router.get("/exams/attempts", async (req, res) => {
 });
 
 // GET /exams/report — aggregated performance report + certified levels
-router.get("/exams/report", async (_req, res) => {
+router.get("/exams/report", requireAuth, async (req, res) => {
   try {
     const all = await db
       .select()
       .from(examAttemptsTable)
+      .where(eq(examAttemptsTable.userId, req.userId!))
       .orderBy(desc(examAttemptsTable.createdAt));
 
     const totalAttempts = all.length;
@@ -211,7 +215,7 @@ router.get("/exams/report", async (_req, res) => {
       })),
     });
   } catch (err) {
-    _req.log.error({ err }, "Failed to build performance report");
+    req.log.error({ err }, "Failed to build performance report");
     res.status(500).json({ error: "Internal server error" });
   }
 });

@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { Link } from "wouter";
+import { useClerk, useUser } from "@clerk/react";
 import {
   Settings as SettingsIcon,
   Moon,
@@ -14,18 +15,109 @@ import {
   Globe,
   CloudCog,
   Sparkles,
+  Fingerprint,
+  Trash2,
+  LogOut,
 } from "lucide-react";
 import { Switch } from "@/components/ui/switch";
 import { useAudioSettings } from "@/lib/audioSettings";
 import { listVoicesForLang, speak } from "@/lib/speech";
+import {
+  biometricSupported,
+  registerBiometric,
+  getBiometricStatus,
+  removeBiometricDevice,
+} from "@/lib/biometric";
 
 const BASE = import.meta.env.BASE_URL.replace(/\/$/, "");
+const basePath = import.meta.env.BASE_URL.replace(/\/$/, "");
+
+function BiometricSection() {
+  const { signOut } = useClerk();
+  const { user } = useUser();
+  const [supported, setSupported] = useState(false);
+  const [devices, setDevices] = useState<{ id: number; label: string; createdAt: string }[]>([]);
+  const [busy, setBusy] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  const refresh = () => getBiometricStatus().then((s) => setDevices(s.devices));
+
+  useEffect(() => {
+    setSupported(biometricSupported());
+    refresh();
+  }, []);
+
+  const handleEnable = async () => {
+    setBusy(true);
+    setError(null);
+    try {
+      await registerBiometric(navigator.userAgent.includes("Mobile") ? "هذا الهاتف" : "هذا الجهاز");
+      await refresh();
+    } catch (e: any) {
+      setError(e?.message || "تعذر تفعيل الدخول بالبصمة");
+    } finally {
+      setBusy(false);
+    }
+  };
+
+  const handleRemove = async (id: number) => {
+    setBusy(true);
+    try {
+      await removeBiometricDevice(id);
+      await refresh();
+    } finally {
+      setBusy(false);
+    }
+  };
+
+  if (!supported) return null;
+
+  return (
+    <section className="bg-card border border-card-border rounded-2xl overflow-hidden">
+      <div className="p-4 border-b border-border flex items-center gap-3 bg-muted/20">
+        <Fingerprint className="w-5 h-5 text-primary" />
+        <h2 className="font-bold text-foreground">الدخول بالبصمة</h2>
+      </div>
+      <div className="p-4 flex flex-col gap-3">
+        <p className="text-xs text-muted-foreground">
+          فعّل الدخول ببصمة الإصبع أو التعرف على الوجه (Face ID / Touch ID) على هذا الجهاز بدل كتابة كلمة المرور.
+        </p>
+        {devices.length > 0 && (
+          <div className="flex flex-col gap-2">
+            {devices.map((d) => (
+              <div key={d.id} className="flex items-center justify-between p-3 rounded-xl bg-muted/40">
+                <span className="text-sm font-semibold text-foreground">{d.label}</span>
+                <button
+                  onClick={() => handleRemove(d.id)}
+                  disabled={busy}
+                  className="text-destructive hover:bg-destructive/10 p-1.5 rounded-lg"
+                  aria-label="حذف"
+                >
+                  <Trash2 className="w-4 h-4" />
+                </button>
+              </div>
+            ))}
+          </div>
+        )}
+        <button
+          onClick={handleEnable}
+          disabled={busy}
+          className="w-full flex items-center justify-center gap-2 py-2.5 rounded-xl bg-primary/10 text-primary font-semibold text-sm hover:bg-primary/20 transition-colors disabled:opacity-60"
+        >
+          <Fingerprint className="w-4 h-4" /> تفعيل البصمة على هذا الجهاز
+        </button>
+        {error && <p className="text-xs text-destructive">{error}</p>}
+      </div>
+    </section>
+  );
+}
 
 export default function SettingsPage() {
   const [settings, setSettings] = useState<any>(null);
   const [aiAvailable, setAiAvailable] = useState(false);
   const [svVoices, setSvVoices] = useState<SpeechSynthesisVoice[]>([]);
   const audio = useAudioSettings();
+  const { signOut } = useClerk();
 
   const fetchSettings = () => {
     fetch(BASE + "/api/settings/user")
@@ -302,6 +394,8 @@ export default function SettingsPage() {
           </div>
         </section>
 
+        <BiometricSection />
+
         {/* Data & Privacy */}
         <section className="bg-card border border-card-border rounded-2xl overflow-hidden">
           <div className="p-4 border-b border-border flex items-center gap-3 bg-muted/20">
@@ -336,8 +430,17 @@ export default function SettingsPage() {
                 onCheckedChange={(c) => updateSetting("twoFactorEnabled", c)}
               />
             </div>
-            <button className="w-full flex items-center justify-center gap-2 py-2 mt-2 rounded-xl bg-muted text-foreground font-semibold text-sm hover:bg-secondary transition-colors">
-              <Lock className="w-4 h-4" /> تغيير كلمة المرور
+            <Link
+              href="/profile"
+              className="w-full flex items-center justify-center gap-2 py-2 mt-2 rounded-xl bg-muted text-foreground font-semibold text-sm hover:bg-secondary transition-colors"
+            >
+              <Lock className="w-4 h-4" /> إدارة الحساب وكلمة المرور
+            </Link>
+            <button
+              onClick={() => signOut({ redirectUrl: basePath || "/" })}
+              className="w-full flex items-center justify-center gap-2 py-2.5 rounded-xl bg-destructive/10 text-destructive font-semibold text-sm hover:bg-destructive/20 transition-colors"
+            >
+              <LogOut className="w-4 h-4" /> تسجيل الخروج
             </button>
           </div>
         </section>

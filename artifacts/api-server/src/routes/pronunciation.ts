@@ -3,7 +3,8 @@ import multer from "multer";
 import { getOpenAI, AI_NOT_CONFIGURED_MESSAGE } from "../lib/openai";
 import { db } from "@workspace/db";
 import { pronunciationAttemptsTable } from "@workspace/db";
-import { desc, sql } from "drizzle-orm";
+import { desc, eq, sql } from "drizzle-orm";
+import { requireAuth } from "../middlewares/auth";
 
 const router: IRouter = Router();
 const upload = multer({ storage: multer.memoryStorage(), limits: { fileSize: 25 * 1024 * 1024 } });
@@ -125,7 +126,7 @@ router.post("/pronunciation/errors", upload.single("audio"), async (req, res) =>
  * evaluation succeeds) so Statistics/Profile can show a real "مستوى النطق"
  * derived from actual scored attempts rather than a placeholder.
  */
-router.post("/pronunciation/attempts", async (req, res) => {
+router.post("/pronunciation/attempts", requireAuth, async (req, res) => {
   try {
     const { targetText, score, feedback } = (req.body ?? {}) as {
       targetText?: string;
@@ -137,7 +138,7 @@ router.post("/pronunciation/attempts", async (req, res) => {
     }
     const [row] = await db
       .insert(pronunciationAttemptsTable)
-      .values({ targetText: targetText.trim(), score: Math.round(score), feedback: feedback ?? null })
+      .values({ userId: req.userId!, targetText: targetText.trim(), score: Math.round(score), feedback: feedback ?? null })
       .returning();
     res.json(row);
   } catch (err) {
@@ -147,12 +148,13 @@ router.post("/pronunciation/attempts", async (req, res) => {
 });
 
 // GET /pronunciation/attempts?limit=
-router.get("/pronunciation/attempts", async (req, res) => {
+router.get("/pronunciation/attempts", requireAuth, async (req, res) => {
   try {
     const limit = Math.min(Number(req.query.limit) || 20, 200);
     const rows = await db
       .select()
       .from(pronunciationAttemptsTable)
+      .where(eq(pronunciationAttemptsTable.userId, req.userId!))
       .orderBy(desc(pronunciationAttemptsTable.createdAt))
       .limit(limit);
     const [{ avg, count }] = await db
@@ -160,7 +162,8 @@ router.get("/pronunciation/attempts", async (req, res) => {
         avg: sql<number>`coalesce(avg(${pronunciationAttemptsTable.score}), 0)`,
         count: sql<number>`count(*)`,
       })
-      .from(pronunciationAttemptsTable);
+      .from(pronunciationAttemptsTable)
+      .where(eq(pronunciationAttemptsTable.userId, req.userId!));
     res.json({ attempts: rows, averageScore: Math.round(Number(avg)), totalAttempts: Number(count) });
   } catch (err) {
     req.log.error({ err }, "Failed to list pronunciation attempts");
