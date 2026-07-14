@@ -61,6 +61,7 @@ import AdminWordsPage from '@/pages/admin/AdminWordsPage';
 import AdminConversationsPage from '@/pages/admin/AdminConversationsPage';
 import AdminExamsPage from '@/pages/admin/AdminExamsPage';
 import AdminAIPage from '@/pages/admin/AdminAIPage';
+import AdminAIKeysPage from '@/pages/admin/AdminAIKeysPage';
 import AdminReportsPage from '@/pages/admin/AdminReportsPage';
 import AdminBackupPage from '@/pages/admin/AdminBackupPage';
 import AdminLanguagesPage from '@/pages/admin/AdminLanguagesPage';
@@ -136,6 +137,7 @@ function Router() {
       <Route path="/admin/conversations" component={AdminConversationsPage} />
       <Route path="/admin/exams" component={AdminExamsPage} />
       <Route path="/admin/ai" component={AdminAIPage} />
+      <Route path="/admin/ai-keys" component={AdminAIKeysPage} />
       <Route path="/admin/reports" component={AdminReportsPage} />
       <Route path="/admin/backup" component={AdminBackupPage} />
       <Route path="/admin/languages" component={AdminLanguagesPage} />

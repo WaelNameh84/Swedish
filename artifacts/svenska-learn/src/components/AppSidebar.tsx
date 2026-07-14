@@ -60,7 +60,8 @@ import {
   LayoutDashboard,
   BarChart2,
   HardDrive,
-  Globe
+  Globe,
+  KeyRound
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import {
@@ -92,6 +93,7 @@ export const adminTools = [
   { href: "/admin/conversations", label: "المحادثات", icon: MessageCircle },
   { href: "/admin/exams", label: "الاختبارات", icon: ClipboardCheck },
   { href: "/admin/ai", label: "الذكاء الاصطناعي", icon: Bot },
+  { href: "/admin/ai-keys", label: "مفاتيح الذكاء الاصطناعي", icon: KeyRound },
   { href: "/admin/reports", label: "التقارير", icon: BarChart2 },
   { href: "/statistics", label: "الإحصائيات", icon: BarChart3 },
   { href: "/admin/backup", label: "النسخ الاحتياطي", icon: HardDrive },

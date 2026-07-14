@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
-import { Bot } from "lucide-react";
+import { Bot, KeyRound } from "lucide-react";
+import { Link } from "wouter";
 import GameHeader from "@/components/GameHeader";
 
 const BASE = import.meta.env.BASE_URL.replace(/\/$/, "");
@@ -16,6 +17,16 @@ export default function AdminAIPage() {
       <GameHeader title="سجل تفاعلات الذكاء الاصطناعي" backHref="/admin" />
 
       <div className="p-4 flex flex-col gap-4">
+        <Link
+          href="/admin/ai-keys"
+          className="flex items-center justify-between p-4 rounded-2xl bg-card border border-card-border hover:bg-secondary/50 transition-colors"
+        >
+          <div className="flex items-center gap-3">
+            <KeyRound className="w-5 h-5 text-emerald-500" />
+            <span className="font-semibold text-foreground text-sm">مفاتيح مزودي الذكاء الاصطناعي</span>
+          </div>
+          <span className="text-muted-foreground text-xs">←</span>
+        </Link>
         {history.length === 0 ? (
           <div className="p-8 text-center text-muted-foreground bg-card border border-card-border rounded-2xl">لا يوجد سجل تفاعلات</div>
         ) : (

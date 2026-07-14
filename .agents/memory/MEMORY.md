@@ -1,3 +1,4 @@
 - [Svenska audio features without API key](svenska-audio-tts.md) — speechSynthesis (browser-native) powers all TTS/audio-learning features; no OpenAI key needed for these.
 - [Svenska AI feature gating](svenska-ai-key-gating.md) — getOpenAI() is async: env var first, then user_settings.openai_api_key fallback; all callers must await it.
+- [Svenska admin-only AI keys](svenska-admin-key-gating.md) — AI provider keys hidden from public settings API, gated behind password-login requireAdmin middleware.
 - [Svenska Community demo data](svenska-community-demo-data.md) — leaderboard/friends/groups/competitions are seeded mock data (no auth system yet); challenges + achievement-sharing are real.

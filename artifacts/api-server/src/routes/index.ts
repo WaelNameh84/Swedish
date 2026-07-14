@@ -18,6 +18,8 @@ import statisticsRouter from "./statistics";
 import achievementsRouter from "./achievements";
 import communityRouter from "./community";
 import adminRouter from "./admin";
+import adminAuthRouter from "./adminAuth";
+import adminKeysRouter from "./adminKeys";
 import userSettingsRouter from "./userSettings";
 
 const router: IRouter = Router();
@@ -41,6 +43,8 @@ router.use(statisticsRouter);
 router.use(achievementsRouter);
 router.use(communityRouter);
 router.use(adminRouter);
+router.use(adminAuthRouter);
+router.use(adminKeysRouter);
 router.use(userSettingsRouter);
 
 export default router;

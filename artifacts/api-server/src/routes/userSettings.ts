@@ -12,23 +12,18 @@ async function getOrCreateSettings() {
   return created;
 }
 
+// Fields intentionally excluded from this public endpoint: geminiApiKey,
+// openaiApiKey, imageGenApiKey, translationApiKey. Those are AI provider
+// keys and are only readable/writable by an authenticated admin via
+// /admin/keys (see routes/adminKeys.ts) — regular users must never see or
+// set them here.
+
 // GET /settings/user
 router.get("/settings/user", async (_req, res) => {
   try {
     const settings = await getOrCreateSettings();
-    // mask API keys before sending
-    res.json({
-      ...settings,
-      geminiApiKey: settings.geminiApiKey ? "••••••••" : "",
-      openaiApiKey: settings.openaiApiKey ? "••••••••" : "",
-      imageGenApiKey: settings.imageGenApiKey ? "••••••••" : "",
-      translationApiKey: settings.translationApiKey ? "••••••••" : "",
-      // expose whether keys are set
-      hasGeminiKey: Boolean(settings.geminiApiKey),
-      hasOpenaiKey: Boolean(settings.openaiApiKey),
-      hasImageGenKey: Boolean(settings.imageGenApiKey),
-      hasTranslationKey: Boolean(settings.translationApiKey),
-    });
+    const { geminiApiKey, openaiApiKey, imageGenApiKey, translationApiKey, ...safeSettings } = settings;
+    res.json(safeSettings);
   } catch (err) {
     res.status(500).json({ error: String(err) });
   }
@@ -41,7 +36,6 @@ router.patch("/settings/user", async (req, res) => {
     const allowed = [
       "appLanguage", "darkMode",
       "notificationsEnabled", "dailyReminderEnabled", "reminderTime",
-      "geminiApiKey", "openaiApiKey", "imageGenApiKey", "translationApiKey",
       "audioEnabled", "audioSpeed", "audioVoice",
       "readingSpeed",
       "dataCollectionEnabled", "analyticsEnabled", "twoFactorEnabled",
@@ -57,17 +51,8 @@ router.patch("/settings/user", async (req, res) => {
       .where(sql`id = ${existing.id}`)
       .returning();
 
-    res.json({
-      ...updated,
-      geminiApiKey: updated.geminiApiKey ? "••••••••" : "",
-      openaiApiKey: updated.openaiApiKey ? "••••••••" : "",
-      imageGenApiKey: updated.imageGenApiKey ? "••••••••" : "",
-      translationApiKey: updated.translationApiKey ? "••••••••" : "",
-      hasGeminiKey: Boolean(updated.geminiApiKey),
-      hasOpenaiKey: Boolean(updated.openaiApiKey),
-      hasImageGenKey: Boolean(updated.imageGenApiKey),
-      hasTranslationKey: Boolean(updated.translationApiKey),
-    });
+    const { geminiApiKey, openaiApiKey, imageGenApiKey, translationApiKey, ...safeUpdated } = updated;
+    res.json(safeUpdated);
   } catch (err) {
     res.status(500).json({ error: String(err) });
   }

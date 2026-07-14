@@ -7,7 +7,6 @@ import {
   Laptop,
   Bell,
   HardDrive,
-  KeyRound,
   Shield,
   Volume2,
   Gauge,
@@ -214,58 +213,6 @@ export default function SettingsPage() {
           </div>
         </section>
 
-        {/* AI & API Keys */}
-        <section className="bg-card border border-card-border rounded-2xl overflow-hidden">
-          <div className="p-4 border-b border-border flex items-center gap-3 bg-muted/20">
-            <KeyRound className="w-5 h-5 text-emerald-500" />
-            <h2 className="font-bold text-foreground">مفاتيح الذكاء الاصطناعي</h2>
-          </div>
-          <div className="p-4 flex flex-col gap-4">
-            <div className="flex flex-col gap-2">
-              <label className="text-sm font-semibold flex items-center justify-between">
-                <span>مفتاح Gemini API</span>
-                {settings.hasGeminiKey && <span className="text-[10px] bg-emerald-100 text-emerald-700 px-2 py-0.5 rounded-full">مُتصل</span>}
-              </label>
-              <input
-                type="password"
-                placeholder="أدخل مفتاح Gemini..."
-                className="bg-muted text-sm rounded-lg px-3 py-2.5 outline-none border border-transparent focus:border-primary w-full"
-                onBlur={(e) => {
-                  if (e.target.value) updateSetting("geminiApiKey", e.target.value);
-                }}
-              />
-            </div>
-            <div className="flex flex-col gap-2">
-              <label className="text-sm font-semibold flex items-center justify-between">
-                <span>مفتاح توليد الصور</span>
-                {settings.hasImageGenKey && <span className="text-[10px] bg-emerald-100 text-emerald-700 px-2 py-0.5 rounded-full">مُتصل</span>}
-              </label>
-              <input
-                type="password"
-                placeholder="أدخل مفتاح توليد الصور..."
-                className="bg-muted text-sm rounded-lg px-3 py-2.5 outline-none border border-transparent focus:border-primary w-full"
-                onBlur={(e) => {
-                  if (e.target.value) updateSetting("imageGenApiKey", e.target.value);
-                }}
-              />
-            </div>
-            <div className="flex flex-col gap-2">
-              <label className="text-sm font-semibold flex items-center justify-between">
-                <span>مفتاح الترجمة (Translation API)</span>
-                {settings.hasTranslationKey && <span className="text-[10px] bg-emerald-100 text-emerald-700 px-2 py-0.5 rounded-full">مُتصل</span>}
-              </label>
-              <input
-                type="password"
-                placeholder="أدخل مفتاح الترجمة..."
-                className="bg-muted text-sm rounded-lg px-3 py-2.5 outline-none border border-transparent focus:border-primary w-full"
-                onBlur={(e) => {
-                  if (e.target.value) updateSetting("translationApiKey", e.target.value);
-                }}
-              />
-            </div>
-          </div>
-        </section>
-
         {/* Audio & Reading */}
         <section className="bg-card border border-card-border rounded-2xl overflow-hidden">
           <div className="p-4 border-b border-border flex items-center gap-3 bg-muted/20">
@@ -316,7 +263,7 @@ export default function SettingsPage() {
                     <Sparkles className="w-3.5 h-3.5 text-amber-500" /> صوت بشري بالذكاء الاصطناعي
                   </span>
                   <span className="text-[10px] text-muted-foreground">
-                    {aiAvailable ? "نطق طبيعي وواضح بدل الصوت الآلي" : "يحتاج مفتاح OpenAI (أضفه أعلاه في مفاتيح الذكاء الاصطناعي)"}
+                    {aiAvailable ? "نطق طبيعي وواضح بدل الصوت الآلي" : "يحتاج مفتاح OpenAI (يضبطه المسؤول من لوحة الإدارة)"}
                   </span>
                 </div>
                 <Switch
