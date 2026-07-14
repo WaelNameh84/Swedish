@@ -66,7 +66,6 @@ import AdminReportsPage from '@/pages/admin/AdminReportsPage';
 import AdminBackupPage from '@/pages/admin/AdminBackupPage';
 import AdminLanguagesPage from '@/pages/admin/AdminLanguagesPage';
 import AdminSettingsPage from '@/pages/admin/AdminSettingsPage';
-import BottomNav from '@/components/BottomNav';
 import AppSidebar from '@/components/AppSidebar';
 import VoiceTranslator from '@/components/VoiceTranslator';
 import { AudioSettingsProvider } from '@/lib/audioSettings';
@@ -154,12 +153,11 @@ function App() {
       <AudioSettingsProvider>
         <TooltipProvider>
           <WouterRouter base={import.meta.env.BASE_URL.replace(/\/$/, '')}>
-            <div className="pb-[64px]">
+            <div>
               <Router />
             </div>
             <AppSidebar />
             <VoiceTranslator />
-            <BottomNav />
           </WouterRouter>
           <Toaster />
         </TooltipProvider>
