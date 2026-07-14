@@ -5,3 +5,4 @@ export * from "./words";
 export * from "./dailyChallenges";
 export * from "./conversations";
 export * from "./chatMessages";
+export * from "./dictionary";

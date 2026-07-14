@@ -8,6 +8,7 @@ import statsRouter from "./stats";
 import challengesRouter from "./challenges";
 import conversationsRouter from "./conversations";
 import chatRouter from "./chat";
+import dictionaryRouter from "./dictionary";
 
 const router: IRouter = Router();
 
@@ -20,5 +21,6 @@ router.use(statsRouter);
 router.use(challengesRouter);
 router.use(conversationsRouter);
 router.use(chatRouter);
+router.use(dictionaryRouter);
 
 export default router;

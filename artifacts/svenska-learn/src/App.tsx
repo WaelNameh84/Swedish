@@ -7,6 +7,7 @@ import ConversationsPage from '@/pages/ConversationsPage';
 import ChatPage from '@/pages/ChatPage';
 import LessonsPage from '@/pages/LessonsPage';
 import LessonDetailPage from '@/pages/LessonDetailPage';
+import DictionaryPage from '@/pages/DictionaryPage';
 import BottomNav from '@/components/BottomNav';
 import { Route, Switch, Router as WouterRouter } from 'wouter';
 
@@ -18,6 +19,7 @@ function Router() {
       <Route path="/" component={Home} />
       <Route path="/lessons" component={LessonsPage} />
       <Route path="/lessons/:id" component={LessonDetailPage} />
+      <Route path="/dictionary" component={DictionaryPage} />
       <Route path="/conversations" component={ConversationsPage} />
       <Route path="/chat" component={ChatPage} />
       <Route path="/stats" component={Home} />
