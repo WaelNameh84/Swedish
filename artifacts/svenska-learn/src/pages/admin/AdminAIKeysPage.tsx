@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { KeyRound, Lock, CheckCircle2, XCircle, HelpCircle, LogOut } from "lucide-react";
+import { KeyRound, Lock, CheckCircle2, XCircle, HelpCircle, LogOut, Trash2 } from "lucide-react";
 import GameHeader from "@/components/GameHeader";
 
 const BASE = import.meta.env.BASE_URL.replace(/\/$/, "");
@@ -28,6 +28,7 @@ export default function AdminAIKeysPage() {
   const [verifying, setVerifying] = useState<Record<string, boolean>>({});
   const [saving, setSaving] = useState(false);
   const [saveMessage, setSaveMessage] = useState("");
+  const [deleting, setDeleting] = useState<Record<string, boolean>>({});
 
   const checkSession = async () => {
     try {
@@ -107,6 +108,32 @@ export default function AdminAIKeysPage() {
       setVerifyResults((s) => ({ ...s, [field]: { ok: false, message: "تعذر الاتصال بالخادم للتحقق" } }));
     } finally {
       setVerifying((s) => ({ ...s, [field]: false }));
+    }
+  };
+
+  const handleDelete = async (field: KeyField) => {
+    if (!confirm("هل تريد حذف هذا المفتاح؟ لن تعمل ميزات الذكاء الاصطناعي المرتبطة به إلى أن تُدخل مفتاحاً جديداً.")) return;
+    setDeleting((s) => ({ ...s, [field]: true }));
+    setSaveMessage("");
+    try {
+      const r = await fetch(BASE + "/api/admin/keys", {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ [field]: "" }),
+      });
+      if (r.status === 401) {
+        setAuthenticated(false);
+        return;
+      }
+      const d = await r.json();
+      setKeyMeta(d);
+      setInputs((s) => ({ ...s, [field]: "" }));
+      setVerifyResults((s) => ({ ...s, [field]: null }));
+      setSaveMessage("تم حذف المفتاح");
+    } catch {
+      setSaveMessage("فشل حذف المفتاح");
+    } finally {
+      setDeleting((s) => ({ ...s, [field]: false }));
     }
   };
 
@@ -232,6 +259,17 @@ export default function AdminAIKeysPage() {
                     >
                       {verifying[field] ? "..." : "تحقق"}
                     </button>
+                    {keyMeta[hasFlag] && (
+                      <button
+                        onClick={() => handleDelete(field)}
+                        disabled={deleting[field]}
+                        title="حذف المفتاح"
+                        className="px-3 rounded-lg bg-destructive/10 text-destructive hover:bg-destructive/20 disabled:opacity-40 transition-colors whitespace-nowrap flex items-center gap-1"
+                      >
+                        <Trash2 className="w-3.5 h-3.5" />
+                        <span className="text-xs font-semibold hidden sm:inline">{deleting[field] ? "..." : "حذف"}</span>
+                      </button>
+                    )}
                   </div>
                   {result && (
                     <div
