@@ -7,7 +7,7 @@ services:
     buildCommand: >-
       npm install -g pnpm@10 &&
       pnpm install --ignore-scripts &&
-      pnpm rebuild esbuild tesseract.js &&
+      pnpm rebuild esbuild tesseract.js ffmpeg-static &&
       pnpm --filter @workspace/db run push &&
       pnpm --filter @workspace/scripts run seed &&
       pnpm --filter @workspace/scripts run seed:dictionary &&
