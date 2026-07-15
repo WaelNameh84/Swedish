@@ -26,17 +26,24 @@ export async function generateText(
 ): Promise<{ text: string; provider: "openai" | "gemini" } | null> {
   const openai = await getOpenAI();
   if (openai) {
-    const completion = await openai.chat.completions.create({
-      model: opts.model ?? "gpt-5.4-mini",
-      max_completion_tokens: opts.maxOutputTokens ?? 2048,
-      messages: [
-        { role: "system", content: systemPrompt },
-        { role: "user", content: userText },
-      ],
-    });
-    const raw = completion.choices[0]?.message?.content ?? "";
-    const text = opts.json ? raw.trim().replace(/^```json\s*|```\s*$/g, "") : raw;
-    return { text, provider: "openai" };
+    try {
+      const completion = await openai.chat.completions.create({
+        model: opts.model ?? "gpt-5.4-mini",
+        max_completion_tokens: opts.maxOutputTokens ?? 2048,
+        messages: [
+          { role: "system", content: systemPrompt },
+          { role: "user", content: userText },
+        ],
+      });
+      const raw = completion.choices[0]?.message?.content ?? "";
+      const text = opts.json ? raw.trim().replace(/^```json\s*|```\s*$/g, "") : raw;
+      return { text, provider: "openai" };
+    } catch (err) {
+      // A misconfigured/invalid OpenAI key (e.g. the wrong key pasted into
+      // the wrong admin field) shouldn't take down every AI feature when a
+      // working Gemini key is also configured — fall through to Gemini.
+      if (!isAuthError(err) || !(await getGemini())) throw err;
+    }
   }
 
   if (await getGemini()) {
@@ -50,6 +57,11 @@ export async function generateText(
   return null;
 }
 
+/** True for OpenAI auth failures (invalid/revoked key) — safe to silently fall back on, unlike other errors (rate limits, bad input, etc.) which should surface to the caller. */
+function isAuthError(err: unknown): boolean {
+  return !!err && typeof err === "object" && "status" in err && (err as { status?: number }).status === 401;
+}
+
 /** Transcribes spoken audio to text, preferring OpenAI Whisper and falling back to Gemini. */
 export async function transcribeAudio(
   buffer: Buffer,
@@ -58,13 +70,17 @@ export async function transcribeAudio(
 ): Promise<{ text: string; provider: "openai" | "gemini" } | null> {
   const openai = await getOpenAI();
   if (openai) {
-    const audioFile = new File([new Uint8Array(buffer)], "recording.webm", { type: mimeType });
-    const transcription = await openai.audio.transcriptions.create({
-      file: audioFile,
-      model: "gpt-4o-mini-transcribe",
-      ...(language ? { language } : {}),
-    });
-    return { text: transcription.text?.trim() ?? "", provider: "openai" };
+    try {
+      const audioFile = new File([new Uint8Array(buffer)], "recording.webm", { type: mimeType });
+      const transcription = await openai.audio.transcriptions.create({
+        file: audioFile,
+        model: "gpt-4o-mini-transcribe",
+        ...(language ? { language } : {}),
+      });
+      return { text: transcription.text?.trim() ?? "", provider: "openai" };
+    } catch (err) {
+      if (!isAuthError(err) || !(await getGemini())) throw err;
+    }
   }
 
   if (await getGemini()) {
