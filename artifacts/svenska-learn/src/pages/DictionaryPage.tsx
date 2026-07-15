@@ -1,13 +1,34 @@
 import { useState, useEffect, useRef, useCallback } from "react";
 import {
   Search, X, BookMarked, Clock, ChevronRight, Volume2,
-  Star, BookOpen, Layers, Tag, Filter, Sparkles, ClipboardCheck
+  Star, BookOpen, Layers, Tag, Filter, Sparkles, ClipboardCheck,
+  Play, ChevronLeft, Lightbulb, MoreVertical
 } from "lucide-react";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion, AnimatePresence, PanInfo } from "framer-motion";
 import { cn } from "@/lib/utils";
 import WordDetailSheet from "@/components/WordDetailSheet";
 import { MCQuizModal } from "@/components/MCQuizModal";
 import type { MCQQuestion } from "@/components/MCQuiz";
+
+// ─── Category fallback images ─────────────────────────────────────────────────
+const CAT_IMG: Record<string, string> = {
+  familj:        "https://images.pexels.com/photos/1640777/pexels-photo-1640777.jpeg?auto=compress&cs=tinysrgb&w=800&h=1200",
+  mat:           "https://images.pexels.com/photos/1640777/pexels-photo-1640777.jpeg?auto=compress&cs=tinysrgb&w=800&h=1200",
+  natur:         "https://images.pexels.com/photos/1125848/pexels-photo-1125848.jpeg?auto=compress&cs=tinysrgb&w=800&h=1200",
+  stad:          "https://images.pexels.com/photos/1477210/pexels-photo-1477210.jpeg?auto=compress&cs=tinysrgb&w=800&h=1200",
+  arbete:        "https://images.pexels.com/photos/3182812/pexels-photo-3182812.jpeg?auto=compress&cs=tinysrgb&w=800&h=1200",
+  kropp:         "https://images.pexels.com/photos/3764119/pexels-photo-3764119.jpeg?auto=compress&cs=tinysrgb&w=800&h=1200",
+  hälsa:         "https://images.pexels.com/photos/40751/running-runner-long-distance-fitness-40751.jpeg?auto=compress&cs=tinysrgb&w=800&h=1200",
+  transport:     "https://images.pexels.com/photos/1118448/pexels-photo-1118448.jpeg?auto=compress&cs=tinysrgb&w=800&h=1200",
+  hem:           "https://images.pexels.com/photos/1571460/pexels-photo-1571460.jpeg?auto=compress&cs=tinysrgb&w=800&h=1200",
+  tid:           "https://images.pexels.com/photos/280250/pexels-photo-280250.jpeg?auto=compress&cs=tinysrgb&w=800&h=1200",
+  handel:        "https://images.pexels.com/photos/1435752/pexels-photo-1435752.jpeg?auto=compress&cs=tinysrgb&w=800&h=1200",
+  skola:         "https://images.pexels.com/photos/5905709/pexels-photo-5905709.jpeg?auto=compress&cs=tinysrgb&w=800&h=1200",
+  känslor:       "https://images.pexels.com/photos/3807571/pexels-photo-3807571.jpeg?auto=compress&cs=tinysrgb&w=800&h=1200",
+  kultur:        "https://images.pexels.com/photos/1190297/pexels-photo-1190297.jpeg?auto=compress&cs=tinysrgb&w=800&h=1200",
+  nyckelverb:    "https://images.pexels.com/photos/4144923/pexels-photo-4144923.jpeg?auto=compress&cs=tinysrgb&w=800&h=1200",
+  default:       "https://images.pexels.com/photos/1509428/pexels-photo-1509428.jpeg?auto=compress&cs=tinysrgb&w=800&h=1200",
+};
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 export interface DictionaryWord {
@@ -117,6 +138,8 @@ export default function DictionaryPage() {
   const [quizOpen, setQuizOpen] = useState(false);
   const [quizLoading, setQuizLoading] = useState(false);
   const [quizQuestions, setQuizQuestions] = useState<MCQQuestion[]>([]);
+  const [viewMode, setViewMode] = useState<"list" | "cards">("list");
+  const [cardStartIdx, setCardStartIdx] = useState(0);
 
   const startQuiz = () => {
     setQuizOpen(true);
@@ -219,9 +242,18 @@ export default function DictionaryPage() {
                 <ClipboardCheck className="w-4 h-4" />
                 اختبار
               </button>
-              <div className="w-10 h-10 bg-primary/10 rounded-2xl flex items-center justify-center">
-                <BookOpen className="w-5 h-5 text-primary" />
-              </div>
+              <button
+                onClick={() => { setViewMode(v => v === "cards" ? "list" : "cards"); setCardStartIdx(0); }}
+                className={cn(
+                  "flex items-center gap-1.5 px-3 h-10 rounded-2xl text-xs font-bold active:scale-95 transition-all",
+                  viewMode === "cards"
+                    ? "bg-primary text-primary-foreground"
+                    : "bg-muted text-muted-foreground hover:text-foreground"
+                )}
+              >
+                <Play className="w-3.5 h-3.5" />
+                بطاقات
+              </button>
             </div>
           </div>
 
@@ -280,6 +312,21 @@ export default function DictionaryPage() {
           })}
         </div>
       </div>
+
+      {/* ─── Cards Mode ─────────────────────────────────────────────── */}
+      <AnimatePresence>
+        {viewMode === "cards" && tabWords.length > 0 && (
+          <WordReelsViewer
+            words={tabWords}
+            startIndex={cardStartIdx}
+            favorites={favorites}
+            reviewLater={reviewLater}
+            onToggleFavorite={toggleFavorite}
+            onToggleReview={toggleReview}
+            onClose={() => setViewMode("list")}
+          />
+        )}
+      </AnimatePresence>
 
       <div className="max-w-2xl mx-auto px-4 py-4 space-y-4">
 
@@ -444,6 +491,185 @@ export default function DictionaryPage() {
       </AnimatePresence>
     </div>
   );
+}
+
+// ─── Word Reels Viewer ────────────────────────────────────────────────────────
+function WordReelsViewer({
+  words, startIndex, favorites, reviewLater, onToggleFavorite, onToggleReview, onClose,
+}: {
+  words: DictionaryWord[];
+  startIndex: number;
+  favorites: Set<number>;
+  reviewLater: Set<number>;
+  onToggleFavorite: (id: number) => void;
+  onToggleReview: (id: number) => void;
+  onClose: () => void;
+}) {
+  const [idx, setIdx] = useState(startIndex);
+  const [imgError, setImgError] = useState(false);
+  const word = words[idx];
+
+  const goNext = useCallback(() => { if (idx < words.length - 1) { setIdx(i => i + 1); setImgError(false); } }, [idx, words.length]);
+  const goPrev = useCallback(() => { if (idx > 0) { setIdx(i => i - 1); setImgError(false); } }, [idx]);
+
+  useEffect(() => {
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === "ArrowRight" || e.key === "ArrowUp") goPrev();
+      if (e.key === "ArrowLeft" || e.key === "ArrowDown") goNext();
+      if (e.key === "Escape") onClose();
+    };
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, [goNext, goPrev, onClose]);
+
+  const handleDrag = (_: MouseEvent | TouchEvent | PointerEvent, info: PanInfo) => {
+    if (Math.abs(info.offset.x) < 40) return;
+    if (info.offset.x > 0) goPrev(); else goNext();
+  };
+
+  if (!word) return null;
+
+  const bgImage = imgError ? CAT_IMG[word.category] ?? CAT_IMG.default : word.imageUrl ?? CAT_IMG[word.category] ?? CAT_IMG.default;
+  const example = word.examples?.[0];
+
+  return (
+    <motion.div
+      initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+      className="fixed inset-0 z-50 bg-black touch-none"
+    >
+      {/* Background image */}
+      <AnimatePresence mode="wait">
+        <motion.img
+          key={word.id}
+          src={bgImage}
+          alt={word.word}
+          initial={{ opacity: 0, scale: 1.06 }}
+          animate={{ opacity: 1, scale: 1 }}
+          exit={{ opacity: 0 }}
+          transition={{ duration: 0.45 }}
+          className="absolute inset-0 w-full h-full object-cover"
+          onError={() => setImgError(true)}
+        />
+      </AnimatePresence>
+
+      {/* Dark gradient */}
+      <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/20 to-black/40" />
+
+      {/* Swipe capture */}
+      <motion.div
+        className="absolute inset-0"
+        drag="x" dragConstraints={{ left: 0, right: 0 }} dragElastic={0.2}
+        onDragEnd={handleDrag}
+      />
+
+      {/* Top bar */}
+      <div className="absolute top-0 left-0 right-0 z-10 flex items-center justify-between px-4 pt-12 pb-4">
+        <button onClick={onClose} className="w-10 h-10 bg-black/40 backdrop-blur-sm rounded-full flex items-center justify-center">
+          <X className="w-5 h-5 text-white" />
+        </button>
+        <div className="flex flex-col items-center gap-1">
+          <span className="text-white/80 text-xs font-bold">{idx + 1} / {words.length}</span>
+          <div className="flex gap-0.5">
+            {words.slice(Math.max(0, idx - 4), Math.min(words.length, idx + 5)).map((_, i) => {
+              const absI = i + Math.max(0, idx - 4);
+              return <div key={absI} className={cn("h-1 rounded-full transition-all", absI === idx ? "w-4 bg-white" : "w-1.5 bg-white/40")} />;
+            })}
+          </div>
+        </div>
+        <button
+          onClick={() => speakWord(word.word)}
+          className="w-10 h-10 bg-black/40 backdrop-blur-sm rounded-full flex items-center justify-center"
+        >
+          <Volume2 className="w-5 h-5 text-white" />
+        </button>
+      </div>
+
+      {/* Left / Right tap zones */}
+      <button onClick={goPrev} className="absolute left-0 top-0 bottom-0 w-1/3 z-10" />
+      <button onClick={goNext} className="absolute right-0 top-0 bottom-0 w-1/3 z-10" />
+
+      {/* Bottom content */}
+      <div className="absolute bottom-0 left-0 right-0 z-10 px-4 pb-10 space-y-3">
+        {/* Swedish word bubble */}
+        <motion.div
+          key={`sv-${word.id}`}
+          initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }}
+          className="bg-white/95 backdrop-blur-sm rounded-2xl px-5 py-4"
+        >
+          <div className="flex items-start justify-between gap-3">
+            <div className="flex-1">
+              <div className="flex items-center gap-2 mb-1">
+                <span className="text-lg">🇸🇪</span>
+                <span className="text-[10px] font-bold text-muted-foreground uppercase tracking-wide">Svenska</span>
+              </div>
+              <p className="text-3xl font-black text-gray-900 tracking-tight" dir="ltr">{word.word}</p>
+              {word.phonetic && <p className="text-sm text-gray-500 mt-0.5 font-mono" dir="ltr">{word.phonetic}</p>}
+            </div>
+            <div className="flex flex-col items-end gap-1.5 shrink-0">
+              <span className={cn("text-[10px] font-bold px-2 py-1 rounded-lg", POS_COLORS[word.partOfSpeech] ?? "bg-gray-100 text-gray-600")}>
+                {POS_LABELS[word.partOfSpeech] ?? word.partOfSpeech}
+              </span>
+              <span className={cn("text-[10px] font-bold px-2 py-1 rounded-lg", LEVEL_COLORS[word.level] ?? "bg-gray-100")}>
+                {word.level}
+              </span>
+            </div>
+          </div>
+          {word.gender && (
+            <span className="text-[10px] font-semibold bg-gray-100 text-gray-600 px-2 py-0.5 rounded-md mt-2 inline-block" dir="ltr">
+              {word.gender}
+            </span>
+          )}
+        </motion.div>
+
+        {/* Arabic translation bubble */}
+        <motion.div
+          key={`ar-${word.id}`}
+          initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }}
+          className="bg-amber-50/95 backdrop-blur-sm rounded-2xl px-5 py-4"
+          dir="rtl"
+        >
+          <div className="flex items-start justify-between gap-3">
+            <div className="flex-1">
+              <div className="flex items-center gap-1.5 mb-1">
+                <span className="text-[10px] font-bold text-amber-700 uppercase tracking-wide">العربية</span>
+              </div>
+              <p className="text-xl font-bold text-gray-900">{word.translation}</p>
+              {example && (
+                <p className="text-xs text-gray-500 mt-2 leading-relaxed">
+                  <span className="font-semibold text-gray-700" dir="ltr">{example.sv}</span>
+                  <br />{example.ar}
+                </p>
+              )}
+            </div>
+            <div className="flex gap-2 shrink-0">
+              <button
+                onClick={() => onToggleFavorite(word.id)}
+                className={cn("w-9 h-9 rounded-xl flex items-center justify-center transition-all",
+                  favorites.has(word.id) ? "bg-yellow-100 text-yellow-500" : "bg-white/70 text-gray-400 hover:text-yellow-500")}
+              >
+                <Star className={cn("w-4 h-4", favorites.has(word.id) && "fill-yellow-500")} />
+              </button>
+              <button
+                onClick={() => onToggleReview(word.id)}
+                className={cn("w-9 h-9 rounded-xl flex items-center justify-center transition-all",
+                  reviewLater.has(word.id) ? "bg-blue-100 text-blue-500" : "bg-white/70 text-gray-400 hover:text-blue-500")}
+              >
+                <Clock className={cn("w-4 h-4", reviewLater.has(word.id) && "stroke-blue-500")} />
+              </button>
+            </div>
+          </div>
+        </motion.div>
+      </div>
+    </motion.div>
+  );
+}
+
+function speakWord(text: string) {
+  if (!window.speechSynthesis || !text) return;
+  const u = new SpeechSynthesisUtterance(text);
+  u.lang = "sv-SE"; u.rate = 0.85;
+  window.speechSynthesis.cancel();
+  window.speechSynthesis.speak(u);
 }
 
 // ─── Word Card ────────────────────────────────────────────────────────────────

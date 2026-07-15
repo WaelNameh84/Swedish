@@ -1,11 +1,30 @@
-import { useState, useEffect, useRef } from "react";
-import { motion, AnimatePresence } from "framer-motion";
+import { useState, useEffect, useRef, useCallback } from "react";
+import { motion, AnimatePresence, PanInfo } from "framer-motion";
 import {
   Search, X, Volume2, Star, Clock, ChevronRight,
-  Zap, BookOpen, FlaskConical, Filter
+  Zap, BookOpen, FlaskConical, Filter, Play
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import VerbDetailSheet from "@/components/VerbDetailSheet";
+
+// ─── Category fallback images ─────────────────────────────────────────────────
+const CAT_IMG_V: Record<string, string> = {
+  kommunikation: "https://images.pexels.com/photos/1181533/pexels-photo-1181533.jpeg?auto=compress&cs=tinysrgb&w=800&h=1200",
+  arbete:        "https://images.pexels.com/photos/3182812/pexels-photo-3182812.jpeg?auto=compress&cs=tinysrgb&w=800&h=1200",
+  handel:        "https://images.pexels.com/photos/1435752/pexels-photo-1435752.jpeg?auto=compress&cs=tinysrgb&w=800&h=1200",
+  rörelse:       "https://images.pexels.com/photos/2827392/pexels-photo-2827392.jpeg?auto=compress&cs=tinysrgb&w=800&h=1200",
+  mat:           "https://images.pexels.com/photos/3184183/pexels-photo-3184183.jpeg?auto=compress&cs=tinysrgb&w=800&h=1200",
+  skola:         "https://images.pexels.com/photos/5905709/pexels-photo-5905709.jpeg?auto=compress&cs=tinysrgb&w=800&h=1200",
+  sinnen:        "https://images.pexels.com/photos/3807571/pexels-photo-3807571.jpeg?auto=compress&cs=tinysrgb&w=800&h=1200",
+  tanke:         "https://images.pexels.com/photos/762687/pexels-photo-762687.jpeg?auto=compress&cs=tinysrgb&w=800&h=1200",
+  känsla:        "https://images.pexels.com/photos/3807571/pexels-photo-3807571.jpeg?auto=compress&cs=tinysrgb&w=800&h=1200",
+  vardag:        "https://images.pexels.com/photos/1199957/pexels-photo-1199957.jpeg?auto=compress&cs=tinysrgb&w=800&h=1200",
+  hem:           "https://images.pexels.com/photos/1571460/pexels-photo-1571460.jpeg?auto=compress&cs=tinysrgb&w=800&h=1200",
+  kärnverb:      "https://images.pexels.com/photos/4144923/pexels-photo-4144923.jpeg?auto=compress&cs=tinysrgb&w=800&h=1200",
+  social:        "https://images.pexels.com/photos/1181533/pexels-photo-1181533.jpeg?auto=compress&cs=tinysrgb&w=800&h=1200",
+  fritid:        "https://images.pexels.com/photos/1125848/pexels-photo-1125848.jpeg?auto=compress&cs=tinysrgb&w=800&h=1200",
+  default:       "https://images.pexels.com/photos/1509428/pexels-photo-1509428.jpeg?auto=compress&cs=tinysrgb&w=800&h=1200",
+};
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 export interface Verb {
@@ -76,6 +95,7 @@ export default function VerbsPage() {
   const [loading, setLoading] = useState(true);
   const [selectedVerb, setSelectedVerb] = useState<Verb | null>(null);
   const [quizMode, setQuizMode] = useState(false);
+  const [viewMode, setViewMode] = useState<"list" | "cards">("list");
 
   // Favorites & review (localStorage)
   const [favorites, setFavorites] = useState<Set<number>>(() => {
@@ -142,11 +162,20 @@ export default function VerbsPage() {
                 className="flex items-center gap-1.5 bg-primary text-primary-foreground px-3 py-2 rounded-xl text-xs font-bold shadow-sm hover:bg-primary/90 transition-all active:scale-95"
               >
                 <Zap className="w-3.5 h-3.5" />
-                اختبر نفسك
+                اختبار
               </button>
-              <div className="w-9 h-9 bg-emerald-100 rounded-2xl flex items-center justify-center">
-                <BookOpen className="w-4.5 h-4.5 text-emerald-700" />
-              </div>
+              <button
+                onClick={() => setViewMode(v => v === "cards" ? "list" : "cards")}
+                className={cn(
+                  "flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs font-bold transition-all active:scale-95",
+                  viewMode === "cards"
+                    ? "bg-primary text-primary-foreground"
+                    : "bg-muted text-muted-foreground hover:text-foreground"
+                )}
+              >
+                <Play className="w-3.5 h-3.5" />
+                بطاقات
+              </button>
             </div>
           </div>
 
@@ -189,6 +218,20 @@ export default function VerbsPage() {
           </div>
         </div>
       </div>
+
+      {/* ─── Cards Mode ─── */}
+      <AnimatePresence>
+        {viewMode === "cards" && verbs.length > 0 && (
+          <VerbReelsViewer
+            verbs={verbs}
+            favorites={favorites}
+            reviewLater={reviewLater}
+            onToggleFavorite={toggleFavorite}
+            onToggleReview={toggleReview}
+            onClose={() => setViewMode("list")}
+          />
+        )}
+      </AnimatePresence>
 
       {/* ─── Verb List ─── */}
       <div className="max-w-2xl mx-auto px-4 py-4 space-y-2.5">
@@ -529,6 +572,224 @@ function VerbQuizModal({ level, onClose, baseUrl }: { level: string; onClose: ()
           </div>
         ) : null}
       </motion.div>
+    </motion.div>
+  );
+}
+
+// ─── Verb Reels Viewer ────────────────────────────────────────────────────────
+function VerbReelsViewer({
+  verbs, favorites, reviewLater, onToggleFavorite, onToggleReview, onClose,
+}: {
+  verbs: Verb[];
+  favorites: Set<number>;
+  reviewLater: Set<number>;
+  onToggleFavorite: (id: number) => void;
+  onToggleReview: (id: number) => void;
+  onClose: () => void;
+}) {
+  const [idx, setIdx] = useState(0);
+  const [imgError, setImgError] = useState(false);
+  const [showConj, setShowConj] = useState(false);
+  const verb = verbs[idx];
+
+  const goNext = useCallback(() => { if (idx < verbs.length - 1) { setIdx(i => i + 1); setImgError(false); setShowConj(false); } }, [idx, verbs.length]);
+  const goPrev = useCallback(() => { if (idx > 0) { setIdx(i => i - 1); setImgError(false); setShowConj(false); } }, [idx]);
+
+  useEffect(() => {
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === "ArrowRight" || e.key === "ArrowUp") goPrev();
+      if (e.key === "ArrowLeft" || e.key === "ArrowDown") goNext();
+      if (e.key === "Escape") onClose();
+    };
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, [goNext, goPrev, onClose]);
+
+  const handleDrag = (_: MouseEvent | TouchEvent | PointerEvent, info: PanInfo) => {
+    if (Math.abs(info.offset.x) < 40) return;
+    if (info.offset.x > 0) goPrev(); else goNext();
+  };
+
+  if (!verb) return null;
+
+  const bgImage = imgError
+    ? (CAT_IMG_V[verb.category] ?? CAT_IMG_V.default)
+    : (verb.imageUrl ?? CAT_IMG_V[verb.category] ?? CAT_IMG_V.default);
+  const group = GROUP_LABELS[verb.group];
+  const example = verb.examples?.[0];
+
+  const CONJ_FORMS = [
+    { key: "infinitiv", ar: "المصدر", prefix: "att " },
+    { key: "presens", ar: "المضارع", prefix: "" },
+    { key: "preteritum", ar: "الماضي", prefix: "" },
+    { key: "supinum", ar: "اسم المفعول", prefix: "" },
+    { key: "imperativ", ar: "الأمر", prefix: "" },
+  ];
+
+  return (
+    <motion.div
+      initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+      className="fixed inset-0 z-50 bg-black touch-none"
+    >
+      {/* Background image */}
+      <AnimatePresence mode="wait">
+        <motion.img
+          key={verb.id}
+          src={bgImage}
+          alt={verb.infinitiv}
+          initial={{ opacity: 0, scale: 1.06 }}
+          animate={{ opacity: 1, scale: 1 }}
+          exit={{ opacity: 0 }}
+          transition={{ duration: 0.45 }}
+          className="absolute inset-0 w-full h-full object-cover"
+          onError={() => setImgError(true)}
+        />
+      </AnimatePresence>
+
+      {/* Dark gradient */}
+      <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/20 to-black/50" />
+
+      {/* Swipe capture */}
+      <motion.div
+        className="absolute inset-0"
+        drag="x" dragConstraints={{ left: 0, right: 0 }} dragElastic={0.2}
+        onDragEnd={handleDrag}
+      />
+
+      {/* Top bar */}
+      <div className="absolute top-0 left-0 right-0 z-10 flex items-center justify-between px-4 pt-12 pb-4">
+        <button onClick={onClose} className="w-10 h-10 bg-black/40 backdrop-blur-sm rounded-full flex items-center justify-center">
+          <X className="w-5 h-5 text-white" />
+        </button>
+        <div className="flex flex-col items-center gap-1">
+          <span className="text-white/80 text-xs font-bold">{idx + 1} / {verbs.length}</span>
+          <div className="flex gap-0.5">
+            {verbs.slice(Math.max(0, idx - 4), Math.min(verbs.length, idx + 5)).map((_, i) => {
+              const absI = i + Math.max(0, idx - 4);
+              return <div key={absI} className={cn("h-1 rounded-full transition-all", absI === idx ? "w-4 bg-white" : "w-1.5 bg-white/40")} />;
+            })}
+          </div>
+        </div>
+        <button
+          onClick={() => speak(verb.infinitiv)}
+          className="w-10 h-10 bg-black/40 backdrop-blur-sm rounded-full flex items-center justify-center"
+        >
+          <Volume2 className="w-5 h-5 text-white" />
+        </button>
+      </div>
+
+      {/* Left / Right tap zones */}
+      <button onClick={goPrev} className="absolute left-0 top-0 bottom-0 w-1/4 z-10" />
+      <button onClick={goNext} className="absolute right-0 top-0 bottom-0 w-1/4 z-10" />
+
+      {/* Bottom content */}
+      <div className="absolute bottom-0 left-0 right-0 z-10 px-4 pb-10 space-y-3">
+        {/* Conjugation table (expandable) */}
+        <AnimatePresence>
+          {showConj && (
+            <motion.div
+              initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: 8 }}
+              className="bg-white/95 backdrop-blur-sm rounded-2xl overflow-hidden"
+            >
+              <div className="grid grid-cols-5 divide-x divide-gray-100">
+                {CONJ_FORMS.map(({ key, ar, prefix }) => (
+                  <div key={key} className="px-2 py-3 text-center">
+                    <p className="text-[9px] text-gray-500 font-semibold mb-1">{ar}</p>
+                    <button
+                      onClick={(e) => { e.stopPropagation(); speak((verb as any)[key]); }}
+                      className="text-xs font-black text-gray-900 hover:text-primary transition-colors leading-tight flex items-center justify-center gap-0.5 mx-auto"
+                      dir="ltr"
+                    >
+                      {prefix}{(verb as any)[key]}
+                      <Volume2 className="w-2 h-2 opacity-30 hover:opacity-100" />
+                    </button>
+                  </div>
+                ))}
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
+
+        {/* Swedish verb bubble */}
+        <motion.div
+          key={`sv-${verb.id}`}
+          initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }}
+          className="bg-white/95 backdrop-blur-sm rounded-2xl px-5 py-4"
+        >
+          <div className="flex items-start justify-between gap-3">
+            <div className="flex-1">
+              <div className="flex items-center gap-2 mb-1">
+                <span className="text-lg">🇸🇪</span>
+                <span className="text-[10px] font-bold text-muted-foreground uppercase tracking-wide">فعل سويدي</span>
+              </div>
+              <p className="text-3xl font-black text-gray-900 tracking-tight" dir="ltr">att {verb.infinitiv}</p>
+              <div className="flex items-center gap-2 mt-1">
+                <span className="text-sm font-bold text-emerald-600" dir="ltr">{verb.presens}</span>
+                <span className="text-gray-300">·</span>
+                <span className="text-sm text-gray-500" dir="ltr">{verb.preteritum}</span>
+                <span className="text-gray-300">·</span>
+                <span className="text-sm text-gray-500" dir="ltr">{verb.supinum}</span>
+              </div>
+            </div>
+            <div className="flex flex-col items-end gap-1.5 shrink-0">
+              <span className={cn("text-[10px] font-bold px-2 py-1 rounded-lg", group?.color ?? "bg-gray-100 text-gray-600")}>
+                {group?.ar ?? verb.group}
+              </span>
+              <span className={cn("text-[10px] font-bold px-2 py-1 rounded-lg", LEVEL_COLORS[verb.level] ?? "bg-gray-100")}>
+                {verb.level}
+              </span>
+              <button
+                onClick={() => setShowConj(v => !v)}
+                className={cn(
+                  "text-[10px] font-bold px-2 py-1 rounded-lg transition-all",
+                  showConj ? "bg-primary/10 text-primary" : "bg-gray-100 text-gray-500 hover:text-primary"
+                )}
+              >
+                {showConj ? "إخفاء" : "التصريف"}
+              </button>
+            </div>
+          </div>
+        </motion.div>
+
+        {/* Arabic translation bubble */}
+        <motion.div
+          key={`ar-${verb.id}`}
+          initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }}
+          className="bg-amber-50/95 backdrop-blur-sm rounded-2xl px-5 py-4"
+          dir="rtl"
+        >
+          <div className="flex items-start justify-between gap-3">
+            <div className="flex-1">
+              <div className="flex items-center gap-1.5 mb-1">
+                <span className="text-[10px] font-bold text-amber-700 uppercase tracking-wide">العربية</span>
+              </div>
+              <p className="text-xl font-bold text-gray-900">{verb.translation}</p>
+              {example && (
+                <p className="text-xs text-gray-500 mt-2 leading-relaxed">
+                  <span className="font-semibold text-gray-700" dir="ltr">{example.sv}</span>
+                  <br />{example.ar}
+                </p>
+              )}
+            </div>
+            <div className="flex gap-2 shrink-0">
+              <button
+                onClick={() => onToggleFavorite(verb.id)}
+                className={cn("w-9 h-9 rounded-xl flex items-center justify-center transition-all",
+                  favorites.has(verb.id) ? "bg-yellow-100 text-yellow-500" : "bg-white/70 text-gray-400 hover:text-yellow-500")}
+              >
+                <Star className={cn("w-4 h-4", favorites.has(verb.id) && "fill-yellow-500")} />
+              </button>
+              <button
+                onClick={() => onToggleReview(verb.id)}
+                className={cn("w-9 h-9 rounded-xl flex items-center justify-center transition-all",
+                  reviewLater.has(verb.id) ? "bg-blue-100 text-blue-500" : "bg-white/70 text-gray-400 hover:text-blue-500")}
+              >
+                <Clock className={cn("w-4 h-4", reviewLater.has(verb.id) && "stroke-blue-500")} />
+              </button>
+            </div>
+          </div>
+        </motion.div>
+      </div>
     </motion.div>
   );
 }
