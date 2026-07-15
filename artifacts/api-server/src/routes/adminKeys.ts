@@ -4,15 +4,12 @@ import { db } from "@workspace/db";
 import { userSettingsTable } from "@workspace/db";
 import { sql, eq } from "drizzle-orm";
 import { requireAdmin } from "../middlewares/adminAuth";
+import { GLOBAL_SETTINGS_USER_ID } from "../lib/openai";
 
 const router = Router();
 
 const KEY_FIELDS = ["openaiApiKey", "geminiApiKey", "imageGenApiKey", "translationApiKey"] as const;
 type KeyField = (typeof KEY_FIELDS)[number];
-
-// AI provider keys are a single app-wide row, not tied to any one learner
-// account, so they use a fixed sentinel userId rather than a real Clerk id.
-const GLOBAL_SETTINGS_USER_ID = "__admin_global__";
 
 async function getOrCreateSettings() {
   const existing = await db
