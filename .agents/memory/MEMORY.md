@@ -5,3 +5,4 @@
 - [Clerk + WebAuthn biometric login](clerk-webauthn-biometric.md) — resident/discoverable passkey + Clerk sign-in-ticket exchange; use `@clerk/react/legacy`'s useSignIn, not the root signal-based one.
 - [Svenska multi-tenancy scope](svenska-multi-tenancy-scope.md) — which tables went per-user vs. stayed global when Clerk accounts were added, and why.
 - [Express sub-router auth scoping bug](express-subrouter-auth-scoping.md) — unscoped router.use(requireAuth) in a root-mounted sub-router can 401 unrelated routes mounted later; always scope to the router's own path prefix.
+- [Gemini audio mime restriction](gemini-audio-mime-restriction.md) — Gemini rejects browser-recorded webm audio; transcode to wav via bundled ffmpeg-static, resolved bundler-proof at runtime.
