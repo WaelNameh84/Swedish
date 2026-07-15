@@ -1,6 +1,6 @@
 import { Router, type IRouter } from "express";
 import multer from "multer";
-import { getOpenAI, AI_NOT_CONFIGURED_MESSAGE } from "../lib/openai";
+import { generateText, transcribeAudio, AI_NOT_CONFIGURED_MESSAGE } from "../lib/aiProvider";
 import { db } from "@workspace/db";
 import { pronunciationAttemptsTable } from "@workspace/db";
 import { desc, eq, sql } from "drizzle-orm";
@@ -28,37 +28,22 @@ router.post("/pronunciation/evaluate", upload.single("audio"), async (req, res) 
       return res.status(400).json({ error: "الرجاء تحديد الكلمة أو الجملة المطلوب نطقها" });
     }
 
-    const openai = await getOpenAI();
-    if (!openai) {
+    const stt = await transcribeAudio(file.buffer, file.mimetype || "audio/webm", "sv");
+    if (!stt) {
+      return res.status(503).json({ error: AI_NOT_CONFIGURED_MESSAGE, aiDisabled: true });
+    }
+    const heard = stt.text;
+
+    const result = await generateText(
+      `أنت مدرّب نطق للغة السويدية للناطقين بالعربية. لديك الكلمة أو الجملة المطلوب نطقها، وما سمعه نظام تحويل الصوت لنص فعلياً من نطق المتعلم. قيّم دقة النطق من 100 (بناءً على تطابق الكلمات والصوتيات، ليس التطابق الحرفي فقط)، واذكر نصيحة نطق واحدة قصيرة ومحددة. أعد فقط JSON صالح بالشكل: {"score":0-100,"feedback":"..."} بدون أي نص إضافي.`,
+      `الكلمة/الجملة المطلوبة: "${targetText.trim()}"\nما سمعه النظام من نطق المتعلم: "${heard}"`,
+      { model: MODEL, json: true, maxOutputTokens: 500 }
+    );
+    if (!result) {
       return res.status(503).json({ error: AI_NOT_CONFIGURED_MESSAGE, aiDisabled: true });
     }
 
-    const audioFile = new File([new Uint8Array(file.buffer)], "recording.webm", { type: file.mimetype || "audio/webm" });
-    const transcription = await openai.audio.transcriptions.create({
-      file: audioFile,
-      model: "gpt-4o-mini-transcribe",
-      language: "sv",
-    });
-    const heard = transcription.text?.trim() ?? "";
-
-    const completion = await openai.chat.completions.create({
-      model: MODEL,
-      max_completion_tokens: 500,
-      messages: [
-        {
-          role: "system",
-          content: `أنت مدرّب نطق للغة السويدية للناطقين بالعربية. لديك الكلمة أو الجملة المطلوب نطقها، وما سمعه نظام تحويل الصوت لنص فعلياً من نطق المتعلم. قيّم دقة النطق من 100 (بناءً على تطابق الكلمات والصوتيات، ليس التطابق الحرفي فقط)، واذكر نصيحة نطق واحدة قصيرة ومحددة. أعد فقط JSON صالح بالشكل: {"score":0-100,"feedback":"..."} بدون أي نص إضافي.`,
-        },
-        {
-          role: "user",
-          content: `الكلمة/الجملة المطلوبة: "${targetText.trim()}"\nما سمعه النظام من نطق المتعلم: "${heard}"`,
-        },
-      ],
-    });
-
-    const raw = completion.choices[0]?.message?.content ?? "{}";
-    const cleaned = raw.trim().replace(/^```json\s*|```$/g, "");
-    const parsed = JSON.parse(cleaned);
+    const parsed = JSON.parse(result.text || "{}");
     res.json({ ...parsed, heardText: heard });
   } catch (err) {
     req.log.error({ err }, "Pronunciation evaluation failed");
@@ -83,37 +68,22 @@ router.post("/pronunciation/errors", upload.single("audio"), async (req, res) =>
       return res.status(400).json({ error: "الرجاء تحديد الكلمة أو الجملة المطلوب نطقها" });
     }
 
-    const openai = await getOpenAI();
-    if (!openai) {
+    const stt = await transcribeAudio(file.buffer, file.mimetype || "audio/webm", "sv");
+    if (!stt) {
+      return res.status(503).json({ error: AI_NOT_CONFIGURED_MESSAGE, aiDisabled: true });
+    }
+    const heard = stt.text;
+
+    const result = await generateText(
+      `أنت مدرّب نطق سويدي متخصص في تحليل أخطاء المتعلمين الناطقين بالعربية. لديك الجملة أو الكلمة المطلوبة، وما سمعه نظام تحويل الصوت لنص من نطق المتعلم. حدد كل كلمة بدت غير دقيقة النطق (بناءً على الفرق بين النص المطلوب والمسموع)، ولكل كلمة اذكر نوع الخطأ المحتمل بجملة قصيرة بالعربية (مثل: صوت غير موجود بالعربية، تشديد خاطئ، حذف حرف، استبدال صوت). إذا لم تجد أخطاء واضحة أعد قائمة فارغة وامدح النطق. أضف نصيحة نطق واحدة قصيرة وعملية. أعد فقط JSON صالح بالشكل: {"errors":[{"word":"...","issue":"..."}],"tip":"..."} بدون أي نص إضافي.`,
+      `الجملة/الكلمة المطلوبة: "${targetText.trim()}"\nما سمعه النظام من نطق المتعلم: "${heard}"`,
+      { model: MODEL, json: true, maxOutputTokens: 600 }
+    );
+    if (!result) {
       return res.status(503).json({ error: AI_NOT_CONFIGURED_MESSAGE, aiDisabled: true });
     }
 
-    const audioFile = new File([new Uint8Array(file.buffer)], "recording.webm", { type: file.mimetype || "audio/webm" });
-    const transcription = await openai.audio.transcriptions.create({
-      file: audioFile,
-      model: "gpt-4o-mini-transcribe",
-      language: "sv",
-    });
-    const heard = transcription.text?.trim() ?? "";
-
-    const completion = await openai.chat.completions.create({
-      model: MODEL,
-      max_completion_tokens: 600,
-      messages: [
-        {
-          role: "system",
-          content: `أنت مدرّب نطق سويدي متخصص في تحليل أخطاء المتعلمين الناطقين بالعربية. لديك الجملة أو الكلمة المطلوبة، وما سمعه نظام تحويل الصوت لنص من نطق المتعلم. حدد كل كلمة بدت غير دقيقة النطق (بناءً على الفرق بين النص المطلوب والمسموع)، ولكل كلمة اذكر نوع الخطأ المحتمل بجملة قصيرة بالعربية (مثل: صوت غير موجود بالعربية، تشديد خاطئ، حذف حرف، استبدال صوت). إذا لم تجد أخطاء واضحة أعد قائمة فارغة وامدح النطق. أضف نصيحة نطق واحدة قصيرة وعملية. أعد فقط JSON صالح بالشكل: {"errors":[{"word":"...","issue":"..."}],"tip":"..."} بدون أي نص إضافي.`,
-        },
-        {
-          role: "user",
-          content: `الجملة/الكلمة المطلوبة: "${targetText.trim()}"\nما سمعه النظام من نطق المتعلم: "${heard}"`,
-        },
-      ],
-    });
-
-    const raw = completion.choices[0]?.message?.content ?? "{}";
-    const cleaned = raw.trim().replace(/^```json\s*|```$/g, "");
-    const parsed = JSON.parse(cleaned);
+    const parsed = JSON.parse(result.text || "{}");
     res.json({ ...parsed, heardText: heard });
   } catch (err) {
     req.log.error({ err }, "Pronunciation error analysis failed");

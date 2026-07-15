@@ -1,6 +1,7 @@
 import { Router, type IRouter } from "express";
 import multer from "multer";
-import { getOpenAI, isAIAvailable, AI_NOT_CONFIGURED_MESSAGE } from "../lib/openai";
+import { getOpenAI } from "../lib/openai";
+import { generateText, transcribeAudio, isAIAvailable, AI_NOT_CONFIGURED_MESSAGE } from "../lib/aiProvider";
 
 const router: IRouter = Router();
 const upload = multer({ storage: multer.memoryStorage(), limits: { fileSize: 25 * 1024 * 1024 } });
@@ -38,22 +39,12 @@ router.post("/ai-teacher/generate", async (req, res) => {
       return res.status(400).json({ error: "الرجاء إدخال طلبك" });
     }
 
-    const openai = await getOpenAI();
-    if (!openai) {
+    const result = await generateText(TOOL_PROMPTS[tool], input.trim(), { model: MODEL, maxOutputTokens: 2048 });
+    if (!result) {
       return res.status(503).json({ error: AI_NOT_CONFIGURED_MESSAGE, aiDisabled: true });
     }
 
-    const completion = await openai.chat.completions.create({
-      model: MODEL,
-      max_completion_tokens: 2048,
-      messages: [
-        { role: "system", content: TOOL_PROMPTS[tool] },
-        { role: "user", content: input.trim() },
-      ],
-    });
-
-    const output = completion.choices[0]?.message?.content ?? "";
-    res.json({ output });
+    res.json({ output: result.text });
   } catch (err) {
     req.log.error({ err }, "AI teacher generate failed");
     res.status(500).json({ error: "حدث خطأ أثناء توليد المحتوى" });
@@ -67,26 +58,16 @@ router.post("/ai-teacher/translate", async (req, res) => {
       return res.status(400).json({ error: "الرجاء إدخال نص" });
     }
 
-    const openai = await getOpenAI();
-    if (!openai) {
+    const result = await generateText(
+      `أنت مترجم فوري بين السويدية والعربية والإنكليزية. تستقبل جملة واحدة بأي من هذه اللغات الثلاث. اكتشف لغتها، وترجمها فوراً إلى اللغة الأخرى الأنسب للمحادثة (إذا كانت الجملة بالسويدية ترجمها للعربية، وإذا كانت بالعربية ترجمها للسويدية، وإذا كانت بالإنكليزية ترجمها للعربية). أعد فقط JSON صالح بالشكل: {"detectedLang":"sv|ar|en","targetLang":"sv|ar|en","translation":"..."} بدون أي نص إضافي.`,
+      text.trim(),
+      { model: MINI_MODEL, json: true, maxOutputTokens: 500 }
+    );
+    if (!result) {
       return res.status(503).json({ error: AI_NOT_CONFIGURED_MESSAGE, aiDisabled: true });
     }
 
-    const completion = await openai.chat.completions.create({
-      model: MINI_MODEL,
-      max_completion_tokens: 500,
-      messages: [
-        {
-          role: "system",
-          content: `أنت مترجم فوري بين السويدية والعربية والإنكليزية. تستقبل جملة واحدة بأي من هذه اللغات الثلاث. اكتشف لغتها، وترجمها فوراً إلى اللغة الأخرى الأنسب للمحادثة (إذا كانت الجملة بالسويدية ترجمها للعربية، وإذا كانت بالعربية ترجمها للسويدية، وإذا كانت بالإنكليزية ترجمها للعربية). أعد فقط JSON صالح بالشكل: {"detectedLang":"sv|ar|en","targetLang":"sv|ar|en","translation":"..."} بدون أي نص إضافي.`,
-        },
-        { role: "user", content: text.trim() },
-      ],
-    });
-
-    const raw = completion.choices[0]?.message?.content ?? "{}";
-    const cleaned = raw.trim().replace(/^```json\s*|```$/g, "");
-    const parsed = JSON.parse(cleaned);
+    const parsed = JSON.parse(result.text || "{}");
     res.json(parsed);
   } catch (err) {
     req.log.error({ err }, "AI translate failed");
@@ -134,38 +115,22 @@ router.post("/ai-teacher/pronunciation", upload.single("audio"), async (req, res
       return res.status(400).json({ error: "الرجاء تحديد الجملة المطلوب نطقها" });
     }
 
-    const openai = await getOpenAI();
-    if (!openai) {
+    const stt = await transcribeAudio(file.buffer, file.mimetype || "audio/webm", "sv");
+    if (!stt) {
+      return res.status(503).json({ error: AI_NOT_CONFIGURED_MESSAGE, aiDisabled: true });
+    }
+    const heard = stt.text;
+
+    const result = await generateText(
+      `أنت مدرّب نطق للغة السويدية. لديك الجملة المطلوب نطقها، وما سمعه نظام تحويل الصوت لنص فعلياً من نطق المتعلم. قيّم دقة النطق من 100 (بناءً على تطابق الكلمات والصوتيات، ليس التطابق الحرفي فقط)، واذكر الكلمات التي بدت غير دقيقة إن وجدت، وأعط نصيحة نطق واحدة قصيرة ومحددة. أعد فقط JSON صالح بالشكل: {"score":0-100,"heardText":"...","feedback":"..."} بدون أي نص إضافي.`,
+      `الجملة المطلوبة: "${targetText.trim()}"\nما سمعه النظام من نطق المتعلم: "${heard}"`,
+      { model: MODEL, json: true, maxOutputTokens: 600 }
+    );
+    if (!result) {
       return res.status(503).json({ error: AI_NOT_CONFIGURED_MESSAGE, aiDisabled: true });
     }
 
-    const audioFile = new File([new Uint8Array(file.buffer)], "recording.webm", { type: file.mimetype || "audio/webm" });
-    const transcription = await openai.audio.transcriptions.create({
-      file: audioFile,
-      model: "gpt-4o-mini-transcribe",
-      language: "sv",
-    });
-
-    const heard = transcription.text?.trim() ?? "";
-
-    const completion = await openai.chat.completions.create({
-      model: MODEL,
-      max_completion_tokens: 600,
-      messages: [
-        {
-          role: "system",
-          content: `أنت مدرّب نطق للغة السويدية. لديك الجملة المطلوب نطقها، وما سمعه نظام تحويل الصوت لنص فعلياً من نطق المتعلم. قيّم دقة النطق من 100 (بناءً على تطابق الكلمات والصوتيات، ليس التطابق الحرفي فقط)، واذكر الكلمات التي بدت غير دقيقة إن وجدت، وأعط نصيحة نطق واحدة قصيرة ومحددة. أعد فقط JSON صالح بالشكل: {"score":0-100,"heardText":"...","feedback":"..."} بدون أي نص إضافي.`,
-        },
-        {
-          role: "user",
-          content: `الجملة المطلوبة: "${targetText.trim()}"\nما سمعه النظام من نطق المتعلم: "${heard}"`,
-        },
-      ],
-    });
-
-    const raw = completion.choices[0]?.message?.content ?? "{}";
-    const cleaned = raw.trim().replace(/^```json\s*|```$/g, "");
-    const parsed = JSON.parse(cleaned);
+    const parsed = JSON.parse(result.text || "{}");
     res.json({ ...parsed, heardText: heard });
   } catch (err) {
     req.log.error({ err }, "Pronunciation assessment failed");
@@ -180,18 +145,12 @@ router.post("/ai-teacher/transcribe", upload.single("audio"), async (req, res) =
       return res.status(400).json({ error: "لم يتم إرسال أي تسجيل صوتي" });
     }
 
-    const openai = await getOpenAI();
-    if (!openai) {
+    const stt = await transcribeAudio(file.buffer, file.mimetype || "audio/webm");
+    if (!stt) {
       return res.status(503).json({ error: AI_NOT_CONFIGURED_MESSAGE, aiDisabled: true });
     }
 
-    const audioFile = new File([new Uint8Array(file.buffer)], "recording.webm", { type: file.mimetype || "audio/webm" });
-    const transcription = await openai.audio.transcriptions.create({
-      file: audioFile,
-      model: "gpt-4o-mini-transcribe",
-    });
-
-    res.json({ text: transcription.text ?? "" });
+    res.json({ text: stt.text });
   } catch (err) {
     req.log.error({ err }, "Transcription failed");
     res.status(500).json({ error: "حدث خطأ أثناء تحويل الصوت إلى نص" });

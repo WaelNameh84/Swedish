@@ -2,7 +2,7 @@ import { Router } from "express";
 import { db } from "@workspace/db";
 import { chatMessagesTable } from "@workspace/db";
 import { eq, and, asc } from "drizzle-orm";
-import { getOpenAI } from "../lib/openai";
+import { generateText } from "../lib/aiProvider";
 import { requireAuth } from "../middlewares/auth";
 
 const router = Router();
@@ -14,20 +14,17 @@ router.use("/chat", requireAuth);
 const TUTOR_SYSTEM_PROMPT = `أنت "المعلم الذكي"، مساعد ودود لتعليم اللغة السويدية للناطقين بالعربية داخل تطبيق تعلم لغة. تحدّث بالعربية مع إبراز الكلمات والجمل السويدية بوضوح. إذا كتب المستخدم بالسويدية، صحّح أخطاءه بلطف وردّ عليه محادثةً، وإذا سأل بالعربية عن قاعدة أو كلمة اشرحها ببساطة مع أمثلة. اجعل ردودك قصيرة ومشجعة (3-5 أسطر) واستخدم رموزاً تعبيرية بشكل معتدل.`;
 
 async function generateAITutorResponse(userMessage: string, history: { role: string; content: string }[]): Promise<string | null> {
-  const openai = await getOpenAI();
-  if (!openai) return null;
+  // Recent history folded into the prompt as plain text — generateText only
+  // takes a single system+user turn (shared across OpenAI/Gemini), not a
+  // full multi-turn messages array.
+  const context = history
+    .slice(-10)
+    .map((m) => `${m.role === "assistant" ? "المعلم" : "المتعلم"}: ${m.content}`)
+    .join("\n");
+  const prompt = context ? `سياق المحادثة السابقة:\n${context}\n\nرسالة المتعلم الجديدة: ${userMessage}` : userMessage;
 
-  const completion = await openai.chat.completions.create({
-    model: "gpt-5.4",
-    max_completion_tokens: 600,
-    messages: [
-      { role: "system", content: TUTOR_SYSTEM_PROMPT },
-      ...history.slice(-10).map((m) => ({ role: m.role as "user" | "assistant", content: m.content })),
-      { role: "user", content: userMessage },
-    ],
-  });
-
-  return completion.choices[0]?.message?.content ?? null;
+  const result = await generateText(TUTOR_SYSTEM_PROMPT, prompt, { model: "gpt-5.4", maxOutputTokens: 600 });
+  return result?.text ?? null;
 }
 
 // Simple Swedish tutor response engine
