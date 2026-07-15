@@ -52,6 +52,7 @@ router.get("/conversations/:id", async (req, res) => {
         textAr: l.textAr,
         phonetic: l.phonetic ?? null,
         noteAr: l.noteAr ?? null,
+        sceneImageUrl: l.sceneImageUrl ?? null,
       })),
     });
   } catch (err) {

@@ -10,6 +10,7 @@
     "seed:verbs": "tsx ./src/seedVerbs.ts",
     "seed:conversations": "tsx ./src/seedConversations.ts",
     "seed:conversations:extra": "tsx ./src/seedConversationsExtra.ts",
+    "seed:conversations:daily": "tsx ./src/seedConversationsDaily.ts",
     "seed:verbs:extra": "tsx ./src/seedVerbsExtra.ts",
     "seed:verbs:extra2": "tsx ./src/seedVerbsExtra2.ts",
     "typecheck": "tsc -p tsconfig.json --noEmit"

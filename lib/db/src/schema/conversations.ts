@@ -39,6 +39,7 @@ export const conversationLinesTable = pgTable("conversation_lines", {
   textAr: text("text_ar").notNull(),
   phonetic: text("phonetic"),
   noteAr: text("note_ar"),                 // optional grammar/usage note
+  sceneImageUrl: text("scene_image_url"),  // per-scene realistic photo
 });
 
 export const insertConversationSchema = createInsertSchema(conversationsTable).omit({ id: true, createdAt: true });

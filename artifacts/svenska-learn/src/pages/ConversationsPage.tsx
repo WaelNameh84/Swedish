@@ -14,6 +14,7 @@ interface ConvLine {
   id: number; orderIndex: number;
   speaker: string; speakerName: string; speakerRole: string | null;
   textSv: string; textAr: string; phonetic: string | null; noteAr: string | null;
+  sceneImageUrl: string | null;
 }
 interface Conversation {
   id: number; title: string; titleAr: string; scenario: string;
@@ -349,9 +350,10 @@ function SceneViewer({
   const [imgError, setImgError] = useState(false);
   const [autoPlaying, setAutoPlaying] = useState(false);
   const autoRef = useRef<ReturnType<typeof setTimeout> | null>(null);
-  const bgImage = getSceneImage(conv);
 
   const currentLine = lines[sceneIdx];
+  // Use per-scene image if available, fall back to conversation image
+  const currentBgImage = currentLine?.sceneImageUrl || getSceneImage(conv);
 
   const goNext = useCallback(() => {
     if (sceneIdx < lines.length - 1) {
@@ -433,7 +435,7 @@ function SceneViewer({
         >
           {!imgError ? (
             <img
-              src={bgImage}
+              src={currentBgImage}
               alt=""
               className="w-full h-full object-cover"
               onError={() => setImgError(true)}
